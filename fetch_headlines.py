@@ -87,8 +87,9 @@ def main():
             if err:
                 print(f"## [{section}] {outlet}\nFEED ERROR: {err}\n", file=sys.stderr)
                 continue
-            fresh = [i for i in items if i["when"] is None or i["when"] >= cutoff]
-            fresh = sorted(fresh, key=lambda i: i["when"] or cutoff, reverse=True)[:20]
+            # keep feed order: Google News is relevance-ranked, direct feeds chronological.
+            # Date-sorting here buries relevant stories under fresh off-topic matches.
+            fresh = [i for i in items if i["when"] is None or i["when"] >= cutoff][:20]
             if not fresh:
                 continue
             print(f"## [{section}] {outlet}")
