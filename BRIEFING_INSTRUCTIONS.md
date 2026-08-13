@@ -7,16 +7,27 @@ Today's date = the current date in America/New_York.
 
 ## 1. Fetch
 
-Run `python3 fetch_headlines.py > /tmp/digest.md 2>/tmp/feed_errors.txt` from the repo root.
-It pulls ~50 RSS feeds defined in `feeds.tsv` (outlets, topics, cities) and `threads.tsv`
-(running stories), filtered to the last 24 hours (72 on Mondays to cover the weekend),
-preserving Google News relevance order. Note any FEED ERROR lines for production notes.
+**Cloud runner: use the pre-fetched digest.** The cloud sandbox's egress proxy blocks
+news domains, so do NOT try to fetch feeds there. A GitHub Action ("Fetch morning
+digest", 12:10 UTC weekdays) runs the fetcher and commits `digests/YYYY-MM-DD.md` to
+this repo ~20 minutes before the routine fires. Read today's digest from `digests/`.
+If today's digest file is missing (Action failed or hasn't run), say so in production
+notes and fall back to WebSearch-based discovery — but budget carefully: the cloud
+session has a hard cap of 200 WebSearch calls, and link verification (step 3) needs
+~20 of them, so never spend more than ~150 on discovery.
+
+**Local runner: fetch live.** Run `python3 fetch_headlines.py > /tmp/digest.md
+2>/tmp/feed_errors.txt` from the repo root. It pulls ~50 RSS feeds defined in
+`feeds.tsv` (outlets, topics, cities) and `threads.tsv` (running stories), filtered to
+the last 24 hours (72 on Mondays to cover the weekend), preserving Google News
+relevance order. Note any FEED ERROR lines for production notes.
 
 **ACE backstop (mandatory):** hard-paywalled outlets — especially WSJ opinion/features —
 are poorly indexed by Google News. Fetch ACE's Higher Education Headlines page
-(https://www.acenet.edu/News-Room/Pages/Higher-Education-Headlines.aspx; if that 404s,
-web-search "ACE higher education headlines today") and scan for NYT/WSJ/Bloomberg stories
-inside the window that the digest missed. Verify each via a headline search before use.
+(https://www.acenet.edu/News-Room/Pages/Higher-Education-Headlines.aspx; if fetching is
+blocked or 404s, web-search "ACE higher education headlines today") and scan for
+NYT/WSJ/Bloomberg stories inside the window that the digest missed. Verify each via a
+headline search before use.
 
 ## 2. Curate
 
