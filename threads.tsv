@@ -8,7 +8,7 @@
 #   - Keep queries TIGHT: quote proper nouns, pair institution with story keywords, so the feed
 #     returns the thread and not general coverage of the institution.
 Thread	Hampshire College sale	https://news.google.com/rss/search?q=%22Hampshire+College%22+(sale+OR+closure+OR+bid+OR+%22Hampshire+Next%22)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-05-01 last_hit=2026-08-11
-Thread	Howard unenrollment	https://news.google.com/rss/search?q=%22Howard+University%22+(unenrolled+OR+unenrollment+OR+readmitted)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-07-24 last_hit=2026-08-12
+Thread	Howard unenrollment	https://news.google.com/rss/search?q=%22Howard+University%22+(unenrolled+OR+unenrollment+OR+readmitted)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-07-24 last_hit=2026-08-13
 Thread	UK university job cuts	https://news.google.com/rss/search?q=UK+university+(%22job+cuts%22+OR+redundancies+OR+strike+OR+deficit)+when:2d&hl=en-GB&gl=GB&ceid=GB:en	opened=2026-05-01 last_hit=2026-08-13
 Thread	Harvard federal funding fight	https://news.google.com/rss/search?q=Harvard+(%22federal+funding%22+OR+%22research+funding%22+lawsuit+OR+settlement)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-05-01 last_hit=2026-08-13
 Thread	Yale settlement talks	https://news.google.com/rss/search?q=Yale+(settlement+OR+%22Trump+administration%22+deal)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-07-02 last_hit=2026-07-31
