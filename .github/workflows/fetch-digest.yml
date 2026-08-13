@@ -1,0 +1,36 @@
+name: Fetch morning digest
+on:
+  schedule:
+    - cron: "10 12 * * 1-5"   # 12:10 UTC weekdays, 20 min before the briefing routine
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch feeds into dated digest
+        run: |
+          mkdir -p digests
+          DATE=$(TZ=America/New_York date +%F)
+          python3 fetch_headlines.py > "digests/$DATE.md" 2> feed_errors.txt || true
+          if [ -s feed_errors.txt ]; then
+            printf '\n## FEED ERRORS\n' >> "digests/$DATE.md"
+            cat feed_errors.txt >> "digests/$DATE.md"
+          fi
+          echo "Digest items: $(grep -c '^- ' "digests/$DATE.md" || true)"
+      - name: Commit digest
+        run: |
+          DATE=$(TZ=America/New_York date +%F)
+          git config user.name "digest-bot"
+          git config user.email "actions@github.com"
+          git add "digests/$DATE.md"
+          git diff --cached --quiet || git commit -m "Digest $DATE"
+          git push
+      - name: Prune digests older than 15 runs
+        run: |
+          ls -1 digests/*.md 2>/dev/null | head -n -15 | xargs -r git rm -q || true
+          git diff --cached --quiet || { git commit -m "Prune old digests"; git push; }
