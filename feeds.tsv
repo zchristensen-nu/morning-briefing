@@ -1,0 +1,53 @@
+# The Morning Briefing feed list — one per line: Section <TAB> Outlet <TAB> URL
+# Sections: HigherEd, Boston, London, BayArea, Seattle, NewYork, Vancouver, Toronto, PortlandME, ArlingtonVA, MiamiTampa, Charlotte, Topic, Thread
+# Google News queries use when:2d so the lookback is enforced at the source.
+# Direct feeds (real URLs + descriptions — prefer these links when a story appears in both)
+HigherEd	New York Times	https://rss.nytimes.com/services/xml/rss/nyt/Education.xml
+HigherEd	NPR	https://feeds.npr.org/1013/rss.xml
+HigherEd	The Guardian	https://www.theguardian.com/education/rss
+HigherEd	Inside Higher Ed	https://www.insidehighered.com/rss.xml
+# National outlets via Google News (headline+outlet discovery; resolve canonical URL at compile time)
+HigherEd	New York Times	https://news.google.com/rss/search?q=site:nytimes.com+(university+OR+college+OR+%22higher+education%22)+-%22The+Athletic%22+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Wall Street Journal	https://news.google.com/rss/search?q=site:wsj.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Washington Post	https://news.google.com/rss/search?q=site:washingtonpost.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Financial Times	https://news.google.com/rss/search?q=site:ft.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	The Atlantic	https://news.google.com/rss/search?q=site:theatlantic.com+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Bloomberg	https://news.google.com/rss/search?q=site:bloomberg.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	The Economist	https://news.google.com/rss/search?q=site:economist.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Associated Press	https://news.google.com/rss/search?q=site:apnews.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Wired	https://news.google.com/rss/search?q=site:wired.com+(university+OR+college+OR+AI+education)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Forbes	https://news.google.com/rss/search?q=site:forbes.com+(%22higher+education%22+OR+university)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Christian Science Monitor	https://news.google.com/rss/search?q=site:csmonitor.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	The New Yorker	https://news.google.com/rss/search?q=site:newyorker.com+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	The Times (UK)	https://news.google.com/rss/search?q=site:thetimes.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Nature	https://news.google.com/rss/search?q=site:nature.com+(university+OR+NIH+funding+OR+research+funding)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Reuters	https://news.google.com/rss/search?q=site:reuters.com+(university+OR+college+OR+%22higher+education%22+OR+%22student+loan%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	USA Today	https://news.google.com/rss/search?q=site:usatoday.com+(university+OR+college+OR+%22student+loan%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+# Topic sweeps (catch stories from any outlet)
+Topic	Federal policy	https://news.google.com/rss/search?q=(Trump+OR+DOJ+OR+%22Education+Department%22)+university+(lawsuit+OR+funding+OR+investigation)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	AI in higher ed	https://news.google.com/rss/search?q=AI+%22higher+education%22+OR+%22artificial+intelligence%22+college+students+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	Closures and finances	https://news.google.com/rss/search?q=college+university+(closure+OR+merger+OR+endowment+OR+deficit)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	Student loans	https://news.google.com/rss/search?q=%22student+loan%22+federal+policy+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	International students	https://news.google.com/rss/search?q=%22international+students%22+(visa+OR+enrollment)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	Campus politics	https://news.google.com/rss/search?q=university+campus+(antisemitism+OR+%22free+speech%22+OR+DEI)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	Job market	https://news.google.com/rss/search?q=(%22college+graduates%22+OR+%22entry-level%22)+(%22job+market%22+OR+hiring+OR+unemployment+OR+%22remote+work%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	AI and workforce	https://news.google.com/rss/search?q=AI+(jobs+OR+workforce+OR+hiring+OR+%22entry-level%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	Work visas and immigration	https://news.google.com/rss/search?q=(H-1B+OR+%22work+visa%22+OR+%22immigration+crackdown%22)+(graduates+OR+workers+OR+economy)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	General sweep	https://news.google.com/rss/search?q=%22higher+education%22+when:2d&hl=en-US&gl=US&ceid=US:en
+# Global campus cities
+Boston	Boston Globe / regional	https://news.google.com/rss/search?q=(site:bostonglobe.com+OR+site:wbur.org+OR+site:masslive.com+OR+site:wgbh.org+OR+site:bizjournals.com/boston)+(university+OR+college+OR+education)+when:2d&hl=en-US&gl=US&ceid=US:en
+Boston	Marketplace / Axios Boston	https://news.google.com/rss/search?q=(site:marketplace.org+OR+site:axios.com/local/boston)+(college+OR+university+OR+education)+when:2d&hl=en-US&gl=US&ceid=US:en
+Boston	Boston city news	https://news.google.com/rss/search?q=(site:bostonglobe.com+OR+site:axios.com/local/boston)+(mayor+OR+housing+OR+economy+OR+%22job+market%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+London	Times Higher Education	https://news.google.com/rss/search?q=site:timeshighereducation.com+when:2d&hl=en-GB&gl=GB&ceid=GB:en
+London	UK outlets	https://news.google.com/rss/search?q=(site:bbc.com+OR+site:bbc.co.uk+OR+site:thetimes.com+OR+site:ft.com)+UK+university+when:2d&hl=en-GB&gl=GB&ceid=GB:en
+BayArea	Bay Area outlets	https://news.google.com/rss/search?q=(site:sfchronicle.com+OR+site:calmatters.org+OR+site:kqed.org+OR+site:mercurynews.com+OR+site:sfgate.com+OR+site:latimes.com)+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+BayArea	Oakland city news	https://news.google.com/rss/search?q=site:sfchronicle.com+Oakland+(mayor+OR+housing+OR+economy)+when:2d&hl=en-US&gl=US&ceid=US:en
+Seattle	Seattle outlets	https://news.google.com/rss/search?q=(site:seattletimes.com+OR+site:bizjournals.com/seattle)+(university+OR+college+OR+education)+when:2d&hl=en-US&gl=US&ceid=US:en
+NewYork	New York outlets	https://news.google.com/rss/search?q=site:nytimes.com+%22New+York%22+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
+NewYork	Newsweek	https://news.google.com/rss/search?q=site:newsweek.com+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
+Vancouver	Vancouver outlets	https://news.google.com/rss/search?q=(site:vancouversun.com+OR+site:cbc.ca+OR+site:theglobeandmail.com)+university+when:2d&hl=en-CA&gl=CA&ceid=CA:en
+Toronto	Toronto outlets	https://news.google.com/rss/search?q=(site:thestar.com+OR+site:torontosun.com+OR+site:theglobeandmail.com)+university+education+when:2d&hl=en-CA&gl=CA&ceid=CA:en
+PortlandME	Maine outlets	https://news.google.com/rss/search?q=(site:pressherald.com+OR+site:mainepublic.org+OR+site:mainebiz.biz)+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
+ArlingtonVA	Virginia outlets	https://news.google.com/rss/search?q=(site:washingtonpost.com+OR+site:virginiamercury.com+OR+site:vpm.org+OR+site:bizjournals.com/washington)+Virginia+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
+MiamiTampa	Florida outlets	https://news.google.com/rss/search?q=(site:miamiherald.com+OR+site:tampabay.com+OR+site:wusf.org+OR+site:bizjournals.com/southflorida)+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
+Charlotte	Charlotte outlets	https://news.google.com/rss/search?q=(site:charlotteobserver.com+OR+site:bizjournals.com/charlotte+OR+site:wcnc.com+OR+site:wfae.org+OR+site:spectrumlocalnews.com)+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en

@@ -1,0 +1,22 @@
+# Running story threads — OWNED AND MAINTAINED BY THE MORNING-BRIEFING AGENT.
+# Format: Thread <TAB> Name <TAB> Google News query URL <TAB> opened=YYYY-MM-DD last_hit=YYYY-MM-DD
+# Rules (applied every morning after compiling the briefing):
+#   - Update last_hit when a thread produces a story worth including (or a clearly relevant development).
+#   - OPEN a new thread when a story (a) recurs across 2+ days or 3+ outlets AND (b) is an unresolved
+#     process: lawsuit, investigation, sale/merger, leadership search, legislation, protest wave, crisis.
+#   - RETIRE (delete the line) when the story resolves or last_hit is more than 14 days old.
+#   - Keep queries TIGHT: quote proper nouns, pair institution with story keywords, so the feed
+#     returns the thread and not general coverage of the institution.
+Thread	Hampshire College sale	https://news.google.com/rss/search?q=%22Hampshire+College%22+(sale+OR+closure+OR+bid+OR+%22Hampshire+Next%22)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-05-01 last_hit=2026-08-11
+Thread	Howard unenrollment	https://news.google.com/rss/search?q=%22Howard+University%22+(unenrolled+OR+unenrollment+OR+readmitted)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-07-24 last_hit=2026-08-12
+Thread	UK university job cuts	https://news.google.com/rss/search?q=UK+university+(%22job+cuts%22+OR+redundancies+OR+strike+OR+deficit)+when:2d&hl=en-GB&gl=GB&ceid=GB:en	opened=2026-05-01 last_hit=2026-08-13
+Thread	Harvard federal funding fight	https://news.google.com/rss/search?q=Harvard+(%22federal+funding%22+OR+%22research+funding%22+lawsuit+OR+settlement)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-05-01 last_hit=2026-08-13
+Thread	Yale settlement talks	https://news.google.com/rss/search?q=Yale+(settlement+OR+%22Trump+administration%22+deal)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-07-02 last_hit=2026-07-31
+Thread	Columbia lawsuits	https://news.google.com/rss/search?q=Columbia+University+(lawsuit+OR+settlement+OR+%22Palestinian+students%22)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-12 last_hit=2026-08-13
+Thread	Michigan pass-fail grades	https://news.google.com/rss/search?q=%22University+of+Michigan%22+(%22pass%2Ffail%22+OR+%22letter+grades%22+OR+freshmen+grades)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-10 last_hit=2026-08-13
+Thread	In-state tuition lawsuits	https://news.google.com/rss/search?q=Trump+(%22in-state+tuition%22+OR+%22undocumented+students%22)+lawsuit+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-11 last_hit=2026-08-12
+Thread	FSU civil rights investigation	https://news.google.com/rss/search?q=%22Florida+State+University%22+(%22civil+rights%22+OR+investigation+OR+scholarships)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-13 last_hit=2026-08-13
+Thread	Cambridge Arday probe	https://news.google.com/rss/search?q=Cambridge+%22Arday%22+when:2d&hl=en-GB&gl=GB&ceid=GB:en	opened=2026-08-13 last_hit=2026-08-13
+Thread	A-level results and clearing	https://news.google.com/rss/search?q=%22A-level+results%22+OR+%22university+clearing%22+when:2d&hl=en-GB&gl=GB&ceid=GB:en	opened=2026-08-13 last_hit=2026-08-13
+Thread	Three-year degrees	https://news.google.com/rss/search?q=%22three-year+degree%22+OR+%22three-year+bachelor%22+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-07-01 last_hit=2026-08-12
+Thread	India student protests	https://news.google.com/rss/search?q=India+%22student+protests%22+OR+%22DUSU%22+when:2d&hl=en-IN&gl=IN&ceid=IN:en	opened=2026-07-21 last_hit=2026-08-13
