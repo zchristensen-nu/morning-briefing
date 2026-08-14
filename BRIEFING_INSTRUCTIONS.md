@@ -81,6 +81,16 @@ The digest marks repeated headlines with (DUPLICATE); when several outlets cover
 story, pick the strongest outlet. Check the most recent file in `briefings/` and do not
 repeat a story from it unless there is a significant new development.
 
+**Thread follow-ups must cite an in-window article — never the thread's original story.**
+When a running thread produces fresh developments, the entry's headline, URL, and summary
+must all come from an article PUBLISHED INSIDE TODAY'S WINDOW covering the new
+development. Linking the original announcement (which already ran in a previous briefing)
+with a summary noting it "has since drawn debate" is a duplicate, not a follow-up. If the
+only fresh coverage is minor or opinion-only and the story already ran, skip it.
+Mechanical check: NYT/WaPo/Guardian URLs carry the publication date in their path
+(`/2026/08/11/`) — if that date is outside the window, the article is out of window no
+matter what the feed's timestamp said.
+
 ## 5. Threads (mandatory)
 
 `threads.tsv` is agent-maintained; its header documents the format
