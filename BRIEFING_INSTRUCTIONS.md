@@ -11,10 +11,12 @@ Today's date = the current date in America/New_York.
 news domains, so do NOT try to fetch feeds there. A GitHub Action ("Fetch morning
 digest", 12:10 UTC weekdays) runs the fetcher and commits `digests/YYYY-MM-DD.md` to
 this repo ~20 minutes before the routine fires. Read today's digest from `digests/`.
-If today's digest file is missing (Action failed or hasn't run), say so in production
-notes and fall back to WebSearch-based discovery — but budget carefully: the cloud
-session has a hard cap of 200 WebSearch calls, and link verification (step 3) needs
-~20 of them, so never spend more than ~150 on discovery.
+If today's digest is missing or stale (GitHub cron schedules are best-effort and
+sometimes skip), re-trigger it yourself — `gh workflow run fetch-digest.yml`, wait
+~90 seconds, `git pull` — and note the missed schedule in production notes. Only if
+that also fails, fall back to WebSearch-based discovery — but budget carefully: the
+cloud session has a hard cap of 200 WebSearch calls, and link verification (step 3)
+needs ~20 of them, so never spend more than ~150 on discovery.
 
 **Local runner: fetch live.** Run `python3 fetch_headlines.py > /tmp/digest.md
 2>/tmp/feed_errors.txt` from the repo root. It pulls ~50 RSS feeds defined in
@@ -91,6 +93,24 @@ Mechanical check: NYT/WaPo/Guardian URLs carry the publication date in their pat
 (`/2026/08/11/`) — if that date is outside the window, the article is out of window no
 matter what the feed's timestamp said.
 
+## 4b. Notion trends sync (cloud runner, mandatory — BEFORE curating)
+
+The media relations team manages trends in the Notion hub ("The Morning Briefing",
+page id `3bf489d4-fca0-8125-adb6-d358827f3872`) in a "Trends" database (data source
+`collection://24b84433-a891-467e-9309-4caaa5e17c48`). **Notion is the team's interface;
+threads.tsv remains the machine copy. Sync both directions every run:**
+
+- INTO threads.tsv, before curating: fetch the Trends database. A row with Status
+  "Active" that has no matching threads.tsv line is a team-added trend — write a tight
+  Google News query for it (fill the row's empty Query URL back into Notion), set
+  opened=today, and add the line. A row set to "Retired" whose thread still exists in
+  threads.tsv means the team stopped it — delete the line (leave the Notion row as the
+  team set it).
+- BACK to Notion, after curating: update each row's Last hit date to match threads.tsv;
+  for threads the agent opens, create a row (Status Active, all fields filled); for
+  threads the agent retires, set the row's Status to "Retired" (never delete team-visible
+  rows). Keep Notes current when a thread's situation changes materially.
+
 ## 5. Threads (mandatory)
 
 `threads.tsv` is agent-maintained; its header documents the format
@@ -121,12 +141,21 @@ Write the briefing to `briefings/YYYY-MM-DD.md` (today's date). Format exactly:
 
 ## 7. Publish (cloud routine)
 
-Run `python3 render_page.py briefings/YYYY-MM-DD.md > /tmp/page.html` and publish
+a. Run `python3 render_page.py briefings/YYYY-MM-DD.md > /tmp/page.html` and publish
 /tmp/page.html with the Artifact tool, passing
 `url=https://claude.ai/code/artifact/faca981e-c281-4ef3-aace-b056cb04e90a` and favicon 📰
-so the existing artifact updates in place at its stable link. This is the page the team
-copies into Outlook — always update that exact artifact, never create a new one.
-Then commit: `git add briefings/ threads.tsv && git commit -m "Morning Briefing YYYY-MM-DD" && git push`.
+so the existing artifact updates in place at its stable link. Always update that exact
+artifact, never create a new one.
+
+b. Create the briefing page in the Notion hub: a child page of the hub page
+(`3bf489d4-fca0-8125-adb6-d358827f3872`) titled "The Morning Briefing | Month D, YYYY"
+with icon 📰, containing the full briefing (bold outlet names, linked headlines,
+one-line summaries, italic tagline and footer), then a `---` divider and a short
+**Production notes (not for email)** paragraph. This is where the team reads it daily.
+If this is a manual re-run, UPDATE the existing page for today (replace its content)
+rather than creating a second page.
+
+c. Commit: `git add briefings/ threads.tsv && git commit -m "Morning Briefing YYYY-MM-DD" && git push`.
 Do not commit digests or /tmp files.
 
 ## 7-alt. Publish (local scheduled task)
