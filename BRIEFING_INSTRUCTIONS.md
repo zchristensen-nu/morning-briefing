@@ -110,6 +110,9 @@ threads.tsv remains the machine copy. Sync both directions every run:**
   for threads the agent opens, create a row (Status Active, all fields filled); for
   threads the agent retires, set the row's Status to "Retired" (never delete team-visible
   rows). Keep Notes current when a thread's situation changes materially.
+- SOURCES table (data source `collection://6a5231cc-ef3e-43c0-a319-d14bfdce4af2`) is a
+  read-only reference listing every feed in feeds.tsv and how it is pulled. Touch it only
+  when feeds.tsv itself changes: add, edit or remove the matching row so it stays accurate.
 
 ## 5. Threads (mandatory)
 
