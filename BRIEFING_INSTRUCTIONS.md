@@ -147,32 +147,36 @@ Write the briefing to `briefings/YYYY-MM-DD.md` (today's date). Format exactly:
 
 ## 7. Publish (cloud routine)
 
-a. Run `python3 render_page.py briefings/YYYY-MM-DD.md > /tmp/page.html` and publish
-/tmp/page.html with the Artifact tool, passing
-`url=<ARTIFACT_URL>` and favicon 📰 — ARTIFACT_URL is the one account-specific value in
-this file. It is currently
-`https://claude.ai/code/artifact/98ab524b-1370-4cc2-9dfa-31c4ec432abe`. If this system is
-re-created under a different Claude account, publish once without a url to create that
-account's artifact, then replace the value here.
-so the existing artifact updates in place at its stable link. Always update that exact
-artifact, never create a new one.
+a. Rebuild the team's page:
+`python3 render_page.py briefings/YYYY-MM-DD.md > docs/index.html`
 
-The page it renders has five tabs: today's briefing (with the copy button), Tracked stories
-(from threads.tsv), Sources (from feeds.tsv), Archive (every earlier file in briefings/),
-and How it works (the team's documentation, held in the DOCS string in render_page.py —
-keep it accurate when these rules change). The tables are generated from the repo files, so
-they stay correct on their own.
+That one file is the whole site. GitHub Pages serves it from the `docs/` folder on `main`
+at https://zchristensen-nu.github.io/morning-briefing/ — the push in step b is what
+publishes it, and Pages redeploys within a minute or two. The page carries a noindex
+directive and `docs/robots.txt` blocks crawlers, but **the URL is publicly reachable by
+anyone who has it**: never put anything in a briefing you would not want public. Everything
+in it is already-published news, which is what makes this acceptable.
 
-b. Commit: `git add briefings/ threads.tsv && git commit -m "Morning Briefing YYYY-MM-DD" && git push`.
+The page has five tabs: today's briefing (with the copy button), Tracked stories (from
+threads.tsv), Sources (from feeds.tsv), Archive (every earlier file in briefings/), and How
+it works (the team's documentation, held in the DOCS string in render_page.py — keep it
+accurate when these rules change). The tables are generated from the repo files, so they
+stay correct on their own.
+
+Do not publish an Artifact. The team reads the Pages URL.
+
+b. Commit and push:
+`git add briefings/ threads.tsv docs/ && git commit -m "Morning Briefing YYYY-MM-DD" && git push`
 Do not commit digests or /tmp files.
 
 ## 7-alt. Publish (local scheduled task)
 
-Same as 7, plus: run `sh draft_email.sh briefings/YYYY-MM-DD.md` to place a recipient-less
-draft in Outlook, and send the briefing file to the user with a proactive notification.
+Same as 7, plus: run `sh draft_email.sh briefings/YYYY-MM-DD.md` to place a
+recipient-less draft in Outlook, and send the briefing file to the user with a proactive
+notification.
 
 ## Hard rules
 
 Never send email or messages anywhere — the team sends the newsletter manually. Never
 add recipients to anything. The deliverables are the committed briefing file and the
-updated artifact.
+updated page at docs/index.html.
