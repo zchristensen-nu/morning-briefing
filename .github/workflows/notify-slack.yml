@@ -1,0 +1,47 @@
+# Posts to Slack when the briefing page actually changes.
+#
+# Triggering on docs/index.html means this fires exactly when the site is
+# updated — not on digest commits, and not on a run that failed before
+# publishing. No webhook configured = the job no-ops instead of failing.
+name: Notify Slack
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/index.html'
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Summarize the briefing
+        id: sum
+        run: |
+          F=$(ls -1 briefings/*.md | tail -1)
+          echo "title=$(head -1 "$F" | sed 's/\*//g')" >> "$GITHUB_OUTPUT"
+          echo "hed=$(awk '/^\*\*Higher Ed News\*\*/{s=1;next} /^\*\*Global Campus/{s=2;next} /^---/{s=0} /^\*\*[^*]+\*\*$/{if(s==1)n++} END{print n+0}' "$F")" >> "$GITHUB_OUTPUT"
+          echo "reg=$(awk '/^\*\*Higher Ed News\*\*/{s=1;next} /^\*\*Global Campus/{s=2;next} /^---/{s=0} /^\*\*[^*]+\*\*$/{if(s==2)n++} END{print n+0}' "$F")" >> "$GITHUB_OUTPUT"
+
+      - name: Post to Slack
+        env:
+          WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TITLE: ${{ steps.sum.outputs.title }}
+          HED: ${{ steps.sum.outputs.hed }}
+          REG: ${{ steps.sum.outputs.reg }}
+          PAGE: https://zchristensen-nu.github.io/morning-briefing/
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "SLACK_WEBHOOK_URL is not set — nothing posted."
+            exit 0
+          fi
+          jq -n --arg t "$TITLE" --arg h "$HED" --arg r "$REG" --arg u "$PAGE" '{
+            text: ($t + " is ready — " + $h + " higher ed, " + $r + " regional"),
+            blocks: [
+              { type: "section",
+                text: { type: "mrkdwn",
+                        text: ("*<" + $u + "|" + $t + ">*\n" + $h + " Higher Ed · " + $r + " Global Campus/Regional — ready to copy into Outlook.") } }
+            ]
+          }' | curl -sS -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK" -o /dev/null -w 'slack: HTTP %{http_code}\n'
