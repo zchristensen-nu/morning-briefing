@@ -63,6 +63,107 @@ def rows(path):
     return out
 
 
+DOCS = """
+<div class="callout">
+  <h2>Request a re-run</h2>
+  <p>Leave a comment on this page with the word <b>re-run</b> in it — use the comment
+  button in the toolbar above the page. A checker reads the comments every hour between
+  9 and 5 on weekdays. When it finds a request it rebuilds the briefing with the latest
+  news, replaces what's on the Briefing tab, and marks your comment resolved so you know
+  it's done. It takes a few minutes.</p>
+</div>
+
+<h2>The morning</h2>
+<p>Three things happen each weekday, with nobody at a computer. At <b>8:10</b> a script
+collects the news. At <b>8:30</b> the AI agent reads what was collected and writes the
+briefing. By about <b>8:45</b> it's on this page, ready to send.</p>
+
+<h2>Sending it</h2>
+<p>Open the Briefing tab, press Copy briefing, paste into Outlook, set From to
+media@northeastern.edu, add the bcc lists, send. Ignore the production notes at the
+bottom of each briefing — those are notes to us, not part of the email.</p>
+
+<h2>How the news is gathered</h2>
+<p>Most outlets that matter are paywalled, which is why this was assumed to be impossible.
+An AI can't read a paywalled article. But the briefing never needed the article — it needs
+a headline, a link and a sentence, and publishers give those away in their news feeds.
+That's the same material Google News is built on.</p>
+<p>Each morning the script checks 59 feeds: four publisher feeds (the New York Times, NPR,
+the Guardian, Inside Higher Ed still run working education feeds), 16 searches scoped to a
+single outlet each, 26 topic and campus-city searches, and one search for each running
+story. The Sources tab lists all of them. It keeps only what was published in the last 24
+hours, or 72 on Mondays so the weekend isn't missed — roughly 1,000 headlines. The agent
+also checks the American Council on Education's daily headlines page by hand, because Wall
+Street Journal opinion pieces don't surface well in search.</p>
+
+<h2>How the stories are chosen</h2>
+<p>Each section carries at least ten stories, strongest first. This is a candidate list to
+hand-pick from, not a finished cut — edit down by deleting from the bottom.</p>
+<p>The test is whether a Northeastern senior leader would want to know it before their
+first meeting. Usually in: federal policy and court rulings, government action against
+universities, AI's effect on campuses and hiring, student loans, international students and
+visas, closures and mergers, UK university finances, leadership changes, research funding,
+campus speech and antisemitism developments, and university-adjacent business or
+city-politics stories in campus cities. Usually out: sports, K-12 with no college angle,
+old rankings, human interest with no institutional angle, and single small colleges with no
+wider relevance.</p>
+<p>Opinion pieces, editorials and podcasts are included and labeled, never as the lead.
+When several outlets cover the same thing the agent picks one, favouring the strongest
+outlet. No story appears twice.</p>
+<p>When the obvious stories run out, it fills to ten in a set order: second-tier items from
+the same digest, then higher-ed trade press, then more labeled opinion, then a wider
+regional net, then a 48-hour stretch for anything that hasn't run before. If it still can't
+reach ten it publishes what qualifies and says so in the production notes rather than
+padding.</p>
+
+<h2>How the links are checked</h2>
+<p>Stories found through search arrive with Google redirect links rather than real
+addresses. For each story it keeps, the agent searches the exact headline to find the
+article on the publisher's own site, then confirms the date falls inside the window — most
+publishers put the date in the address, which makes that checkable. If it can't verify a
+link for an important story it keeps the story and flags the link in the production notes.
+It never invents a link.</p>
+
+<h2>How repeats are avoided</h2>
+<p>Every past briefing is kept (see the Archive tab) and the agent reads the most recent one
+before finalizing. Anything that already ran is dropped unless there's a real new
+development. For a story it has been tracking, the follow-up must be an article published
+today, not the original announcement.</p>
+
+<h2>How tracked stories work</h2>
+<p>A tracked story is one that keeps developing: a lawsuit, a federal investigation, a
+campus sale, a presidential search, a financial crisis. The agent starts tracking one when
+a story has appeared across two or more days, or in three or more outlets, and is clearly
+unresolved. It stops when the story concludes or two weeks pass with nothing new. The
+Tracked stories tab shows what it's watching now and when each last produced news.</p>
+
+<h2>Production notes</h2>
+<p>Below the divider at the bottom of each briefing the agent records what happened during
+the run: what it cut and why, which links need a manual fix, which stories it started or
+stopped tracking, and anything that failed. If a briefing looks thin, the reason is usually
+there.</p>
+
+<h2>What it never does</h2>
+<p>It never sends email, never adds recipients, never touches the distribution list. It
+produces a draft; a person sends it.</p>
+
+<h2>Worth knowing</h2>
+<p><b>Judgment calls are judgment calls.</b> If it keeps including something you'd cut, or
+skipping something you'd run, that's a rule to change rather than a malfunction. The rules
+live in one document the agent reads every morning. Say what you want different.</p>
+<p><b>Paywalled opinion and feature writing is the weak spot.</b> Search engines index it
+poorly. The daily check of the ACE headlines page covers most of it, but this is where a
+miss is most likely.</p>
+<p><b>Search results have noisy tails.</b> Open a source and you may see results with
+nothing to do with education. That's expected — results come back ranked by relevance, the
+real stories sit at the top, and the agent reads all of them before choosing.</p>
+<p><b>A broken search looks like a quiet news day.</b> If a search stops returning
+anything, nothing announces it. That's why the source list isn't editable here.</p>
+<p><b>The clock is set in UTC.</b> The run happens at 8:30 Eastern now; after the clocks
+change in November it happens at 7:30 Eastern — earlier, never later, so it's always ready
+before 9.</p>
+"""
+
 GROUPS = {"HigherEd": "National outlet", "Topic": "Topic sweep", "BayArea": "Oakland / Bay Area",
           "NewYork": "New York", "PortlandME": "Portland ME", "ArlingtonVA": "Arlington VA",
           "MiamiTampa": "Miami / Tampa"}
@@ -166,18 +267,29 @@ print(f"""<title>The Morning Briefing</title>
   summary:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; }}
   .arch {{ padding:4px 0 20px; }}
   button.copy.sm {{ font-size:12px; padding:6px 12px; margin-bottom:10px; }}
+  button.ghost {{ background:none; color:var(--accent); border:1px solid var(--accent);
+          border-radius:4px; font:600 13px/1 inherit; padding:8px 14px; cursor:pointer; }}
+  button.ghost:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; }}
+  .callout {{ background:var(--panel); border:1px solid var(--accent); border-radius:6px;
+          padding:16px 20px; margin:0 0 26px; }}
+  .callout h2 {{ margin-top:0; }}
+  #p-h {{ max-width:660px; }}
+  #p-h h2 {{ font-size:15px; font-weight:600; margin:26px 0 8px; }}
+  #p-h p {{ font-size:14.5px; line-height:1.65; margin:0 0 12px; color:var(--ink); }}
 </style>
 <div class="wrap">
 <div class="bar">
   <h1>{title}</h1>
   <span class="hint">Copy, then paste straight into the Outlook email body.</span>
   <button class="copy" data-copy="briefing">Copy briefing</button>
+  <button class="ghost" id="rerun">Request a re-run</button>
 </div>
 <nav role="tablist">
   <button role="tab" id="t-b" aria-controls="p-b" aria-selected="true">Briefing</button>
   <button role="tab" id="t-t" aria-controls="p-t" aria-selected="false">Tracked stories</button>
   <button role="tab" id="t-s" aria-controls="p-s" aria-selected="false">Sources</button>
   <button role="tab" id="t-a" aria-controls="p-a" aria-selected="false">Archive</button>
+  <button role="tab" id="t-h" aria-controls="p-h" aria-selected="false">How it works</button>
 </nav>
 
 <section id="p-b" role="tabpanel" aria-labelledby="t-b">
@@ -210,9 +322,13 @@ print(f"""<title>The Morning Briefing</title>
   <p class="meta">Every briefing published so far, newest first. Click one to open it.</p>
 {archive_html}
 </section>
+
+<section id="p-h" role="tabpanel" aria-labelledby="t-h" hidden>
+{DOCS}
+</section>
 </div>
 <script>
-  const tabs = [["t-b","p-b"],["t-t","p-t"],["t-s","p-s"],["t-a","p-a"]];
+  const tabs = [["t-b","p-b"],["t-t","p-t"],["t-s","p-s"],["t-a","p-a"],["t-h","p-h"]];
   for (const [tid, pid] of tabs) {{
     document.getElementById(tid).addEventListener("click", () => {{
       for (const [t, p] of tabs) {{
@@ -222,6 +338,10 @@ print(f"""<title>The Morning Briefing</title>
       }}
     }});
   }}
+  document.getElementById("rerun").addEventListener("click", () => {{
+    document.getElementById("t-h").click();
+    document.getElementById("p-h").scrollIntoView({{block: "start"}});
+  }});
   document.addEventListener("click", async (ev) => {{
     const btn = ev.target.closest("button[data-copy]");
     if (!btn) return;

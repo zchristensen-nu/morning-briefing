@@ -170,10 +170,14 @@ a. Run `python3 render_page.py briefings/YYYY-MM-DD.md > /tmp/page.html` and pub
 so the existing artifact updates in place at its stable link. Always update that exact
 artifact, never create a new one.
 
-The page it renders has four tabs: today's briefing (with the copy button), Tracked
-stories (from threads.tsv), Sources (from feeds.tsv), and Archive (every earlier file in
-briefings/). Those three tables are generated from the repo files, so they stay correct on
-their own — no extra step.
+The page it renders has five tabs: today's briefing (with the copy button), Tracked stories
+(from threads.tsv), Sources (from feeds.tsv), Archive (every earlier file in briefings/),
+and How it works (the team's documentation, held in the DOCS string in render_page.py —
+keep it accurate when these rules change). The tables are generated from the repo files, so
+they stay correct on their own.
+
+The team requests a re-run by leaving a comment on that artifact. The `briefing-rerun-checker`
+routine reads the comments hourly, rebuilds on request, and resolves the thread.
 
 b. Create the briefing page in the Notion hub: a child page of the hub page
 (`3bf489d4-fca0-8125-adb6-d358827f3872`) titled "The Morning Briefing | Month D, YYYY"
