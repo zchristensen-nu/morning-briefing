@@ -64,15 +64,6 @@ def rows(path):
 
 
 DOCS = """
-<div class="callout">
-  <h2>Request a re-run</h2>
-  <p>Leave a comment on this page with the word <b>re-run</b> in it — use the comment
-  button in the toolbar above the page. A checker reads the comments every hour between
-  9 and 5 on weekdays. When it finds a request it rebuilds the briefing with the latest
-  news, replaces what's on the Briefing tab, and marks your comment resolved so you know
-  it's done. It takes a few minutes.</p>
-</div>
-
 <h2>The morning</h2>
 <p>Three things happen each weekday, with nobody at a computer. At <b>8:10</b> a script
 collects the news. At <b>8:30</b> the AI agent reads what was collected and writes the
@@ -267,12 +258,6 @@ print(f"""<title>The Morning Briefing</title>
   summary:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; }}
   .arch {{ padding:4px 0 20px; }}
   button.copy.sm {{ font-size:12px; padding:6px 12px; margin-bottom:10px; }}
-  button.ghost {{ background:none; color:var(--accent); border:1px solid var(--accent);
-          border-radius:4px; font:600 13px/1 inherit; padding:8px 14px; cursor:pointer; }}
-  button.ghost:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; }}
-  .callout {{ background:var(--panel); border:1px solid var(--accent); border-radius:6px;
-          padding:16px 20px; margin:0 0 26px; }}
-  .callout h2 {{ margin-top:0; }}
   #p-h {{ max-width:660px; }}
   #p-h h2 {{ font-size:15px; font-weight:600; margin:26px 0 8px; }}
   #p-h p {{ font-size:14.5px; line-height:1.65; margin:0 0 12px; color:var(--ink); }}
@@ -282,7 +267,6 @@ print(f"""<title>The Morning Briefing</title>
   <h1>{title}</h1>
   <span class="hint">Copy, then paste straight into the Outlook email body.</span>
   <button class="copy" data-copy="briefing">Copy briefing</button>
-  <button class="ghost" id="rerun">Request a re-run</button>
 </div>
 <nav role="tablist">
   <button role="tab" id="t-b" aria-controls="p-b" aria-selected="true">Briefing</button>
@@ -338,10 +322,6 @@ print(f"""<title>The Morning Briefing</title>
       }}
     }});
   }}
-  document.getElementById("rerun").addEventListener("click", () => {{
-    document.getElementById("t-h").click();
-    document.getElementById("p-h").scrollIntoView({{block: "start"}});
-  }});
   document.addEventListener("click", async (ev) => {{
     const btn = ev.target.closest("button[data-copy]");
     if (!btn) return;
