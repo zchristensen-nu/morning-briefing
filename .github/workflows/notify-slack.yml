@@ -2,7 +2,13 @@
 #
 # Triggering on docs/index.html means this fires exactly when the site is
 # updated — not on digest commits, and not on a run that failed before
-# publishing. No webhook configured = the job no-ops instead of failing.
+# publishing.
+#
+# Needs a bot token rather than an incoming webhook: webhooks cannot reply in
+# a thread, because they do not return the parent message's timestamp.
+# Secrets: SLACK_BOT_TOKEN (xoxb-…, scope chat:write) and SLACK_CHANNEL (the
+# channel ID, e.g. C0123ABCD). The bot must be invited to that channel.
+# Missing secrets = the job no-ops instead of failing.
 name: Notify Slack
 on:
   push:
@@ -17,31 +23,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Summarize the briefing
+      - name: Read the briefing
         id: sum
         run: |
           F=$(ls -1 briefings/*.md | tail -1)
+          DATE=$(basename "$F" .md)
           echo "title=$(head -1 "$F" | sed 's/\*//g')" >> "$GITHUB_OUTPUT"
-          echo "hed=$(awk '/^\*\*Higher Ed News\*\*/{s=1;next} /^\*\*Global Campus/{s=2;next} /^---/{s=0} /^\*\*[^*]+\*\*$/{if(s==1)n++} END{print n+0}' "$F")" >> "$GITHUB_OUTPUT"
-          echo "reg=$(awk '/^\*\*Higher Ed News\*\*/{s=1;next} /^\*\*Global Campus/{s=2;next} /^---/{s=0} /^\*\*[^*]+\*\*$/{if(s==2)n++} END{print n+0}' "$F")" >> "$GITHUB_OUTPUT"
+          echo "near=near-misses/$DATE.md" >> "$GITHUB_OUTPUT"
 
       - name: Post to Slack
         env:
-          WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          CHANNEL: ${{ secrets.SLACK_CHANNEL }}
           TITLE: ${{ steps.sum.outputs.title }}
-          HED: ${{ steps.sum.outputs.hed }}
-          REG: ${{ steps.sum.outputs.reg }}
+          NEAR: ${{ steps.sum.outputs.near }}
           PAGE: https://zchristensen-nu.github.io/morning-briefing/
         run: |
-          if [ -z "$WEBHOOK" ]; then
-            echo "SLACK_WEBHOOK_URL is not set — nothing posted."
+          if [ -z "$TOKEN" ] || [ -z "$CHANNEL" ]; then
+            echo "SLACK_BOT_TOKEN or SLACK_CHANNEL not set — nothing posted."
             exit 0
           fi
-          jq -n --arg t "$TITLE" --arg h "$HED" --arg r "$REG" --arg u "$PAGE" '{
-            text: ($t + " is ready — " + $h + " higher ed, " + $r + " regional"),
-            blocks: [
-              { type: "section",
-                text: { type: "mrkdwn",
-                        text: ("*<" + $u + "|" + $t + ">*\n" + $h + " Higher Ed · " + $r + " Global Campus/Regional — ready to copy into Outlook.") } }
-            ]
-          }' | curl -sS -X POST -H 'Content-type: application/json' --data @- "$WEBHOOK" -o /dev/null -w 'slack: HTTP %{http_code}\n'
+
+          RESP=$(jq -n --arg c "$CHANNEL" --arg t "$TITLE" --arg u "$PAGE" '{
+            channel: $c,
+            text: "Your Morning Briefing is ready to review",
+            blocks: [ { type: "section", text: { type: "mrkdwn",
+              text: ("*<" + $u + "|" + $t + ">*\nYour Morning Briefing is ready to review") } } ]
+          }' | curl -sS -X POST https://slack.com/api/chat.postMessage \
+                 -H "Authorization: Bearer $TOKEN" \
+                 -H 'Content-type: application/json; charset=utf-8' --data @-)
+
+          echo "$RESP" | jq -r 'if .ok then "posted ts=\(.ts)" else "SLACK ERROR: \(.error)" end'
+          echo "$RESP" | jq -e '.ok' >/dev/null || exit 1
+          TS=$(echo "$RESP" | jq -r .ts)
+
+          if [ ! -s "$NEAR" ]; then
+            echo "no near-misses file for this briefing — no thread reply."
+            exit 0
+          fi
+
+          jq -n --arg c "$CHANNEL" --arg ts "$TS" --arg body "$(cat "$NEAR")" '{
+            channel: $c, thread_ts: $ts,
+            text: ("Close calls that did not make the cut:\n" + $body),
+            unfurl_links: false
+          }' | curl -sS -X POST https://slack.com/api/chat.postMessage \
+                 -H "Authorization: Bearer $TOKEN" \
+                 -H 'Content-type: application/json; charset=utf-8' --data @- \
+             | jq -r 'if .ok then "thread reply posted" else "THREAD ERROR: \(.error)" end'

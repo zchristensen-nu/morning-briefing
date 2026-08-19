@@ -165,8 +165,19 @@ stay correct on their own.
 
 Do not publish an Artifact. The team reads the Pages URL.
 
-b. Commit and push:
-`git add briefings/ threads.tsv docs/ && git commit -m "Morning Briefing YYYY-MM-DD" && git push`
+b. Record the near-misses. Write `near-misses/YYYY-MM-DD.md` — three to five stories you
+genuinely considered and left out, one per line, in Slack mrkdwn:
+
+`• <URL|Headline> — Outlet — one short clause on why it was cut`
+
+These get posted as a thread reply under the Slack notification, so the team can pull one
+back in if they disagree. Only real candidates belong here: stories that passed the
+relevance test but lost on space, were beaten by a stronger outlet on the same story, or
+had an unresolvable link. Do not pad it with items that failed the skip rules, and write
+nothing (skip the file) on a day when nothing was genuinely close.
+
+c. Commit and push:
+`git add briefings/ threads.tsv docs/ near-misses/ && git commit -m "Morning Briefing YYYY-MM-DD" && git push`
 Do not commit digests or /tmp files.
 
 ## 7-alt. Publish (local scheduled task)
