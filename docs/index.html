@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>The Morning Briefing</title>
+<style>
+  :root {
+    --ground:#FAFAF8; --ink:#1A1A1A; --muted:#6B6B6B; --border:#E4E2DD;
+    --accent:#C00000; --btn-ink:#FFFFFF; --panel:#FFFFFF; --rss:#E8F0E6; --rss-ink:#2C4A28;
+    --srch:#E6EEF7; --srch-ink:#1B3F63;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --ground:#1C1B1A; --ink:#EDEBE8; --muted:#9C9994;
+      --border:#3A3835; --panel:#232221; --rss:#22301F; --rss-ink:#BFD8B8;
+      --srch:#1D2B3A; --srch-ink:#B6CFE8; }
+  }
+  :root[data-theme="dark"] { --ground:#1C1B1A; --ink:#EDEBE8; --muted:#9C9994;
+    --border:#3A3835; --panel:#232221; --rss:#22301F; --rss-ink:#BFD8B8;
+    --srch:#1D2B3A; --srch-ink:#B6CFE8; }
+  body { background:var(--ground); color:var(--ink); margin:0;
+         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  .wrap { max-width:860px; margin:0 auto; padding:26px 20px 60px; }
+  .bar { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+  .bar h1 { font-size:15px; font-weight:600; margin:0; letter-spacing:.01em; }
+  .bar .hint { color:var(--muted); font-size:13px; margin-right:auto; }
+  button.copy { background:var(--accent); color:var(--btn-ink); border:0; border-radius:4px;
+            font:600 13px/1 inherit; padding:9px 16px; cursor:pointer; }
+  nav { display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+  nav button { background:none; border:0; border-bottom:2px solid transparent; color:var(--muted);
+            font:500 14px/1 inherit; padding:10px 14px; cursor:pointer; }
+  nav button[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--accent); }
+  nav button:focus-visible, button.copy:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  [hidden] { display:none; }
+  .sheet { background:#FFFFFF; color:#000; padding:36px 40px; border:1px solid var(--border);
+            border-radius:2px; }
+  .sheet a { color:#0563C1; }
+  .meta { color:var(--muted); font-size:13px; margin:0 0 14px; }
+  .scroll { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; }
+  th { text-align:left; font-weight:600; color:var(--muted); font-size:12px;
+        letter-spacing:.04em; text-transform:uppercase; padding:0 12px 8px 0;
+        border-bottom:1px solid var(--border); white-space:nowrap; }
+  td { padding:9px 12px 9px 0; border-bottom:1px solid var(--border); vertical-align:top; }
+  td.k { font-weight:500; }
+  td.n { font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--muted); }
+  td.g { color:var(--muted); white-space:nowrap; }
+  td.c { color:var(--muted); }
+  td a { color:var(--accent); }
+  .tag { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11.5px;
+          font-weight:500; white-space:nowrap; }
+  .tag.rss { background:var(--rss); color:var(--rss-ink); }
+  .tag.srch { background:var(--srch); color:var(--srch-ink); }
+  details { border-bottom:1px solid var(--border); }
+  summary { cursor:pointer; padding:11px 0; font-weight:500; font-size:14px; }
+  summary:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .arch { padding:4px 0 20px; }
+  button.copy.sm { font-size:12px; padding:6px 12px; margin-bottom:10px; }
+  #p-h { max-width:660px; }
+  #p-h h2 { font-size:15px; font-weight:600; margin:26px 0 8px; }
+  #p-h p { font-size:14.5px; line-height:1.65; margin:0 0 12px; color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="bar">
+  <h1>The Morning Briefing | August 19, 2026</h1>
+  <span class="hint">Copy, then paste straight into the Outlook email body.</span>
+  <button class="copy" data-copy="briefing">Copy briefing</button>
+</div>
+<nav role="tablist">
+  <button role="tab" id="t-b" aria-controls="p-b" aria-selected="true">Briefing</button>
+  <button role="tab" id="t-t" aria-controls="p-t" aria-selected="false">Tracked stories</button>
+  <button role="tab" id="t-s" aria-controls="p-s" aria-selected="false">Sources</button>
+  <button role="tab" id="t-a" aria-controls="p-a" aria-selected="false">Archive</button>
+  <button role="tab" id="t-h" aria-controls="p-h" aria-selected="false">How it works</button>
+</nav>
+
+<section id="p-b" role="tabpanel" aria-labelledby="t-b">
+  <div class="sheet" id="briefing"><div style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000">
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 4pt"><b><u>The Morning Briefing | August 19, 2026</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 12pt"><i>The Morning Briefing is a curated collection of the day's relevant news.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Higher Ed News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>The Guardian</b><br><a href="https://www.theguardian.com/us-news/2026/aug/18/pentagon-funding-colleges-harvard">Pentagon threatens to cut federal funding to 30 universities over foreign academic partnerships</a><br>The Pentagon is directing 30 universities, including Harvard, Yale and Stanford, to review and cut foreign academic partnerships it deems national-security risks within two weeks or risk losing federal funding.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/18/us/trump-administration-university-investigations-whistleblower.html">Trump Officials Ignored Their Own University Investigations, Lawyer Says</a><br>A former Justice Department lawyer says Trump administration leaders ignored findings that elite schools, including Brown and Columbia, hadn't broken the law as they pressed them into settlements.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Cambridge Independent</b><br><a href="https://www.cambridgeindependent.co.uk/news/vigil-for-jason-arday-in-cambridge-warns-of-growing-movemen-9478932/">Vigil for Jason Arday in Cambridge warns of 'growing movement for radicalised hatred in the UK'</a><br>Mourners gathered in Cambridge to honor the late professor Jason Arday, with speakers warning of rising racist hatred in Britain and Vice-Chancellor Deborah Prentice heckled by attendees over the university's handling of his case.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/18/us/harvard-stolen-body-parts-settlement.html">Harvard Agrees to $53 Million Settlement in Body Part Theft Scandal</a><br>The agreement settles lawsuits filed by relatives of people whose remains, donated for medical research and teaching, were stolen and sold by the former manager of the school's medical morgue.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/18/us/university-michigan-president-cybele-raver.html">University of Michigan Names President After Prior Pick Faced Brain Cancer</a><br>The university chose a Vanderbilt academic, Cybele Raver, after a previous candidate for the role had to step down because of a brain cancer diagnosis.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>NPR</b><br><a href="https://www.npr.org/2026/08/19/nx-s1-5936490/groups-sue-trump-administration-over-new-foreign-student-visa-rule">Groups sue Trump administration over new foreign student visa rule</a><br>A coalition of labor unions and higher-education groups sued the Trump administration to stop a new rule limiting how long foreign students, exchange visitors and journalists can stay in the U.S.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/19/business/student-loans-ibr-paye.html">Many Student Loan Borrowers May Have to Switch to Worse Repayment Plans</a><br>In an unusual move, Congress worsened terms for some existing borrowers, who will now have to pay more, and for longer.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Washington Post</b><br><a href="https://www.washingtonpost.com/technology/2026/08/19/mathematicians-ask-whats-left-humans-when-ai-can-do-math-research/">This may be the first academic profession to see its work taken over by AI</a><br>Top mathematicians gathered at OpenAI's San Francisco offices to grapple with what will be left for humans to do once AI systems can match or exceed human ability at mathematical research.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/quick-takes/2026/08/19/jacksonville-state-dissolves-faculty-senate">Jacksonville State Dissolves Faculty Senate</a><br>Jacksonville State's board dissolved the university's Faculty Senate and Staff Council under a new Alabama law shifting control over shared governance to trustees, following a similar move at Auburn.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Forbes</b><br><a href="https://www.forbes.com/sites/marvinkrislov/2026/08/18/while-the-world-competes-for-college-america-questions-its-value/">While The World Competes For College, America Questions Its Value</a> <b>(Op-ed)</b><br>A former college president argues that as other countries compete harder for students, the U.S. is losing confidence in the value of a degree at the worst possible time.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Global Campus/Regional News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/quick-takes/2026/08/19/universities-wisconsin-announce-2-year-tuition-freeze">Universities of Wisconsin Announce 2-Year Tuition Freeze</a></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/government/student-aid-policy/2026/08/19/almost-half-colleges-havent-fully-submitted-student">42% of Colleges Haven't Fully Submitted Required Student Outcomes Data</a></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Times Higher Education</b><br><a href="https://www.timeshighereducation.com/news/canberra-cancels-foreign-teaching-and-research-deals">Canberra cancels foreign teaching and research deals</a><br>Australia's government canceled a Chinese research partnership at the Australian National University and blocked a University of Queensland deal with the Chinese Academy of Sciences under a foreign-interference law, the first terminations of their kind.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Boston Globe</b><br><a href="https://www.bostonglobe.com/2026/08/18/metro/international-students-duration-stay-lawsuit/">Nonprofits, unions file lawsuit in Boston challenging Trump international student visa changes</a><br>Massachusetts nonprofits and labor unions filed a federal lawsuit in Boston challenging the Trump administration's new four-year cap on international student visas.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Times Higher Education</b><br><a href="https://www.timeshighereducation.com/news/universities-research-costs-shortfall-rises-again">Universities' research costs shortfall rises again</a><br>English and Northern Irish universities' aggregated research funding deficit rose to roughly £5.5 billion in 2024-25, according to new Office for Students costing data, extending a multi-year trend of rising shortfalls.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/government/state-policy/2026/08/19/calif-bill-could-create-asian-serving-designation">Calif. Bill Could Create Designation for Asian-Serving Colleges</a><br>A California bill would create a state designation for Asian American, Native Hawaiian and Pacific Islander-Serving Institutions, alongside a companion bill for Hispanic-Serving Institutions, following the state's recent Black-Serving Institution designation.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>CBC News</b><br><a href="https://www.cbc.ca/news/canada/toronto/tmu-task-force-to-begin-conservations-september-9.7311284">TMU task force will look to balance rights to protest, campus safety in talks beginning next month, chair says</a><br>Toronto Metropolitan University's new task force, chaired by former Ontario premier Bob Rae, will begin talks on balancing protest rights with campus safety after a review found a "deteriorating campus climate."</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>CBC News</b><br><a href="https://www.cbc.ca/news/canada/london/western-biology-department-delays-power-outage-9.7309972">'Irreplaceable' samples destroyed in latest power outage at Western University in London, Ont.</a><br>A four-day power outage at Western University destroyed irreplaceable research samples and disrupted experiments in the biology department, with graduate students scrambling to salvage years of work.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>mainebiz</b><br><a href="https://mainebiz.biz/article/university-of-maine-foundation-names-president-and-ceo/">University of Maine Foundation names president and CEO</a><br>The foundation named Illinois Tech advancement vice president Sean Campbell as its next leader, succeeding longtime president Jeffery Mills.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/quick-takes/2026/08/19/florida-responds-mcmahon-call-action">Florida Responds to McMahon 'Call to Action'</a><br>Florida's public university and college leaders signed a joint response to Education Secretary McMahon's reform "Call to Action," arguing the state had already implemented most of the requested changes over the past decade.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>Please visit NGN's "<a href="https://news.northeastern.edu/in-the-media/">In The Press</a>" section to view Northeastern's most recent press mentions, updated weekly.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>To get in touch with the media relations team, please contact us at <a href="mailto:media@northeastern.edu">media@northeastern.edu</a>.</i></p>
+</div>
+</div>
+</section>
+
+<section id="p-t" role="tabpanel" aria-labelledby="t-t" hidden>
+  <p class="meta">15 running stories the agent follows up on every morning. It opens
+  one when a story keeps developing and is unresolved, and retires it once the story concludes or
+  goes quiet for two weeks. Newest activity first.</p>
+  <div class="scroll"><table>
+  <thead><tr><th>Story</th><th>Last news</th><th>Tracking since</th><th></th></tr></thead>
+  <tbody>
+<tr><td class="k">Howard unenrollment</td><td class="n">2026-08-19</td><td class="n">2026-07-24</td><td><a href="https://news.google.com/search?q=%22Howard+University%22+(unenrolled+OR+unenrollment+OR+readmitted)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">UK university job cuts</td><td class="n">2026-08-19</td><td class="n">2026-05-01</td><td><a href="https://news.google.com/search?q=UK+university+(%22job+cuts%22+OR+redundancies+OR+strike+OR+deficit)+when:2d&amp;hl=en-GB&amp;gl=GB&amp;ceid=GB:en">live search</a></td></tr>
+<tr><td class="k">Harvard federal funding fight</td><td class="n">2026-08-19</td><td class="n">2026-05-01</td><td><a href="https://news.google.com/search?q=Harvard+(%22federal+funding%22+OR+%22research+funding%22+lawsuit+OR+settlement)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">Columbia lawsuits</td><td class="n">2026-08-19</td><td class="n">2026-08-12</td><td><a href="https://news.google.com/search?q=Columbia+University+(lawsuit+OR+settlement+OR+%22Palestinian+students%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">Michigan pass-fail grades</td><td class="n">2026-08-19</td><td class="n">2026-08-10</td><td><a href="https://news.google.com/search?q=%22University+of+Michigan%22+(%22pass%2Ffail%22+OR+%22letter+grades%22+OR+freshmen+grades)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">FSU civil rights investigation</td><td class="n">2026-08-19</td><td class="n">2026-08-13</td><td><a href="https://news.google.com/search?q=%22Florida+State+University%22+(%22civil+rights%22+OR+investigation+OR+scholarships)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">Cambridge Arday probe</td><td class="n">2026-08-19</td><td class="n">2026-08-13</td><td><a href="https://news.google.com/search?q=Cambridge+%22Arday%22+when:2d&amp;hl=en-GB&amp;gl=GB&amp;ceid=GB:en">live search</a></td></tr>
+<tr><td class="k">A-level results and clearing</td><td class="n">2026-08-19</td><td class="n">2026-08-13</td><td><a href="https://news.google.com/search?q=%22A-level+results%22+OR+%22university+clearing%22+when:2d&amp;hl=en-GB&amp;gl=GB&amp;ceid=GB:en">live search</a></td></tr>
+<tr><td class="k">India student protests</td><td class="n">2026-08-19</td><td class="n">2026-07-21</td><td><a href="https://news.google.com/search?q=India+%22student+protests%22+OR+%22DUSU%22+when:2d&amp;hl=en-IN&amp;gl=IN&amp;ceid=IN:en">live search</a></td></tr>
+<tr><td class="k">Virginia State University shooting</td><td class="n">2026-08-19</td><td class="n">2026-08-17</td><td><a href="https://news.google.com/search?q=%22Virginia+State+University%22+(shooting+OR+shooter+OR+investigation)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">DOJ campus civil rights probes</td><td class="n">2026-08-19</td><td class="n">2026-08-18</td><td><a href="https://news.google.com/search?q=DOJ+(%22William+%26+Mary%22+OR+Stanford)+(%22civil+rights%22+OR+discrimination+OR+investigation)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">Pentagon foreign partnership audit</td><td class="n">2026-08-19</td><td class="n">2026-08-19</td><td><a href="https://news.google.com/search?q=Pentagon+(%22foreign+academic+partnerships%22+OR+%22foreign+partnerships%22)+universities+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">In-state tuition lawsuits</td><td class="n">2026-08-13</td><td class="n">2026-08-11</td><td><a href="https://news.google.com/search?q=Trump+(%22in-state+tuition%22+OR+%22undocumented+students%22)+lawsuit+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">Three-year degrees</td><td class="n">2026-08-12</td><td class="n">2026-07-01</td><td><a href="https://news.google.com/search?q=%22three-year+degree%22+OR+%22three-year+bachelor%22+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+<tr><td class="k">Hampshire College sale</td><td class="n">2026-08-11</td><td class="n">2026-05-01</td><td><a href="https://news.google.com/search?q=%22Hampshire+College%22+(sale+OR+closure+OR+bid+OR+%22Hampshire+Next%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">live search</a></td></tr>
+  </tbody></table></div>
+</section>
+
+<section id="p-s" role="tabpanel" aria-labelledby="t-s" hidden>
+  <p class="meta">46 sources checked every morning — 4 through the
+  publisher's own feed, 42 through a news search, which is how
+  paywalled outlets are covered. Running-story searches are listed under Tracked stories.</p>
+  <div class="scroll"><table>
+  <thead><tr><th>Source</th><th>How</th><th>Group</th><th>What it pulls</th><th></th></tr></thead>
+  <tbody>
+<tr><td class="k">New York Times</td><td><span class="tag rss">Publisher RSS</span></td><td class="g">National outlet</td><td class="c">The outlet&#x27;s own education feed</td><td><a href="https://rss.nytimes.com/services/xml/rss/nyt/Education.xml">open</a></td></tr>
+<tr><td class="k">NPR</td><td><span class="tag rss">Publisher RSS</span></td><td class="g">National outlet</td><td class="c">The outlet&#x27;s own education feed</td><td><a href="https://feeds.npr.org/1013/rss.xml">open</a></td></tr>
+<tr><td class="k">The Guardian</td><td><span class="tag rss">Publisher RSS</span></td><td class="g">National outlet</td><td class="c">The outlet&#x27;s own education feed</td><td><a href="https://www.theguardian.com/education/rss">open</a></td></tr>
+<tr><td class="k">Inside Higher Ed</td><td><span class="tag rss">Publisher RSS</span></td><td class="g">National outlet</td><td class="c">The outlet&#x27;s own education feed</td><td><a href="https://www.insidehighered.com/rss.xml">open</a></td></tr>
+<tr><td class="k">New York Times</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">nytimes.com — mentioning university, college, higher education (excluding The Athletic)</td><td><a href="https://news.google.com/search?q=site:nytimes.com+(university+OR+college+OR+%22higher+education%22)+-%22The+Athletic%22+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Wall Street Journal</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">wsj.com — mentioning university, college, students, graduates, higher education</td><td><a href="https://news.google.com/search?q=site:wsj.com+(university+OR+college+OR+students+OR+graduates+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Washington Post</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">washingtonpost.com — mentioning university, college, higher education</td><td><a href="https://news.google.com/search?q=site:washingtonpost.com+(university+OR+college+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Financial Times</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">ft.com — mentioning university, higher education, graduates (excluding Company Announcement, Press Release)</td><td><a href="https://news.google.com/search?q=site:ft.com+(university+OR+%22higher+education%22+OR+graduates)+-%22Company+Announcement%22+-%22Press+Release%22+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">The Atlantic</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">theatlantic.com — mentioning university, college</td><td><a href="https://news.google.com/search?q=site:theatlantic.com+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Bloomberg</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">bloomberg.com — mentioning university, college, higher education</td><td><a href="https://news.google.com/search?q=site:bloomberg.com+(university+OR+college+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">The Economist</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">economist.com — mentioning university, higher education</td><td><a href="https://news.google.com/search?q=site:economist.com+(university+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Associated Press</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">apnews.com — mentioning university, college, higher education</td><td><a href="https://news.google.com/search?q=site:apnews.com+(university+OR+college+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Wired</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">wired.com — mentioning university, college, AI education</td><td><a href="https://news.google.com/search?q=site:wired.com+(university+OR+college+OR+AI+education)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Forbes</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">forbes.com — mentioning higher education, higher ed, university, college</td><td><a href="https://news.google.com/search?q=site:forbes.com+(%22higher+education%22+OR+%22higher+ed%22+OR+university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Christian Science Monitor</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">csmonitor.com — mentioning university, higher education</td><td><a href="https://news.google.com/search?q=site:csmonitor.com+(university+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">The New Yorker</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">newyorker.com — mentioning university, college</td><td><a href="https://news.google.com/search?q=site:newyorker.com+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">The Times (UK)</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">thetimes.com — mentioning university, higher education</td><td><a href="https://news.google.com/search?q=site:thetimes.com+(university+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Nature</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">nature.com — mentioning university, NIH funding, research funding</td><td><a href="https://news.google.com/search?q=site:nature.com+(university+OR+NIH+funding+OR+research+funding)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Reuters</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">reuters.com — mentioning university, college, higher education, student loan</td><td><a href="https://news.google.com/search?q=site:reuters.com+(university+OR+college+OR+%22higher+education%22+OR+%22student+loan%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">USA Today</td><td><span class="tag srch">News search</span></td><td class="g">National outlet</td><td class="c">usatoday.com — mentioning university, college, student loan</td><td><a href="https://news.google.com/search?q=site:usatoday.com+(university+OR+college+OR+%22student+loan%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Federal policy</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — Trump, DOJ, Education Department university lawsuit, funding, investigation</td><td><a href="https://news.google.com/search?q=(Trump+OR+DOJ+OR+%22Education+Department%22)+university+(lawsuit+OR+funding+OR+investigation)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">AI in higher ed</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — AI higher education, artificial intelligence college students</td><td><a href="https://news.google.com/search?q=AI+%22higher+education%22+OR+%22artificial+intelligence%22+college+students+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Closures and finances</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — college university closure, merger, endowment, deficit</td><td><a href="https://news.google.com/search?q=college+university+(closure+OR+merger+OR+endowment+OR+deficit)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Student loans</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — student loan federal policy</td><td><a href="https://news.google.com/search?q=%22student+loan%22+federal+policy+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">International students</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — international students visa, enrollment</td><td><a href="https://news.google.com/search?q=%22international+students%22+(visa+OR+enrollment)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Campus politics</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — university campus antisemitism, free speech, DEI</td><td><a href="https://news.google.com/search?q=university+campus+(antisemitism+OR+%22free+speech%22+OR+DEI)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Job market</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — college graduates, entry (excluding level job market OR hiring OR unemployment OR remote work)</td><td><a href="https://news.google.com/search?q=(%22college+graduates%22+OR+%22entry-level%22)+(%22job+market%22+OR+hiring+OR+unemployment+OR+%22remote+work%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">AI and workforce</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — AI jobs, workforce, hiring, entry (excluding level)</td><td><a href="https://news.google.com/search?q=AI+(jobs+OR+workforce+OR+hiring+OR+%22entry-level%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Work visas and immigration</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — H-1B, work visa, immigration crackdown graduates, workers, economy</td><td><a href="https://news.google.com/search?q=(H-1B+OR+%22work+visa%22+OR+%22immigration+crackdown%22)+(graduates+OR+workers+OR+economy)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">General sweep</td><td><span class="tag srch">News search</span></td><td class="g">Topic sweep</td><td class="c">Any outlet — higher education</td><td><a href="https://news.google.com/search?q=%22higher+education%22+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Boston Globe / regional</td><td><span class="tag srch">News search</span></td><td class="g">Boston</td><td class="c">bizjournals.com/boston, bostonglobe.com, masslive.com, wbur.org, wgbh.org — mentioning university, college, education</td><td><a href="https://news.google.com/search?q=(site:bostonglobe.com+OR+site:wbur.org+OR+site:masslive.com+OR+site:wgbh.org+OR+site:bizjournals.com/boston)+(university+OR+college+OR+education)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Marketplace / Axios Boston</td><td><span class="tag srch">News search</span></td><td class="g">Boston</td><td class="c">axios.com/local/boston, marketplace.org — mentioning college, university, education</td><td><a href="https://news.google.com/search?q=(site:marketplace.org+OR+site:axios.com/local/boston)+(college+OR+university+OR+education)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Boston city news</td><td><span class="tag srch">News search</span></td><td class="g">Boston</td><td class="c">axios.com/local/boston, bostonglobe.com — mentioning mayor, housing, economy, job market</td><td><a href="https://news.google.com/search?q=(site:bostonglobe.com+OR+site:axios.com/local/boston)+(mayor+OR+housing+OR+economy+OR+%22job+market%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Times Higher Education</td><td><span class="tag srch">News search</span></td><td class="g">London</td><td class="c">timeshighereducation.com — everything published</td><td><a href="https://news.google.com/search?q=site:timeshighereducation.com+when:2d&amp;hl=en-GB&amp;gl=GB&amp;ceid=GB:en">open</a></td></tr>
+<tr><td class="k">UK outlets</td><td><span class="tag srch">News search</span></td><td class="g">London</td><td class="c">bbc.co.uk, bbc.com, ft.com, thetimes.com — mentioning UK university</td><td><a href="https://news.google.com/search?q=(site:bbc.com+OR+site:bbc.co.uk+OR+site:thetimes.com+OR+site:ft.com)+UK+university+when:2d&amp;hl=en-GB&amp;gl=GB&amp;ceid=GB:en">open</a></td></tr>
+<tr><td class="k">Bay Area outlets</td><td><span class="tag srch">News search</span></td><td class="g">Oakland / Bay Area</td><td class="c">calmatters.org, kqed.org, latimes.com, mercurynews.com, sfchronicle.com, sfgate.com — mentioning university, college, higher education</td><td><a href="https://news.google.com/search?q=(site:sfchronicle.com+OR+site:calmatters.org+OR+site:kqed.org+OR+site:mercurynews.com+OR+site:sfgate.com+OR+site:latimes.com)+(university+OR+college+OR+%22higher+education%22)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Oakland city news</td><td><span class="tag srch">News search</span></td><td class="g">Oakland / Bay Area</td><td class="c">sfchronicle.com — mentioning Oakland mayor, housing, economy</td><td><a href="https://news.google.com/search?q=site:sfchronicle.com+Oakland+(mayor+OR+housing+OR+economy)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Seattle outlets</td><td><span class="tag srch">News search</span></td><td class="g">Seattle</td><td class="c">bizjournals.com/seattle, seattletimes.com — mentioning university, college, education</td><td><a href="https://news.google.com/search?q=(site:seattletimes.com+OR+site:bizjournals.com/seattle)+(university+OR+college+OR+education)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">New York outlets</td><td><span class="tag srch">News search</span></td><td class="g">New York</td><td class="c">nytimes.com — mentioning New York university, college</td><td><a href="https://news.google.com/search?q=site:nytimes.com+%22New+York%22+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Newsweek</td><td><span class="tag srch">News search</span></td><td class="g">New York</td><td class="c">newsweek.com — mentioning university, college</td><td><a href="https://news.google.com/search?q=site:newsweek.com+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Vancouver outlets</td><td><span class="tag srch">News search</span></td><td class="g">Vancouver</td><td class="c">cbc.ca, theglobeandmail.com, vancouversun.com — mentioning university</td><td><a href="https://news.google.com/search?q=(site:vancouversun.com+OR+site:cbc.ca+OR+site:theglobeandmail.com)+university+when:2d&amp;hl=en-CA&amp;gl=CA&amp;ceid=CA:en">open</a></td></tr>
+<tr><td class="k">Toronto outlets</td><td><span class="tag srch">News search</span></td><td class="g">Toronto</td><td class="c">theglobeandmail.com, thestar.com, torontosun.com — mentioning university education</td><td><a href="https://news.google.com/search?q=(site:thestar.com+OR+site:torontosun.com+OR+site:theglobeandmail.com)+university+education+when:2d&amp;hl=en-CA&amp;gl=CA&amp;ceid=CA:en">open</a></td></tr>
+<tr><td class="k">Maine outlets</td><td><span class="tag srch">News search</span></td><td class="g">Portland ME</td><td class="c">mainebiz.biz, mainepublic.org, pressherald.com — mentioning university, college</td><td><a href="https://news.google.com/search?q=(site:pressherald.com+OR+site:mainepublic.org+OR+site:mainebiz.biz)+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Virginia outlets</td><td><span class="tag srch">News search</span></td><td class="g">Arlington VA</td><td class="c">bizjournals.com/washington, virginiamercury.com, vpm.org, washingtonpost.com — mentioning Virginia university, college</td><td><a href="https://news.google.com/search?q=(site:washingtonpost.com+OR+site:virginiamercury.com+OR+site:vpm.org+OR+site:bizjournals.com/washington)+Virginia+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Florida outlets</td><td><span class="tag srch">News search</span></td><td class="g">Miami / Tampa</td><td class="c">bizjournals.com/southflorida, miamiherald.com, tampabay.com, wusf.org — mentioning university, college</td><td><a href="https://news.google.com/search?q=(site:miamiherald.com+OR+site:tampabay.com+OR+site:wusf.org+OR+site:bizjournals.com/southflorida)+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+<tr><td class="k">Charlotte outlets</td><td><span class="tag srch">News search</span></td><td class="g">Charlotte</td><td class="c">bizjournals.com/charlotte, charlotteobserver.com, spectrumlocalnews.com, wcnc.com, wfae.org — mentioning university, college</td><td><a href="https://news.google.com/search?q=(site:charlotteobserver.com+OR+site:bizjournals.com/charlotte+OR+site:wcnc.com+OR+site:wfae.org+OR+site:spectrumlocalnews.com)+(university+OR+college)+when:2d&amp;hl=en-US&amp;gl=US&amp;ceid=US:en">open</a></td></tr>
+  </tbody></table></div>
+</section>
+
+<section id="p-a" role="tabpanel" aria-labelledby="t-a" hidden>
+  <p class="meta">Every briefing published so far, newest first. Click one to open it.</p>
+<details><summary>The Morning Briefing | August 18, 2026</summary><div class="arch"><button class="copy sm" data-copy="a0">Copy</button><div class="sheet" id="a0"><div style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000">
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 4pt"><b><u>The Morning Briefing | August 18, 2026</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 12pt"><i>The Morning Briefing is a curated collection of the day's relevant news.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Higher Ed News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/18/us/texas-tech-artificial-intelligence-ideology-brandon-creighton.html">Texas Tech University Is Using A.I. to Cut Left-Leaning Content</a><br>Brandon Creighton, the Texas lawmaker who engineered the state's conservative higher-ed overhaul, is now running a university system that uses AI to screen out "forbidden" ideological topics.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Bloomberg</b><br><a href="https://www.bloomberg.com/news/articles/2026-08-17/doj-probing-william-mary-scholarships-aid-for-discrimination">DOJ Probing William & Mary Scholarships, Aid for Discrimination</a><br>The Justice Department's Civil Rights Division opened a Title VI compliance review into William & Mary's scholarships and financial aid, giving the university until Sept. 8 to respond.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Guardian</b><br><a href="https://www.theguardian.com/uk-news/2026/aug/17/support-jason-arday-family-shows-britain-still-cares-windrush-campaigner">Support for Jason Arday's family shows 'Britain still cares', says Windrush campaigner</a><br>Cambridge's chancellor publicly condemned the "racist feeding frenzy" that preceded Arday's death as calls grow for an inquiry into how the case was covered.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/18/business/india-private-university-debt.html">India's College Boom Is Leaving Graduates in Debt and Without Jobs</a><br>A private-university boom fueled by family savings is outpacing India's job market, leaving many graduates debt-laden and underemployed.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>NPR</b><br><a href="https://www.npr.org/2026/08/18/nx-s1-5910677/recent-college-graduates-employment-job-artificial-intelligence">Many recent grads say AI is making it harder to get a job. Economists aren't so sure</a><br>New York Fed data show unemployment among recent degree-holders outpacing the overall rate, but economists are divided on how much AI is to blame.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Forbes</b><br><a href="https://www.forbes.com/sites/adamminsky/2026/08/18/education-department-rescinds-student-loan-forgiveness-credit-but-scope-of-rollback-is-unclear/">Education Department Rescinds Student Loan Forgiveness Credit, But Scope Of Rollback Is Unclear</a><br>The department has reversed Public Service Loan Forgiveness qualifying-payment credits for some borrowers, though officials haven't clarified how many are affected or why.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Bloomberg</b><br><a href="https://www.bloomberg.com/news/articles/2026-08-17/goldman-margin-loan-eased-nashville-college-s-liquidity-crunch">Goldman Margin Loan Eased Nashville College's Liquidity Crunch</a><br>Belmont University took out a Goldman Sachs margin loan against its investment accounts to ease a cash crunch, a sign of financial strain reaching mid-size private colleges.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Forbes</b><br><a href="https://www.forbes.com/sites/michaeltnietzel/2026/08/17/rice-university-given-25-million-for-first-generation-low-income-students/">Rice University Given $25 Million For First-Generation, Low-Income Students</a><br>A gift from Jim and Lauren Whitehurst will fund a new Sallyport Fellows Program supporting first-generation and low-income students starting fall 2027.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Global Campus/Regional News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Times Higher Education</b><br><a href="https://www.timeshighereducation.com/news/ban-all-remote-unsupervised-tests-immediately-urges-report">Ban all remote unsupervised tests 'immediately', urges report</a><br>A UK policy report based on FOI requests to 120 universities found most still rely on unsupervised online exams with little accounting for generative AI, and is urging regulators to force an end to the practice.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Times Higher Education</b><br><a href="https://www.timeshighereducation.com/news/no-easy-way-deal-it-taiwan-enrolments-slump-again">'No easy way to deal with it': Taiwan enrolments to slump again</a><br>Taiwan's Ministry of Education projects first-year university enrollment will fall roughly 26 percent by 2041 as the birth rate declines, with officials warning international students can't fully close the gap.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Boston Globe</b><br><a href="https://www.bostonglobe.com/2026/08/18/business/higher-education-jobs-middle-class/">Almost 130,000 people work at Mass. universities. Many are now on the 'chopping blocks.'</a><br>At least 400 university jobs were cut across Massachusetts over the past six months, including 120 at Boston University, with administrative and non-teaching roles hit hardest.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Seattle Times</b><br><a href="https://www.seattletimes.com/seattle-news/homeless/a-one-of-a-kind-partnership-gets-community-college-students-housed/">A partnership with King County helps community college students get housed. Here's why it works</a><br>A King County program pairs housing assistance and emergency aid with enrollment at ten Seattle-area community colleges to keep homeless students in school.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Seattle Times</b><br><a href="https://www.seattletimes.com/seattle-news/uw-researchers-say-ai-is-coming-for-kids-books-but-its-biased/">UW researchers say AI is coming for kids' books, but it's biased</a><br>A University of Washington study found AI models writing children's animal stories nearly erase female characters, appearing in just 2 percent of stories versus 41 percent for male characters.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>Please visit NGN's "<a href="https://news.northeastern.edu/in-the-media/">In The Press</a>" section to view Northeastern's most recent press mentions, updated weekly.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>To get in touch with the media relations team, please contact us at <a href="mailto:media@northeastern.edu">media@northeastern.edu</a>.</i></p>
+</div>
+</div></div></details>
+<details><summary>The Morning Briefing | August 17, 2026</summary><div class="arch"><button class="copy sm" data-copy="a1">Copy</button><div class="sheet" id="a1"><div style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000">
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 4pt"><b><u>The Morning Briefing | August 17, 2026</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 12pt"><i>The Morning Briefing is a curated collection of the day's relevant news.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Higher Ed News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Washington Post</b><br><a href="https://www.washingtonpost.com/nation/2026/08/15/five-people-shot-virginia-state-university/">Shooting at VSU leaves 5 injured hours after freshmen welcome event</a><br>Five people were shot near dormitories at Virginia State University hours after a freshman welcome event; a 19-year-old suspect was arrested and police are still searching for others involved.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/17/us/student-writing-essays-ai.html">What Do Students Lose When They Stop Writing?</a><br>Educators say a growing number of students can no longer write essays without AI assistance, and worry the cost extends well beyond grammar.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/17/business/china-scientific-talent-competition.html">As China Hunts for Scientific Talent, the US Makes It Easier</a><br>A combination of Chinese government funding and tightening U.S. visa and research restrictions is shifting where young scientific researchers choose to train and work.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Bloomberg</b><br><a href="https://www.bloomberg.com/news/articles/2026-08-14/harvard-fund-discloses-2-2-billion-stake-in-elon-musk-s-spacex">Harvard Fund Discloses $2.2 Billion Stake in Musk's SpaceX</a><br>Harvard Management Co.'s latest disclosure shows a $2.2 billion stake in SpaceX, its largest disclosed holding, as the company's June IPO lifted returns for several university endowments.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/quick-takes/2026/08/17/nih-wants-remove-peer-review-scores-grant-applications">NIH Proposes Removing Peer Review Scores From Grant Applications</a><br>NIH is proposing to drop numerical peer-review scores from grant applications, a change that could reshape how federal research funding is awarded to universities.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/student-success/academic-life/2026/08/17/cunys-computer-science-growing-pains">CUNY's Computer Science Growing Pains</a><br>CUNY computer science enrollment fell 15 percent in a year as entry-level New York City tech jobs dropped nearly half since 2022, prompting a report urging faculty and curriculum investment for the AI era.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Forbes</b><br><a href="https://www.forbes.com/advisor/student-loans/cant-afford-student-loan-payments-trump-changes-lmandp5/">Student Loan Borrowers Say They Can't Afford Payments After Trump Changes, New Survey Finds</a><br>A new survey finds most student loan borrowers say they can't afford their new monthly payments following the Trump administration's July overhaul of federal repayment options.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Times Higher Education</b><br><a href="https://www.timeshighereducation.com/news/degree-wage-premium-decline-2010-finds-study">Degree wage premium in decline since 2010, finds study</a><br>A new study finds the earnings advantage of a university degree has eroded steadily for 15 years, echoing similar findings in the U.S. labor market.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Washington Post</b><br><a href="https://www.washingtonpost.com/opinions/2026/08/16/trump-harvard-loss-court-could-be-long-range-win/">Trump's Harvard loss conceals a strategic victory</a> <b>(Op-ed)</b><br>A Washington Post opinion column argues that despite losing its antisemitism case in court, the Trump administration's use of federal funding leverage against Harvard sets a lasting precedent for pressuring universities into compliance.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Global Campus/Regional News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/15/world/europe/jason-arday-cambridge-hiring-questions.html">Professor's Death Leaves Behind Hard Questions for Cambridge on Race and Hiring</a><br>Jason Arday, who resigned as Cambridge's youngest-ever Black professor amid plagiarism allegations, was found dead Friday at a London home, leaving the university facing renewed scrutiny over how it vetted and hired him.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Times Higher Education</b><br><a href="https://www.timeshighereducation.com/news/sussex-staff-vote-strike-action-over-job-cuts">University of Sussex staff vote for strike action over job cuts</a><br>University of Sussex staff voted 81 percent in favor of strike action after management proposed cutting roughly 200 jobs to close a £35 million budget gap amid falling student numbers.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Boston Globe</b><br><a href="https://www.bostonglobe.com/2026/08/16/metro/artificial-intelligence-degrees/">Boston-area colleges are looking to make students 'AI natives' with new majors</a><br>Northeastern, Wentworth, and other Boston-area schools are rolling out dozens of new AI-infused majors and co-majors as demand grows for graduates who are "AI native."</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>WBUR</b><br><a href="https://www.wbur.org/news/2026/08/14/massachusetts-noe-ortega-universities-colleges">Ortega, state's higher ed commissioner, to step down next month</a><br>Massachusetts Higher Education Commissioner Noe Ortega will step down next month, the second high-profile state education leadership departure this year.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>CBC</b><br><a href="https://www.cbc.ca/news/canada/toronto/review-toronto-metropolitan-university-protest-arrests-9.7307807">Review finds protests that led to TMU student arrests 'symptoms of a deteriorating campus climate'</a><br>An independent review found that protests leading to student arrests at Toronto Metropolitan University were symptoms of a deteriorating campus climate around the Israel-Hamas war, prompting the university to form a task force on campus expression and safety.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>The Globe and Mail</b><br><a href="https://www.theglobeandmail.com/business/commentary/article-ottawa-is-ignoring-the-beating-heart-of-the-life-sciences-sector/">Ottawa is ignoring the beating heart of the life sciences sector</a> <b>(Op-ed)</b><br>A McGill University professor argues Ottawa's new pharma task force overlooked universities and research hospitals, the "idea-generation apparatus" Canada needs to build a domestic life-sciences industry.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Tampa Bay Times</b><br><a href="https://www.tampabay.com/news/education/2026/08/14/usf-nursing-college-program-simulation-lab-shortage/">Inside the high-tech simulation labs at USF's expanded College of Nursing</a><br>USF opened a $33 million nursing-education expansion with high-fidelity simulation labs, aiming to grow undergraduate nursing enrollment by 500 students by 2028 amid a projected shortage of nearly 20,000 Florida nurses.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>Please visit NGN's "<a href="https://news.northeastern.edu/in-the-media/">In The Press</a>" section to view Northeastern's most recent press mentions, updated weekly.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>To get in touch with the media relations team, please contact us at <a href="mailto:media@northeastern.edu">media@northeastern.edu</a>.</i></p>
+</div>
+</div></div></details>
+<details><summary>The Morning Briefing | August 14, 2026</summary><div class="arch"><button class="copy sm" data-copy="a2">Copy</button><div class="sheet" id="a2"><div style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000">
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 4pt"><b><u>The Morning Briefing | August 14, 2026</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 12pt"><i>The Morning Briefing is a curated collection of the day's relevant news.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Higher Ed News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/government/science-research-policy/2026/08/14/doj-declares-3-race-based-stem-programs">DOJ Declares 3 Race-Based STEM Programs Unconstitutional</a><br>The Justice Department's Office of Legal Counsel ruled that three long-running NSF programs supporting Hispanic-serving institutions and minority participation in STEM are unconstitutional and must be terminated, affecting about $104 million of NSF's STEM education budget.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Bloomberg</b><br><a href="https://www.bloomberg.com/news/articles/2026-08-13/chinese-talent-plans-brought-to-light-with-science-agency-probe-of-professor">Professor's Alleged Role in China Programs Leads to Ban From US Funding</a><br>A former NSF program officer was barred from federal funding for six years after an inspector general found he oversaw research grants while failing to disclose his own participation in Chinese government talent programs, part of a wider federal push to sever US-China research ties.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>The New York Times</b><br><a href="https://www.nytimes.com/2026/08/14/us/activist-sociology-independent.html">Is Activism Hurting Sociology? Sociologists Are Torn.</a><br>A group of sociologists broke away from colleagues in protest over the discipline's handling of Israel-related activism, reigniting debate over whether the field has drifted too far toward advocacy.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/quick-takes/2026/08/14/troy-punishes-professor-using-university-letterhead">Troy Punishes Professor for Writing to Lawmakers on University Letterhead</a><br>Troy University disciplined a faculty member for writing to state lawmakers on university letterhead, the latest episode to draw academic-freedom scrutiny of administrative pressure on faculty speech at the Alabama institution.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/faculty/academic-freedom/2026/08/14/stockton-pulls-genocide-reference-after-donor-complains">Stockton Pulls Genocide Reference After Donor Complains</a><br>Stockton University removed language describing the war in Gaza as a genocide from its Holocaust and genocide studies program website after a complaint from the university's largest donor.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Global Campus/Regional News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/global/2026/08/14/cambridge-review-hiring-processes-after-arday-scandal">Cambridge to Review Hiring Processes After Arday Scandal</a><br>Cambridge will fold its inquiry into sociologist Jason Arday's disputed appointment into a broader review of how the university recruits senior academics, with the controversy still unresolved despite Arday's resignation.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>The Guardian</b><br><a href="https://www.theguardian.com/education/2026/aug/13/england-a-level-results-record-levels-regional-disparities">Behind England's bumper A-level results lie record levels of regional disparities</a><br>New data show London pulling further ahead of the rest of England in top A-level grades, sharpening pressure on Labour to address regional educational inequality.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>The Seattle Times</b><br><a href="https://www.seattletimes.com/seattle-news/hasan-piker-says-uw-canceled-speaking-event-because-of-views-on-israel/">Hasan Piker says UW canceled speaking event because of views on Israel</a><br>The political streamer says the University of Washington scrapped his campus appearance over his stance on Israel, though the university says the cancellation was due to a flawed speaker-vetting process, not the content of his views.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>WFAE</b><br><a href="https://www.wfae.org/race-equity/2026-08-13/two-nc-members-of-congress-push-federal-support-for-foreign-language-education">Two NC members of Congress push federal support for foreign language education</a><br>Reps. Deborah Ross and Valerie Foushee introduced legislation to reauthorize Title VI of the Higher Education Act, which funds foreign-language and international-education programs at colleges nationwide.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>Please visit NGN's "<a href="https://news.northeastern.edu/in-the-media/">In The Press</a>" section to view Northeastern's most recent press mentions, updated weekly.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>To get in touch with the media relations team, please contact us at <a href="mailto:media@northeastern.edu">media@northeastern.edu</a>.</i></p>
+</div>
+</div></div></details>
+<details><summary>The Morning Briefing | August 13, 2026</summary><div class="arch"><button class="copy sm" data-copy="a3">Copy</button><div class="sheet" id="a3"><div style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#000">
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 4pt"><b><u>The Morning Briefing | August 13, 2026</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 12pt"><i>The Morning Briefing is a curated collection of the day's relevant news.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Higher Ed News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/13/us/harvard-antisemitism-case-dismissed.html">Judge Dismisses Trump Administration's Antisemitism Case Against Harvard</a><br>A federal judge dismissed the Trump administration's antisemitism lawsuit against Harvard, ruling the government had not shown the incidents cited amounted to more than "isolated and episodic" conduct.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>New York Times</b><br><a href="https://www.nytimes.com/2026/08/11/nyregion/columbia-university-lawsuit-palestinians.html">Palestinian Americans File Discrimination Lawsuit Against Columbia</a><br>Five current and former Columbia affiliates say the university failed to protect them from harassment after the October 2023 Hamas attack against Israel, opening a new legal front weeks after Columbia settled federal antisemitism claims.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/quick-takes/2026/08/11/doj-sues-3-states-over-state-tuition-noncitizens">DOJ Sues 3 States Over In-State Tuition for Noncitizens</a><br>The Justice Department sued New York, Connecticut, and Vermont over in-state tuition benefits for undocumented students, the 17th such lawsuit nationally.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Washington Post</b><br><a href="https://www.washingtonpost.com/education/2026/08/12/foreign-student-enrollment-will-fall-nearly-10-report-predicts/">About 110,000 fewer foreign students expected after visa crackdown, report says</a><br>A new industry report projects international enrollment at U.S. colleges will fall by roughly 111,000 students, or 9.5 percent, this fall amid the administration's visa restrictions.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Washington Post</b><br><a href="https://www.washingtonpost.com/education/2026/08/11/student-loan-delinquencies-starting-stabilize-new-york-fed-says/">Student loan delinquencies starting to stabilize, New York Fed says</a><br>New York Fed data show the share of borrowers newly falling seriously delinquent has dropped to 7.83 percent from 12.88 percent a year ago, though overall past-due debt remains elevated.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Forbes</b><br><a href="https://www.forbes.com/sites/annaesakismith/2026/08/13/university-of-tulsa-slashes-tuition-by-more-than-half/">University Of Tulsa Slashes Tuition By More Than Half</a><br>The University of Tulsa will cut its sticker-price tuition and fees from $54,000 to $25,000 starting fall 2027, a "tuition reset" meant to bring the advertised price closer to what most students already pay after aid.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Inside Higher Ed</b><br><a href="https://www.insidehighered.com/news/institutions/minority-serving-institutions/2026/08/12/departing-uncf-president-reflects-how">Departing UNCF President Reflects on How HBCUs Have Changed</a><br>Michael L. Lomax, who is stepping down next year after 24 years leading the United Negro College Fund and raising more than $4 billion, reflects on how HBCUs have changed.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Bloomberg</b><br><a href="https://www.bloomberg.com/opinion/articles/2026-08-12/college-grads-struggle-to-find-jobs-non-grads-are-giving-up">College Grads Struggle to Find Jobs. Non-Grads Are Giving Up</a> <b>(Op-ed)</b><br>A Bloomberg Opinion column argues that while college graduates are struggling in a weak job market, workers without degrees are faring even worse — eroding one of the strongest arguments for a four-year degree.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:14pt 0 6pt;color:#C00000"><b><u>Global Campus/Regional News</u></b></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Times Higher Education</b><br><a href="https://www.timeshighereducation.com/news/cambridge-v-c-promises-independent-arday-investigation">Cambridge agrees independent inquiry into Jason Arday appointment</a><br>Cambridge vice-chancellor Deborah Prentice pledged an independent, senior-academic-led investigation into sociologist Jason Arday's 2022 appointment amid plagiarism allegations, calling the case "an aberration."</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>The Guardian</b><br><a href="https://www.theguardian.com/education/2026/aug/13/uk-universities-face-financial-crisis-amid-collapse-in-international-students">UK universities face 'financial crisis' amid collapse in international students</a><br>University leaders are warning of financial turmoil across British higher education after new figures suggested a collapse in international student numbers would strip the sector of vital income, and are calling on Labour to reverse the fee levy.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>The Guardian</b><br><a href="https://www.theguardian.com/education/2026/aug/13/students-new-records-a-levels-grades-results">Students set new records for A-level grades in bumper year</a><br>More than a quarter of a million 18-year-olds are headed to higher education after England, Wales, and Northern Ireland posted record A-level results, with Northern Ireland leading at 30.7 percent A/A* grades.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>CBC News</b><br><a href="https://www.cbc.ca/news/canada/british-columbia/sfu-medical-school-opens-9.7297178">New Simon Fraser University medical school welcomes first 48 students</a><br>Simon Fraser University's new medical school in Surrey, B.C. welcomed its inaugural class of 48 students, chosen from nearly 1,900 applicants for a program built around community-based primary care.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Virginia Mercury</b><br><a href="https://virginiamercury.com/2026/08/11/amid-major-federal-shifts-mcmahon-urges-va-universities-to-reform-practices-restore-public-trust/">Amid major federal shifts, McMahon urges Va. universities to reform practices, restore public trust</a><br>U.S. Education Secretary Linda McMahon sent Virginia college presidents and governing boards a letter urging them to publicly commit to reforms on free speech, admissions, and affordability by year's end, noting UVA and George Mason are already under federal scrutiny.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>Spectrum Bay News 9</b><br><a href="https://baynews9.com/fl/tampa/news/2026/08/12/bradenton-is-exploring-a-point-park-university--partnership">Bradenton is exploring a Point Park University partnership</a><br>Bradenton officials and the Pittsburgh university are exploring a downtown branch location focused initially on performing arts, with room to grow into tourism, sports, and business programs.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt"><b>WFAE</b><br><a href="https://www.wfae.org/2026-08-12/a-17m-nih-award-boosts-health-disparities-research-at-n-c-a-t">A $17M NIH award boosts health disparities research at NC A&T</a><br>The nearly $17 million grant — the largest ever received by A&T's Hairston College of Health and Human Sciences — will fund a new center studying chronic-disease disparities in underserved central North Carolina communities.</p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>Please visit NGN's "<a href="https://news.northeastern.edu/in-the-media/">In The Press</a>" section to view Northeastern's most recent press mentions, updated weekly.</i></p>
+<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:12pt 0 0"><i>To get in touch with the media relations team, please contact us at <a href="mailto:media@northeastern.edu">media@northeastern.edu</a>.</i></p>
+</div>
+</div></div></details>
+
+</section>
+
+<section id="p-h" role="tabpanel" aria-labelledby="t-h" hidden>
+
+<h2>The morning</h2>
+<p>Three things happen each weekday, with nobody at a computer. At <b>8:10</b> a script
+collects the news. At <b>8:30</b> the AI agent reads what was collected and writes the
+briefing. By about <b>8:45</b> it's on this page, ready to send.</p>
+
+<h2>Sending it</h2>
+<p>Open the Briefing tab, press Copy briefing, paste into Outlook, set From to
+media@northeastern.edu, add the bcc lists, send. Ignore the production notes at the
+bottom of each briefing — those are notes to us, not part of the email.</p>
+
+<h2>How the news is gathered</h2>
+<p>Most outlets that matter are paywalled, which is why this was assumed to be impossible.
+An AI can't read a paywalled article. But the briefing never needed the article — it needs
+a headline, a link and a sentence, and publishers give those away in their news feeds.
+That's the same material Google News is built on.</p>
+<p>Each morning the script checks 59 feeds: four publisher feeds (the New York Times, NPR,
+the Guardian, Inside Higher Ed still run working education feeds), 16 searches scoped to a
+single outlet each, 26 topic and campus-city searches, and one search for each running
+story. The Sources tab lists all of them. It keeps only what was published in the last 24
+hours, or 72 on Mondays so the weekend isn't missed — roughly 1,000 headlines. The agent
+also checks the American Council on Education's daily headlines page by hand, because Wall
+Street Journal opinion pieces don't surface well in search.</p>
+
+<h2>How the stories are chosen</h2>
+<p>Each section carries at least ten stories, strongest first. This is a candidate list to
+hand-pick from, not a finished cut — edit down by deleting from the bottom.</p>
+<p>The test is whether a Northeastern senior leader would want to know it before their
+first meeting. Usually in: federal policy and court rulings, government action against
+universities, AI's effect on campuses and hiring, student loans, international students and
+visas, closures and mergers, UK university finances, leadership changes, research funding,
+campus speech and antisemitism developments, and university-adjacent business or
+city-politics stories in campus cities. Usually out: sports, K-12 with no college angle,
+old rankings, human interest with no institutional angle, and single small colleges with no
+wider relevance.</p>
+<p>Opinion pieces, editorials and podcasts are included and labeled, never as the lead.
+When several outlets cover the same thing the agent picks one, favouring the strongest
+outlet. No story appears twice.</p>
+<p>When the obvious stories run out, it fills to ten in a set order: second-tier items from
+the same digest, then higher-ed trade press, then more labeled opinion, then a wider
+regional net, then a 48-hour stretch for anything that hasn't run before. If it still can't
+reach ten it publishes what qualifies and says so in the production notes rather than
+padding.</p>
+
+<h2>How the links are checked</h2>
+<p>Stories found through search arrive with Google redirect links rather than real
+addresses. For each story it keeps, the agent searches the exact headline to find the
+article on the publisher's own site, then confirms the date falls inside the window — most
+publishers put the date in the address, which makes that checkable. If it can't verify a
+link for an important story it keeps the story and flags the link in the production notes.
+It never invents a link.</p>
+
+<h2>How repeats are avoided</h2>
+<p>Every past briefing is kept (see the Archive tab) and the agent reads the most recent one
+before finalizing. Anything that already ran is dropped unless there's a real new
+development. For a story it has been tracking, the follow-up must be an article published
+today, not the original announcement.</p>
+
+<h2>How tracked stories work</h2>
+<p>A tracked story is one that keeps developing: a lawsuit, a federal investigation, a
+campus sale, a presidential search, a financial crisis. The agent starts tracking one when
+a story has appeared across two or more days, or in three or more outlets, and is clearly
+unresolved. It stops when the story concludes or two weeks pass with nothing new. The
+Tracked stories tab shows what it's watching now and when each last produced news.</p>
+
+<h2>Production notes</h2>
+<p>Below the divider at the bottom of each briefing the agent records what happened during
+the run: what it cut and why, which links need a manual fix, which stories it started or
+stopped tracking, and anything that failed. If a briefing looks thin, the reason is usually
+there.</p>
+
+<h2>What it never does</h2>
+<p>It never sends email, never adds recipients, never touches the distribution list. It
+produces a draft; a person sends it.</p>
+
+<h2>Worth knowing</h2>
+<p><b>Judgment calls are judgment calls.</b> If it keeps including something you'd cut, or
+skipping something you'd run, that's a rule to change rather than a malfunction. The rules
+live in one document the agent reads every morning. Say what you want different.</p>
+<p><b>Paywalled opinion and feature writing is the weak spot.</b> Search engines index it
+poorly. The daily check of the ACE headlines page covers most of it, but this is where a
+miss is most likely.</p>
+<p><b>Search results have noisy tails.</b> Open a source and you may see results with
+nothing to do with education. That's expected — results come back ranked by relevance, the
+real stories sit at the top, and the agent reads all of them before choosing.</p>
+<p><b>A broken search looks like a quiet news day.</b> If a search stops returning
+anything, nothing announces it. That's why the source list isn't editable here.</p>
+<p><b>The clock is set in UTC.</b> The run happens at 8:30 Eastern now; after the clocks
+change in November it happens at 7:30 Eastern — earlier, never later, so it's always ready
+before 9.</p>
+
+</section>
+</div>
+<script>
+  const tabs = [["t-b","p-b"],["t-t","p-t"],["t-s","p-s"],["t-a","p-a"],["t-h","p-h"]];
+  for (const [tid, pid] of tabs) {
+    document.getElementById(tid).addEventListener("click", () => {
+      for (const [t, p] of tabs) {
+        const on = t === tid;
+        document.getElementById(t).setAttribute("aria-selected", on ? "true" : "false");
+        document.getElementById(p).hidden = !on;
+      }
+    });
+  }
+  document.addEventListener("click", async (ev) => {
+    const btn = ev.target.closest("button[data-copy]");
+    if (!btn) return;
+    const el = document.getElementById(btn.dataset.copy);
+    try {
+      await navigator.clipboard.write([new ClipboardItem({
+        "text/html": new Blob([el.innerHTML], {type: "text/html"}),
+        "text/plain": new Blob([el.innerText], {type: "text/plain"}),
+      })]);
+    } catch (e) {
+      const r = document.createRange(); r.selectNodeContents(el);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      document.execCommand("copy"); s.removeAllRanges();
+    }
+    const was = btn.textContent;
+    btn.textContent = "Copied";
+    setTimeout(() => btn.textContent = was, 2500);
+  });
+</script>
+</body>
+</html>

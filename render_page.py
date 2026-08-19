@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Render the briefing markdown into the team-facing Artifact page.
+"""Render the briefing markdown into the team-facing web page (GitHub Pages).
 
-Usage: python3 render_page.py briefings/YYYY-MM-DD.md > page.html
+Usage: python3 render_page.py briefings/YYYY-MM-DD.md > docs/index.html
 
 Three tabs: the briefing itself (white sheet, copy button), the tracked
 stories from threads.tsv, and the source list from feeds.tsv. Tables are
@@ -205,7 +205,13 @@ sources_html = "\n".join(
 
 rss_count = sum(1 for r in source_rows if r[2] == "Publisher RSS")
 
-print(f"""<title>The Morning Briefing</title>
+print(f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>The Morning Briefing</title>
 <style>
   :root {{
     --ground:#FAFAF8; --ink:#1A1A1A; --muted:#6B6B6B; --border:#E4E2DD;
@@ -262,6 +268,8 @@ print(f"""<title>The Morning Briefing</title>
   #p-h h2 {{ font-size:15px; font-weight:600; margin:26px 0 8px; }}
   #p-h p {{ font-size:14.5px; line-height:1.65; margin:0 0 12px; color:var(--ink); }}
 </style>
+</head>
+<body>
 <div class="wrap">
 <div class="bar">
   <h1>{title}</h1>
@@ -340,4 +348,6 @@ print(f"""<title>The Morning Briefing</title>
     btn.textContent = "Copied";
     setTimeout(() => btn.textContent = was, 2500);
   }});
-</script>""")
+</script>
+</body>
+</html>""")
