@@ -117,27 +117,6 @@ Mechanical check: NYT/WaPo/Guardian URLs carry the publication date in their pat
 (`/2026/08/11/`) — if that date is outside the window, the article is out of window no
 matter what the feed's timestamp said.
 
-## 4b. Notion trends sync (cloud runner, mandatory — BEFORE curating)
-
-The media relations team manages trends in the Notion hub ("The Morning Briefing",
-page id `3bf489d4-fca0-8125-adb6-d358827f3872`) in a "Trends" database (data source
-`collection://24b84433-a891-467e-9309-4caaa5e17c48`). **Notion is the team's interface;
-threads.tsv remains the machine copy. Sync both directions every run:**
-
-- INTO threads.tsv, before curating: fetch the Trends database. A row with Status
-  "Active" that has no matching threads.tsv line is a team-added trend — write a tight
-  Google News query for it (fill the row's empty Query URL back into Notion), set
-  opened=today, and add the line. A row set to "Retired" whose thread still exists in
-  threads.tsv means the team stopped it — delete the line (leave the Notion row as the
-  team set it).
-- BACK to Notion, after curating: update each row's Last hit date to match threads.tsv;
-  for threads the agent opens, create a row (Status Active, all fields filled); for
-  threads the agent retires, set the row's Status to "Retired" (never delete team-visible
-  rows). Keep Notes current when a thread's situation changes materially.
-- SOURCES table (data source `collection://6a5231cc-ef3e-43c0-a319-d14bfdce4af2`) is a
-  read-only reference listing every feed in feeds.tsv and how it is pulled. Touch it only
-  when feeds.tsv itself changes: add, edit or remove the matching row so it stays accurate.
-
 ## 5. Threads (mandatory)
 
 `threads.tsv` is agent-maintained; its header documents the format
@@ -170,7 +149,11 @@ Write the briefing to `briefings/YYYY-MM-DD.md` (today's date). Format exactly:
 
 a. Run `python3 render_page.py briefings/YYYY-MM-DD.md > /tmp/page.html` and publish
 /tmp/page.html with the Artifact tool, passing
-`url=https://claude.ai/code/artifact/faca981e-c281-4ef3-aace-b056cb04e90a` and favicon 📰
+`url=<ARTIFACT_URL>` and favicon 📰 — ARTIFACT_URL is the one account-specific value in
+this file. It is currently
+`https://claude.ai/code/artifact/faca981e-c281-4ef3-aace-b056cb04e90a`. If this system is
+re-created under a different Claude account, publish once without a url to create that
+account's artifact, then replace the value here.
 so the existing artifact updates in place at its stable link. Always update that exact
 artifact, never create a new one.
 
@@ -180,15 +163,7 @@ and How it works (the team's documentation, held in the DOCS string in render_pa
 keep it accurate when these rules change). The tables are generated from the repo files, so
 they stay correct on their own.
 
-b. Create the briefing page in the Notion hub: a child page of the hub page
-(`3bf489d4-fca0-8125-adb6-d358827f3872`) titled "The Morning Briefing | Month D, YYYY"
-with icon 📰, containing the full briefing (bold outlet names, linked headlines,
-one-line summaries, italic tagline and footer), then a `---` divider and a short
-**Production notes (not for email)** paragraph. This is where the team reads it daily.
-If this is a manual re-run, UPDATE the existing page for today (replace its content)
-rather than creating a second page.
-
-c. Commit: `git add briefings/ threads.tsv && git commit -m "Morning Briefing YYYY-MM-DD" && git push`.
+b. Commit: `git add briefings/ threads.tsv && git commit -m "Morning Briefing YYYY-MM-DD" && git push`.
 Do not commit digests or /tmp files.
 
 ## 7-alt. Publish (local scheduled task)
