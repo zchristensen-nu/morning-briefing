@@ -151,7 +151,7 @@ a. Run `python3 render_page.py briefings/YYYY-MM-DD.md > /tmp/page.html` and pub
 /tmp/page.html with the Artifact tool, passing
 `url=<ARTIFACT_URL>` and favicon 📰 — ARTIFACT_URL is the one account-specific value in
 this file. It is currently
-`https://claude.ai/code/artifact/faca981e-c281-4ef3-aace-b056cb04e90a`. If this system is
+`https://claude.ai/code/artifact/98ab524b-1370-4cc2-9dfa-31c4ec432abe`. If this system is
 re-created under a different Claude account, publish once without a url to create that
 account's artifact, then replace the value here.
 so the existing artifact updates in place at its stable link. Always update that exact
