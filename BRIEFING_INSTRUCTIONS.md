@@ -33,10 +33,30 @@ headline search before use.
 
 ## 2. Curate
 
-Two sections only: **Higher Ed News** (typically 5–8 items) then **Global Campus/Regional
-News** (typically 4–10 items, loosely grouped by campus city: Boston, London, Oakland/Bay
-Area, Seattle, New York, Vancouver, Toronto, Portland ME, Arlington VA, Miami/Tampa,
-Charlotte — not every city every day).
+Two sections only: **Higher Ed News** then **Global Campus/Regional News** (loosely grouped
+by campus city: Boston, London, Oakland/Bay Area, Seattle, New York, Vancouver, Toronto,
+Portland ME, Arlington VA, Miami/Tampa, Charlotte — not every city every day).
+
+**Each section carries AT LEAST 10 stories.** The briefing is a candidate list the media
+relations team hand-picks from, not a finished cut. **Order each section strongest first**,
+so editing down means deleting from the bottom.
+
+When the obvious stories run out, fill to 10 in this order — never by inventing, never by
+padding with stories that fail the skip rules:
+1. Second-tier items already in the digest from approved outlets: stories that passed the
+   relevance test but lost out to stronger ones.
+2. Higher-ed trade press: Chronicle of Higher Education, Inside Higher Ed, Higher Ed Dive,
+   Times Higher Education.
+3. More labeled opinion, editorial and analysis than the usual one or two (still never as
+   the lead).
+4. A wider regional net: any campus-city outlet in feeds.tsv, including business journals
+   and public radio, on university-adjacent business, real estate, workforce or city
+   politics.
+5. Stretch to 48 hours for stories that did not appear in a previous briefing.
+
+If a section still cannot reach 10 after all five, publish what genuinely qualifies and
+record in production notes how many were found and which steps were tried. A short honest
+section beats a padded one.
 
 Inclusion test: would a Northeastern senior leader want to know this before their first
 meeting? Strong yes: federal policy and court rulings on higher ed; Trump admin/DOJ
@@ -149,6 +169,11 @@ a. Run `python3 render_page.py briefings/YYYY-MM-DD.md > /tmp/page.html` and pub
 `url=https://claude.ai/code/artifact/faca981e-c281-4ef3-aace-b056cb04e90a` and favicon 📰
 so the existing artifact updates in place at its stable link. Always update that exact
 artifact, never create a new one.
+
+The page it renders has four tabs: today's briefing (with the copy button), Tracked
+stories (from threads.tsv), Sources (from feeds.tsv), and Archive (every earlier file in
+briefings/). Those three tables are generated from the repo files, so they stay correct on
+their own — no extra step.
 
 b. Create the briefing page in the Notion hub: a child page of the hub page
 (`3bf489d4-fca0-8125-adb6-d358827f3872`) titled "The Morning Briefing | Month D, YYYY"
