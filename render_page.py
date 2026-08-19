@@ -21,7 +21,14 @@ body = subprocess.run(
     [sys.executable, str(HERE / "render_email.py"), md_path],
     capture_output=True, text=True, check=True,
 ).stdout
-title = re.sub(r"\*", "", open(md_path).readline()).strip()
+LOGO = ('<svg viewBox="0 0 298 298" fill="none" xmlns="http://www.w3.org/2000/svg" '
+        'class="logo" aria-hidden="true">'
+        '<path d="M148.868 297.951C231.086 297.951 297.737 231.252 297.737 148.975C297.737 66.6986 231.086 0 148.868 0C66.6506 0 0 66.6986 0 148.975C0 231.252 66.6506 297.951 148.868 297.951Z" fill="white"/>'
+        '<path d="M66.4521 191.258C66.4521 169.292 83.0397 152.58 104.989 152.58C117.985 152.58 129.978 158.775 137.888 170.234L126.11 178.642C120.247 169.794 112.623 166.415 104.989 166.415C91.3283 166.415 81.7708 176.706 81.7708 191.258C81.7708 205.809 91.7274 216.101 105.378 216.101C117.872 216.101 124.892 208.738 126.611 200.771H103.884V187.878H141.705C141.93 189.814 141.981 192.026 141.981 193.91C141.981 213.223 128.382 229.925 105.378 229.925C82.3745 229.925 66.4521 213.213 66.4521 191.247V191.258Z" fill="black"/>'
+        '<path d="M156.194 228.829V155.191H169.466L210.163 205.727V155.191H224.796V228.829H211.309L170.838 178.836V228.829H156.205H156.194Z" fill="black"/>'
+        '<path d="M71.1904 144.255V70.6169H84.4625L125.159 121.153V70.6169H139.792V144.255H126.305L85.8337 94.2617V144.255H71.2007H71.1904Z" fill="black"/>'
+        '<path d="M151.201 70.6272V85.3425H199.327L156.42 128.27L166.817 138.674L210.081 95.3882V144.255H224.786V70.6272H151.201Z" fill="#C8102E"/>'
+        '</svg>')
 
 
 def browsable(rss_url):
@@ -229,9 +236,9 @@ print(f"""<!doctype html>
   body {{ background:var(--ground); color:var(--ink); margin:0;
          font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }}
   .wrap {{ max-width:860px; margin:0 auto; padding:26px 20px 60px; }}
-  .bar {{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:16px; }}
-  .bar h1 {{ font-size:15px; font-weight:600; margin:0; letter-spacing:.01em; }}
-  .bar .hint {{ color:var(--muted); font-size:13px; margin-right:auto; }}
+  .bar {{ display:flex; align-items:center; gap:11px; flex-wrap:wrap; margin-bottom:18px; }}
+  .bar h1 {{ font-size:17px; font-weight:600; margin:0; letter-spacing:.01em; margin-right:auto; }}
+  .logo {{ width:34px; height:34px; flex:none; display:block; }}
   button.copy {{ background:var(--accent); color:var(--btn-ink); border:0; border-radius:4px;
             font:600 13px/1 inherit; padding:9px 16px; cursor:pointer; }}
   nav {{ display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:20px; }}
@@ -272,8 +279,8 @@ print(f"""<!doctype html>
 <body>
 <div class="wrap">
 <div class="bar">
-  <h1>{title}</h1>
-  <span class="hint">Copy, then paste straight into the Outlook email body.</span>
+  {LOGO}
+  <h1>The Morning Briefing</h1>
   <button class="copy" data-copy="briefing">Copy briefing</button>
 </div>
 <nav role="tablist">
