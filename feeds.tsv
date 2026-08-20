@@ -16,17 +16,12 @@ HigherEd	Associated Press	https://feedx.net/rss/ap.xml	filter=edu
 HigherEd	Christian Science Monitor	https://rss.csmonitor.com/feeds/all	filter=edu
 HigherEd	Higher Ed Dive	https://www.highereddive.com/feeds/news/
 # National outlets via Google News (headline+outlet discovery; resolve canonical URL at compile time)
-HigherEd	New York Times	https://news.google.com/rss/search?q=site:nytimes.com+(university+OR+college+OR+%22higher+education%22)+-%22The+Athletic%22+when:2d&hl=en-US&gl=US&ceid=US:en
-HigherEd	Wall Street Journal	https://news.google.com/rss/search?q=site:wsj.com+(university+OR+college+OR+campus+OR+tuition+OR+undergraduate+OR+%22higher+education%22+OR+%22student+loan%22+OR+%22student+debt%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Washington Post	https://news.google.com/rss/search?q=site:washingtonpost.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Financial Times	https://news.google.com/rss/search?q=site:ft.com+(university+OR+campus+OR+tuition+OR+undergraduate+OR+%22higher+education%22+OR+%22student+debt%22)+-%22Company+Announcement%22+-%22Press+Release%22+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	The Atlantic	https://news.google.com/rss/search?q=site:theatlantic.com+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Bloomberg	https://news.google.com/rss/search?q=site:bloomberg.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
-HigherEd	The Economist	https://news.google.com/rss/search?q=site:economist.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
-HigherEd	Associated Press	https://news.google.com/rss/search?q=site:apnews.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Wired	https://news.google.com/rss/search?q=site:wired.com+(university+OR+college+OR+AI+education)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Forbes	https://news.google.com/rss/search?q=site:forbes.com+(%22higher+education%22+OR+%22higher+ed%22+OR+university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
-HigherEd	Christian Science Monitor	https://news.google.com/rss/search?q=site:csmonitor.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	The New Yorker	https://news.google.com/rss/search?q=site:newyorker.com+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	The Times (UK)	https://news.google.com/rss/search?q=site:thetimes.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Nature	https://news.google.com/rss/search?q=site:nature.com+(university+OR+NIH+funding+OR+research+funding)+when:2d&hl=en-US&gl=US&ceid=US:en
