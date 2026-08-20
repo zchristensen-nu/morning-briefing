@@ -8,9 +8,9 @@ HigherEd	The Guardian	https://www.theguardian.com/education/rss
 HigherEd	Inside Higher Ed	https://www.insidehighered.com/rss.xml
 # National outlets via Google News (headline+outlet discovery; resolve canonical URL at compile time)
 HigherEd	New York Times	https://news.google.com/rss/search?q=site:nytimes.com+(university+OR+college+OR+%22higher+education%22)+-%22The+Athletic%22+when:2d&hl=en-US&gl=US&ceid=US:en
-HigherEd	Wall Street Journal	https://news.google.com/rss/search?q=site:wsj.com+(university+OR+college+OR+students+OR+graduates+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Wall Street Journal	https://news.google.com/rss/search?q=site:wsj.com+(university+OR+college+OR+campus+OR+tuition+OR+undergraduate+OR+%22higher+education%22+OR+%22student+loan%22+OR+%22student+debt%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Washington Post	https://news.google.com/rss/search?q=site:washingtonpost.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
-HigherEd	Financial Times	https://news.google.com/rss/search?q=site:ft.com+(university+OR+%22higher+education%22+OR+graduates)+-%22Company+Announcement%22+-%22Press+Release%22+when:2d&hl=en-US&gl=US&ceid=US:en
+HigherEd	Financial Times	https://news.google.com/rss/search?q=site:ft.com+(university+OR+campus+OR+tuition+OR+undergraduate+OR+%22higher+education%22+OR+%22student+debt%22)+-%22Company+Announcement%22+-%22Press+Release%22+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	The Atlantic	https://news.google.com/rss/search?q=site:theatlantic.com+(university+OR+college)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Bloomberg	https://news.google.com/rss/search?q=site:bloomberg.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	The Economist	https://news.google.com/rss/search?q=site:economist.com+(university+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
@@ -33,6 +33,10 @@ Topic	Campus politics	https://news.google.com/rss/search?q=university+campus+(an
 Topic	Job market	https://news.google.com/rss/search?q=(%22college+graduates%22+OR+%22entry-level%22)+(%22job+market%22+OR+hiring+OR+unemployment+OR+%22remote+work%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 Topic	AI and workforce	https://news.google.com/rss/search?q=AI+(jobs+OR+workforce+OR+hiring+OR+%22entry-level%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 Topic	Work visas and immigration	https://news.google.com/rss/search?q=(H-1B+OR+%22work+visa%22+OR+%22immigration+crackdown%22)+(graduates+OR+workers+OR+economy)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	Enrollment and demographics	https://news.google.com/rss/search?q=(%22enrollment+cliff%22+OR+%22demographic+cliff%22+OR+%22enrollment+decline%22+OR+admissions)+college+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	Value and cost of a degree	https://news.google.com/rss/search?q=(%22is+college+worth%22+OR+%22value+of+a+degree%22+OR+%22cost+of+college%22+OR+tuition+OR+%22student+debt%22)+when:2d&hl=en-US&gl=US&ceid=US:en
+Topic	UK student finance and schools	https://news.google.com/rss/search?q=(GCSE+OR+%22A-level%22+OR+apprenticeship+OR+%22graduate+tax%22+OR+%22student+loan%22)+UK+when:2d&hl=en-GB&gl=GB&ceid=GB:en
+Topic	Graduate hiring by sector	https://news.google.com/rss/search?q=(graduate+OR+%22entry-level%22)+(hiring+OR+recruitment+OR+internship)+(law+OR+finance+OR+consulting+OR+tech)+when:2d&hl=en-US&gl=US&ceid=US:en
 Topic	General sweep	https://news.google.com/rss/search?q=%22higher+education%22+when:2d&hl=en-US&gl=US&ceid=US:en
 # Global campus cities
 Boston	Boston Globe / regional	https://news.google.com/rss/search?q=(site:bostonglobe.com+OR+site:wbur.org+OR+site:masslive.com+OR+site:wgbh.org+OR+site:bizjournals.com/boston)+(university+OR+college+OR+education)+when:2d&hl=en-US&gl=US&ceid=US:en

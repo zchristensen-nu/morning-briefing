@@ -41,22 +41,39 @@ Portland ME, Arlington VA, Miami/Tampa, Charlotte — not every city every day).
 relations team hand-picks from, not a finished cut. **Order each section strongest first**,
 so editing down means deleting from the bottom.
 
+**Higher Ed News is for major national and international outlets** — NYT, WSJ, Washington
+Post, FT, The Atlantic, Bloomberg, The Economist, The Guardian, NPR, AP, Reuters, Forbes,
+The Times, New Yorker, CSM, Nature, USA Today. That is what a senior executive audience
+reads. **Trade press — Inside Higher Ed, Chronicle, Times Higher Education, Higher Ed
+Dive — is capped at 2 entries in Higher Ed News** and only after the majors are exhausted.
+The regional section is different: it may lead with an IHE and a THE highlight as usual.
+
+MANDATORY CHECK before writing the file: count the Higher Ed section by outlet. If more
+than 2 come from trade press, or if any single outlet supplies more than 3 entries, the
+selection has failed — go back and re-read the NYT, WSJ, Washington Post, FT, Atlantic,
+Bloomberg, Guardian and Economist sections of the digest before trying again. A Higher Ed
+section that is mostly Inside Higher Ed is a failed run, not a full one.
+
 When the obvious stories run out, fill to 10 in this order — never by inventing, never by
 padding with stories that fail the skip rules:
-1. Second-tier items already in the digest from approved outlets: stories that passed the
-   relevance test but lost out to stronger ones.
-2. Higher-ed trade press: Chronicle of Higher Education, Inside Higher Ed, Higher Ed Dive,
-   Times Higher Education.
-3. More labeled opinion, editorial and analysis than the usual one or two (still never as
-   the lead).
-4. A wider regional net: any campus-city outlet in feeds.tsv, including business journals
-   and public radio, on university-adjacent business, real estate, workforce or city
-   politics.
-5. Stretch to 48 hours for stories that did not appear in a previous briefing.
+1. Second-tier items from the MAJOR outlets already in the digest: stories that passed the
+   relevance test but lost out to stronger ones. Read those feed sections again in full —
+   good stories sit below the top of a noisy feed.
+2. The topic sweeps in the digest ([Topic] sections). These are the most reliable way to
+   find major-outlet coverage, because Google's `site:` operator returns an outlet's
+   general firehose rather than its education stories — a paywalled major's best piece
+   often appears ONLY in a topic sweep, credited to that outlet.
+3. The ACE headlines page (step 1) for anything from NYT/WSJ/Bloomberg the feeds missed.
+4. Labeled opinion, editorial and analysis from major outlets (still never as the lead).
+5. A wider regional net for the regional section: any campus-city outlet in feeds.tsv,
+   including business journals and public radio, on university-adjacent business, real
+   estate, workforce or city politics.
+6. Stretch to 48 hours for major-outlet stories that did not appear in a previous briefing.
+7. Only now, trade press — and no more than the 2-entry cap allows.
 
-If a section still cannot reach 10 after all five, publish what genuinely qualifies and
+If a section still cannot reach 10 after all seven, publish what genuinely qualifies and
 record in production notes how many were found and which steps were tried. A short honest
-section beats a padded one.
+section beats a padded one, and a section padded with trade press is worse than a short one.
 
 Inclusion test: would a Northeastern senior leader want to know this before their first
 meeting? Strong yes: federal policy and court rulings on higher ed; Trump admin/DOJ

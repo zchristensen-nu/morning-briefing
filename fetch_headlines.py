@@ -89,7 +89,10 @@ def main():
                 continue
             # keep feed order: Google News is relevance-ranked, direct feeds chronological.
             # Date-sorting here buries relevant stories under fresh off-topic matches.
-            fresh = [i for i in items if i["when"] is None or i["when"] >= cutoff][:20]
+            # national outlets get a deeper cap: their feeds carry more noise, so
+            # a genuine education story can sit below 20 on relevance rank.
+            cap = 35 if section == "HigherEd" else 20
+            fresh = [i for i in items if i["when"] is None or i["when"] >= cutoff][:cap]
             if not fresh:
                 continue
             print(f"## [{section}] {outlet}")
