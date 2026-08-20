@@ -36,10 +36,24 @@ def browsable(rss_url):
     return rss_url.replace("/rss/search?", "/search?") if "news.google.com" in rss_url else rss_url
 
 
-def describe(url):
+SECTION_LABELS = [
+    ("Education.xml", "Education section"), ("/education/rss", "Education section"),
+    ("1013/rss.xml", "Education topic"), ("Opinion.xml", "Opinion section"),
+    ("RSSOpinion", "Opinion section"), ("RSSUSnews", "US news section"),
+    ("/US.xml", "US news section"), ("Business.xml", "Business section"),
+    ("latest/rss.xml", "Latest stories"), ("ap.xml", "Top news"),
+    ("feeds/all", "All stories"), ("highereddive.com", "Newsroom"),
+    ("insidehighered.com", "Full site (all of it is higher ed)"),
+]
+
+
+def describe(url, edu_filtered=False):
     """Plain-language summary of what a feed pulls."""
     if "news.google.com" not in url:
-        return "Publisher RSS", "The outlet's own education feed"
+        label = next((v for k, v in SECTION_LABELS if k in url), "Main feed")
+        if edu_filtered:
+            label += ", filtered to education stories"
+        return "Publisher RSS", label
     q = urllib.parse.parse_qs(urllib.parse.urlparse(url).query).get("q", [""])[0]
     q = urllib.parse.unquote_plus(q)
     q = re.sub(r"when:\d+d", "", q).strip()
@@ -167,8 +181,9 @@ GROUPS = {"HigherEd": "National outlet", "Topic": "Topic sweep", "BayArea": "Oak
           "MiamiTampa": "Miami / Tampa"}
 
 source_rows = []
-for sec, name, url in [(r[0], r[1], r[2]) for r in rows("feeds.tsv")]:
-    method, covers = describe(url)
+for r in rows("feeds.tsv"):
+    sec, name, url = r[0], r[1], r[2]
+    method, covers = describe(url, len(r) > 3 and "filter=edu" in r[3])
     source_rows.append((GROUPS.get(sec, sec), name, method, covers, browsable(url)))
 
 trend_rows = []
