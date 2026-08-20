@@ -41,18 +41,33 @@ Portland ME, Arlington VA, Miami/Tampa, Charlotte — not every city every day).
 relations team hand-picks from, not a finished cut. **Order each section strongest first**,
 so editing down means deleting from the bottom.
 
-**Higher Ed News is for major national and international outlets** — NYT, WSJ, Washington
-Post, FT, The Atlantic, Bloomberg, The Economist, The Guardian, NPR, AP, Reuters, Forbes,
-The Times, New Yorker, CSM, Nature, USA Today. That is what a senior executive audience
-reads. **Trade press — Inside Higher Ed, Chronicle, Times Higher Education, Higher Ed
-Dive — is capped at 2 entries in Higher Ed News** and only after the majors are exhausted.
-The regional section is different: it may lead with an IHE and a THE highlight as usual.
+**Outlets are tiered, and the tiers are not interchangeable.**
 
-MANDATORY CHECK before writing the file: count the Higher Ed section by outlet. If more
-than 2 come from trade press, or if any single outlet supplies more than 3 entries, the
-selection has failed — go back and re-read the NYT, WSJ, Washington Post, FT, Atlantic,
-Bloomberg, Guardian and Economist sections of the digest before trying again. A Higher Ed
-section that is mostly Inside Higher Ed is a failed run, not a full one.
+- **Tier 1** — New York Times, Wall Street Journal, Washington Post, Financial Times, The
+  Atlantic, Bloomberg, The Economist, The Guardian, BBC, NPR, AP, Reuters, The Times (UK),
+  The New Yorker, Forbes, Christian Science Monitor, Nature, USA Today, Newsweek.
+- **Tier 2 (regional)** — the campus-city outlets in feeds.tsv: Boston Globe, Charlotte
+  Observer, Seattle Times, SF Chronicle, LA Times, Miami Herald, Tampa Bay Times, CalMatters,
+  Globe and Mail, Toronto Star, CBC, Press Herald, Mainebiz, Virginia Mercury, the city
+  business journals, and public-radio affiliates (WBUR, WFAE, KQED, WUSF, Maine Public, VPM).
+- **Trade press** — Inside Higher Ed, The Chronicle of Higher Education, Times Higher
+  Education, Higher Ed Dive.
+
+**Higher Ed News is a Tier 1 section.** Trade press is capped at **2 entries** there, and
+only after Tier 1 is genuinely exhausted. The regional section may lead with one Inside
+Higher Ed and one Times Higher Education highlight as usual — that is **2 more, and that is
+the ceiling**.
+
+Hard caps across the whole briefing:
+- **No more than 4 trade-press entries in total**, and no more than 3 from any one trade
+  outlet. Nine Inside Higher Ed entries in one briefing, as happened on 2026-08-20, is a
+  failed run.
+- **No more than 3 entries from any single outlet**, Tier 1 included.
+
+MANDATORY CHECK before writing the file: count every entry by outlet and by tier. If the
+trade-press total exceeds 4, if any outlet exceeds 3, or if Higher Ed News carries more
+than 2 trade-press entries, the selection has failed — go back and re-read the Tier 1 feed
+sections and the topic sweeps in the digest before trying again.
 
 When the obvious stories run out, fill to 10 in this order — never by inventing, never by
 padding with stories that fail the skip rules:
@@ -117,8 +132,23 @@ significant stories over link resolution is worse than a link the team fixes in 
 ## 4. De-duplicate
 
 The digest marks repeated headlines with (DUPLICATE); when several outlets cover one
-story, pick the strongest outlet. Check the most recent file in `briefings/` and do not
-repeat a story from it unless there is a significant new development.
+story, pick the strongest outlet. **The same event never gets two entries** — not in the
+same section, and not one in Higher Ed News and another in the regional section. On
+2026-08-20 the UNC System's answer to Secretary McMahon ran twice, once from Inside Higher
+Ed and once from WFAE; that is one story, so pick one outlet and drop the other.
+
+Read the **last five files** in `briefings/`, not just the most recent, and do not repeat a
+story from any of them unless there is a significant new development.
+
+**Story waves count as one story, capped at one entry per week.** When a single federal
+action, ruling or policy prompts a run of institutions to respond one after another, each
+response is not a new story. Recent examples: state systems answering McMahon's "call to
+action" (Florida on 08-19, UNC on 08-20 — the second should not have run), DOJ opening
+Title VI investigations at successive universities, universities joining the same amicus
+brief. Give the wave one entry, then leave it alone for a week unless something materially
+new happens: a court ruling, a reversal, a refusal, the first institution to break ranks,
+or a development with a direct Northeastern angle. Continuing coverage of the same wave
+belongs in threads.tsv, where it is tracked, not in the briefing every morning.
 
 **If a briefing file for today already exists, this run is a rebuild.** Overwrite that file
 rather than creating another, and de-duplicate against the PREVIOUS day's briefing — never
