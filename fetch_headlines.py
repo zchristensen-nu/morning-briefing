@@ -33,13 +33,17 @@ def load_feeds():
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
-            section, outlet, url = line.split("\t")[:3]  # 4th col = thread metadata
-            feeds.append((section, outlet, url))
+            parts = line.split("\t")
+            section, outlet, url = parts[:3]
+            # 4th col is metadata: thread dates, or filter=edu on broad publisher
+            # feeds that carry an outlet's whole output rather than its education desk
+            meta = parts[3] if len(parts) > 3 else ""
+            feeds.append((section, outlet, url, "filter=edu" in meta))
     return feeds
 
 
 def fetch(feed):
-    section, outlet, url, hours = feed
+    section, outlet, url, hours, edu_only = feed
     # widen the Google News source window to cover the lookback (weekend on Mondays)
     url = url.replace("when:2d", f"when:{max(2, -(-int(hours) // 24))}d")
     try:
@@ -67,6 +71,11 @@ def fetch(feed):
             desc = ""
         items.append({"title": title, "link": get("link"), "when": when,
                       "desc": desc[:300], "source": (src or "").strip()})
+    if edu_only:
+        kw = re.compile(r"\b(universit|college|campus|student|higher ed|tuition|"
+                        r"undergrad|faculty|professor|academic|academia|dean|provost|"
+                        r"enrol|admission|scholarship|alumni|degree|graduate)", re.I)
+        items = [i for i in items if kw.search(i["title"] + " " + i["desc"])]
     return section, outlet, items, None
 
 
@@ -79,7 +88,7 @@ def main():
     hours = args.hours or lookback_hours(now)
     cutoff = now - timedelta(hours=hours)
 
-    feeds = [(s, o, u, hours) for s, o, u in load_feeds()]
+    feeds = [(s, o, u, hours, f) for s, o, u, f in load_feeds()]
     print(f"# Raw headline digest — {now.strftime('%A, %B %d, %Y %H:%M UTC')} (lookback {hours:.0f}h)")
     print("# Items with a URL came from a publisher feed and the link is usable as-is.")
     print("# Items without one came from a news search: find the canonical URL by")

@@ -6,6 +6,15 @@ HigherEd	New York Times	https://rss.nytimes.com/services/xml/rss/nyt/Education.x
 HigherEd	NPR	https://feeds.npr.org/1013/rss.xml
 HigherEd	The Guardian	https://www.theguardian.com/education/rss
 HigherEd	Inside Higher Ed	https://www.insidehighered.com/rss.xml
+HigherEd	Wall Street Journal	https://feeds.content.dowjones.io/public/rss/RSSUSnews	filter=edu
+HigherEd	Wall Street Journal	https://feeds.content.dowjones.io/public/rss/RSSOpinion	filter=edu
+HigherEd	New York Times	https://rss.nytimes.com/services/xml/rss/nyt/Opinion.xml	filter=edu
+HigherEd	New York Times	https://rss.nytimes.com/services/xml/rss/nyt/US.xml	filter=edu
+HigherEd	New York Times	https://rss.nytimes.com/services/xml/rss/nyt/Business.xml	filter=edu
+HigherEd	The Economist	https://www.economist.com/latest/rss.xml	filter=edu
+HigherEd	Associated Press	https://feedx.net/rss/ap.xml	filter=edu
+HigherEd	Christian Science Monitor	https://rss.csmonitor.com/feeds/all	filter=edu
+HigherEd	Higher Ed Dive	https://www.highereddive.com/feeds/news/
 # National outlets via Google News (headline+outlet discovery; resolve canonical URL at compile time)
 HigherEd	New York Times	https://news.google.com/rss/search?q=site:nytimes.com+(university+OR+college+OR+%22higher+education%22)+-%22The+Athletic%22+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Wall Street Journal	https://news.google.com/rss/search?q=site:wsj.com+(university+OR+college+OR+campus+OR+tuition+OR+undergraduate+OR+%22higher+education%22+OR+%22student+loan%22+OR+%22student+debt%22)+when:2d&hl=en-US&gl=US&ceid=US:en

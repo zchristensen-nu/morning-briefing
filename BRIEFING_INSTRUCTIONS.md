@@ -24,6 +24,13 @@ needs ~20 of them, so never spend more than ~150 on discovery.
 the last 24 hours (72 on Mondays to cover the weekend), preserving Google News
 relevance order. Note any FEED ERROR lines for production notes.
 
+**Publisher feeds now carry the Tier 1 stories.** WSJ (US news + opinion), NYT (education,
+opinion, US, business), the Economist, AP, CSM, NPR, the Guardian and Inside Higher Ed all
+publish working RSS, and those entries arrive with a real, canonical article URL that needs
+no verification. This is the primary source of Tier 1 coverage — read those sections first
+and hardest. The Google News `site:` queries are a supplement, not the backbone: they
+return an outlet's general firehose and their links are dead redirects.
+
 **Reading the digest.** It runs 1,200-1,500 lines. Read it in chunks with offset/limit —
 about 250 lines at a time is safe. Entries that came from a publisher feed carry a usable
 URL; entries from a news search carry none, because Google's redirect links are dead ends
