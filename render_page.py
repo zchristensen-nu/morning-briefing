@@ -43,6 +43,8 @@ SECTION_LABELS = [
     ("/US.xml", "US news section"), ("Business.xml", "Business section"),
     ("latest/rss.xml", "Latest stories"), ("ap.xml", "Top news"),
     ("feeds/all", "All stories"), ("highereddive.com", "Newsroom"),
+    ("rss/national", "National section"), ("wired.com/feed", "All stories"),
+    ("newyorker.com/feed", "All stories"),
     ("insidehighered.com", "Full site (all of it is higher ed)"),
 ]
 
