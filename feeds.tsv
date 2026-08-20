@@ -15,6 +15,9 @@ HigherEd	The Economist	https://www.economist.com/latest/rss.xml	filter=edu
 HigherEd	Associated Press	https://feedx.net/rss/ap.xml	filter=edu
 HigherEd	Christian Science Monitor	https://rss.csmonitor.com/feeds/all	filter=edu
 HigherEd	Higher Ed Dive	https://www.highereddive.com/feeds/news/
+HigherEd	Washington Post	https://feeds.washingtonpost.com/rss/national	filter=edu
+HigherEd	Wired	https://www.wired.com/feed/rss	filter=edu
+HigherEd	The New Yorker	https://www.newyorker.com/feed/everything	filter=edu
 # National outlets via Google News (headline+outlet discovery; resolve canonical URL at compile time)
 HigherEd	Washington Post	https://news.google.com/rss/search?q=site:washingtonpost.com+(university+OR+college+OR+%22higher+education%22)+when:2d&hl=en-US&gl=US&ceid=US:en
 HigherEd	Financial Times	https://news.google.com/rss/search?q=site:ft.com+(university+OR+campus+OR+tuition+OR+undergraduate+OR+%22higher+education%22+OR+%22student+debt%22)+-%22Company+Announcement%22+-%22Press+Release%22+when:2d&hl=en-US&gl=US&ceid=US:en
