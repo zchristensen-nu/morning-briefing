@@ -24,6 +24,19 @@ needs ~20 of them, so never spend more than ~150 on discovery.
 the last 24 hours (72 on Mondays to cover the weekend), preserving Google News
 relevance order. Note any FEED ERROR lines for production notes.
 
+**Reading the digest.** It runs 1,200-1,500 lines. Read it in chunks with offset/limit —
+about 250 lines at a time is safe. Entries that came from a publisher feed carry a usable
+URL; entries from a news search carry none, because Google's redirect links are dead ends
+and the canonical URL has to be found by headline search regardless (step 3).
+
+**Never end a run with work outstanding.** This is a scheduled, headless session: nothing
+resumes it, so anything left pending is simply lost. If you delegate reading or extraction
+to subagents, wait for every one of them to report before continuing, and do not finish the
+run until the briefing is written, the page is rendered and the commit is pushed. A run
+that stops mid-way produces no briefing at all, which is worse than any imperfect one.
+On 2026-08-20 a run ended while two extraction subagents were still working and delivered
+nothing.
+
 **ACE backstop (mandatory):** hard-paywalled outlets — especially WSJ opinion/features —
 are poorly indexed by Google News. Fetch ACE's Higher Education Headlines page
 (https://www.acenet.edu/News-Room/Pages/Higher-Education-Headlines.aspx; if fetching is

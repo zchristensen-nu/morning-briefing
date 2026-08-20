@@ -80,7 +80,10 @@ def main():
     cutoff = now - timedelta(hours=hours)
 
     feeds = [(s, o, u, hours) for s, o, u in load_feeds()]
-    print(f"# Raw headline digest — {now.strftime('%A, %B %d, %Y %H:%M UTC')} (lookback {hours:.0f}h)\n")
+    print(f"# Raw headline digest — {now.strftime('%A, %B %d, %Y %H:%M UTC')} (lookback {hours:.0f}h)")
+    print("# Items with a URL came from a publisher feed and the link is usable as-is.")
+    print("# Items without one came from a news search: find the canonical URL by")
+    print("# searching the exact headline plus the outlet's domain.\n")
     seen = set()
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
         for section, outlet, items, err in ex.map(fetch, feeds):
@@ -102,7 +105,11 @@ def main():
                 seen.add(key)
                 when = i["when"].strftime("%a %b %d %H:%M") if i["when"] else "undated"
                 src = f" | source: {i['source']}" if i["source"] else ""
-                print(f"- {i['title']} ({when}{src}){dupe}\n  {i['link']}")
+                # Google's redirect links are unusable — the canonical URL has to be
+                # found by searching the headline anyway — and they were 69% of this
+                # file's bytes, pushing it past what the curating agent can read.
+                link = "" if "news.google.com" in i["link"] else f"\n  {i['link']}"
+                print(f"- {i['title']} ({when}{src}){dupe}{link}")
                 if i["desc"]:
                     print(f"  > {i['desc']}")
             print()
