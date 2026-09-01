@@ -8,7 +8,7 @@
 #   - Keep queries TIGHT: quote proper nouns, pair institution with story keywords, so the feed
 #     returns the thread and not general coverage of the institution.
 Thread	Howard unenrollment	https://news.google.com/rss/search?q=%22Howard+University%22+(unenrolled+OR+unenrollment+OR+readmitted)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-07-24 last_hit=2026-08-20
-Thread	UK university job cuts	https://news.google.com/rss/search?q=UK+university+(%22job+cuts%22+OR+redundancies+OR+strike+OR+deficit)+when:2d&hl=en-GB&gl=GB&ceid=GB:en	opened=2026-05-01 last_hit=2026-08-31
+Thread	UK university job cuts	https://news.google.com/rss/search?q=UK+university+(%22job+cuts%22+OR+redundancies+OR+strike+OR+deficit)+when:2d&hl=en-GB&gl=GB&ceid=GB:en	opened=2026-05-01 last_hit=2026-09-01
 Thread	Harvard federal funding fight	https://news.google.com/rss/search?q=Harvard+(%22federal+funding%22+OR+%22research+funding%22+lawsuit+OR+settlement)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-05-01 last_hit=2026-08-28
 Thread	Columbia lawsuits	https://news.google.com/rss/search?q=Columbia+University+(lawsuit+OR+settlement+OR+%22Palestinian+students%22)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-12 last_hit=2026-08-31
 Thread	Michigan pass-fail grades	https://news.google.com/rss/search?q=%22University+of+Michigan%22+(%22pass%2Ffail%22+OR+%22letter+grades%22+OR+freshmen+grades)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-10 last_hit=2026-08-20
@@ -28,3 +28,6 @@ Thread	H-1B $100K+ fee litigation	https://news.google.com/rss/search?q=%22H-1B%2
 Thread	DOJ in-state tuition lawsuits	https://news.google.com/rss/search?q=DOJ+%22in-state+tuition%22+(lawsuit+OR+sues)+(undocumented+OR+immigrant)+students+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-28 last_hit=2026-08-28
 Thread	Hampshire College financial crisis	https://news.google.com/rss/search?q=%22Hampshire+College%22+(loan+OR+debt+OR+creditors+OR+campus+OR+sale)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-08-31 last_hit=2026-08-31
 Thread	MUN budget cuts	https://news.google.com/rss/search?q=%22Memorial+University%22+Newfoundland+(cuts+OR+layoffs+OR+budget+OR+deficit)+when:2d&hl=en-CA&gl=CA&ceid=CA:en	opened=2026-08-31 last_hit=2026-08-31
+Thread	Foreign funding disclosure enforcement	https://news.google.com/rss/search?q=university+(%22foreign+funding%22+OR+%22undisclosed+funding%22)+(DOJ+OR+settlement+OR+disclosure)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-09-01 last_hit=2026-09-01
+Thread	H-1B H-4 spousal work permit rule	https://news.google.com/rss/search?q=%22H-1B%22+(%22H-4%22+OR+spouse+OR+spousal)+(%22work+permit%22+OR+EAD)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-09-01 last_hit=2026-09-01
+Thread	FIU ICE protest free speech case	https://news.google.com/rss/search?q=%22Florida+International+University%22+(ICE+OR+protest)+(lawsuit+OR+%22free+speech%22+OR+judge)+when:2d&hl=en-US&gl=US&ceid=US:en	opened=2026-09-01 last_hit=2026-09-01
