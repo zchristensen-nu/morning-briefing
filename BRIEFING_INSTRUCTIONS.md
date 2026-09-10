@@ -10,16 +10,17 @@ Today's date = the current date in America/New_York.
 Before anything else:
 `git fetch -q origin main && git cat-file -e origin/main:briefings/$(TZ=America/New_York date +%F).md`
 If that succeeds, today's briefing is already published. Stop, change nothing, and end
-with the single line "Already published today". The cloud routine fires at 12:30, 13:30
-and 14:30 UTC on purpose: the later fires are retries for a morning where the first run
-died, and this check is what makes them harmless.
+with the single line "Already published today". The cloud routine fires hourly at 10:00, 11:00, 12:00
+and 13:00 UTC (6:00-9:00 Eastern) on purpose: the later fires are retries for a morning
+where an earlier run died, and this check is what makes them harmless. Whichever fire
+succeeds first sets the day's content; the later ones do not refresh it.
 
 ## 1. Fetch
 
 **Cloud runner: use the pre-fetched digest.** The cloud sandbox's egress proxy blocks
 news domains, so do NOT try to fetch feeds there. A GitHub Action ("Fetch morning
-digest", 12:10 UTC weekdays) runs the fetcher and commits `digests/YYYY-MM-DD.md` to
-this repo ~20 minutes before the routine fires. Read today's digest from `digests/`.
+digest", 09:45 UTC weekdays) runs the fetcher and commits `digests/YYYY-MM-DD.md` to
+this repo ~15 minutes before the first routine fire. Read today's digest from `digests/`.
 
 **If today's digest is missing** (GitHub cron schedules are best-effort and skip or run
 hours late most weeks), fetch it yourself with this exact loop — no improvising:
