@@ -1,7 +1,7 @@
 name: Fetch morning digest
 on:
   schedule:
-    - cron: "10 12 * * 1-5"   # 12:10 UTC weekdays, 20 min before the briefing routine
+    - cron: "45 9 * * 1-5"    # 09:45 UTC weekdays, 15 min before the first briefing routine fire
   workflow_dispatch:
 
 permissions:

@@ -5,18 +5,42 @@ and global campus news digest for senior leaders at Northeastern University. Fol
 by both the cloud routine and the local scheduled task; edit HERE, not in run prompts.
 Today's date = the current date in America/New_York.
 
+## 0. Already done today?
+
+Before anything else:
+`git fetch -q origin main && git cat-file -e origin/main:briefings/$(TZ=America/New_York date +%F).md`
+If that succeeds, today's briefing is already published. Stop, change nothing, and end
+with the single line "Already published today". The cloud routine fires hourly at 10:00, 11:00, 12:00
+and 13:00 UTC (6:00-9:00 Eastern) on purpose: the later fires are retries for a morning
+where an earlier run died, and this check is what makes them harmless. Whichever fire
+succeeds first sets the day's content; the later ones do not refresh it.
+
 ## 1. Fetch
 
 **Cloud runner: use the pre-fetched digest.** The cloud sandbox's egress proxy blocks
 news domains, so do NOT try to fetch feeds there. A GitHub Action ("Fetch morning
-digest", 12:10 UTC weekdays) runs the fetcher and commits `digests/YYYY-MM-DD.md` to
-this repo ~20 minutes before the routine fires. Read today's digest from `digests/`.
-If today's digest is missing or stale (GitHub cron schedules are best-effort and
-sometimes skip), re-trigger it yourself — `gh workflow run fetch-digest.yml`, wait
-~90 seconds, `git pull` — and note the missed schedule in production notes. Only if
-that also fails, fall back to WebSearch-based discovery — but budget carefully: the
-cloud session has a hard cap of 200 WebSearch calls, and link verification (step 3)
-needs ~20 of them, so never spend more than ~150 on discovery.
+digest", 09:45 UTC weekdays) runs the fetcher and commits `digests/YYYY-MM-DD.md` to
+this repo ~15 minutes before the first routine fire. Read today's digest from `digests/`.
+
+**If today's digest is missing** (GitHub cron schedules are best-effort and skip or run
+hours late most weeks), fetch it yourself with this exact loop — no improvising:
+
+1. Dispatch the workflow: `gh workflow run fetch-digest.yml`, or the GitHub MCP tool
+   (`actions_run_trigger`, method `run_workflow`, workflow `fetch-digest.yml`, ref `main`).
+2. Run `sh wait_for_digest.sh` as a plain FOREGROUND Bash call. It polls origin/main for
+   `digests/<today>.md`, pulls it and exits 0, or exits 1 after ~100 seconds if the file
+   never appeared.
+3. On exit 1, go back to step 1. Up to six rounds (about ten minutes).
+
+Never wait any other way. Do not put the wait in a background Bash call, a Monitor or a
+ScheduleWakeup, and never end your turn to "wait for a notification": this is a headless
+routine, and on 2026-09-10 a run that did exactly that ended after 61 seconds and
+published nothing. A foreground loop is the only wait that survives. Note the missed
+schedule in production notes.
+
+Only if all six rounds fail, fall back to WebSearch-based discovery — but budget
+carefully: the cloud session has a hard cap of 200 WebSearch calls, and link verification
+(step 3) needs ~20 of them, so never spend more than ~150 on discovery.
 
 **Local runner: fetch live.** Run `python3 fetch_headlines.py > /tmp/digest.md
 2>/tmp/feed_errors.txt` from the repo root. It pulls ~50 RSS feeds defined in

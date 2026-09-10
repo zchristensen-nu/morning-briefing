@@ -88,9 +88,11 @@ def rows(path):
 
 DOCS = """
 <h2>The morning</h2>
-<p>Three things happen each weekday, with nobody at a computer. At <b>8:10</b> a script
-collects the news. At <b>8:30</b> the AI agent reads what was collected and writes the
-briefing. By about <b>8:45</b> it's on this page, ready to send.</p>
+<p>Three things happen each weekday, with nobody at a computer. At <b>5:45</b> a script
+collects the news. At <b>6:00</b> the AI agent reads what was collected and writes the
+briefing. By about <b>6:20</b> it's on this page, ready to send. If that run fails, the
+agent tries again at <b>7:00</b>, <b>8:00</b> and <b>9:00</b>; once a day's briefing is
+published the later tries do nothing.</p>
 
 <h2>Sending it</h2>
 <p>Open the Briefing tab, press Copy briefing, paste into Outlook, set From to
@@ -173,8 +175,8 @@ nothing to do with education. That's expected — results come back ranked by re
 real stories sit at the top, and the agent reads all of them before choosing.</p>
 <p><b>A broken search looks like a quiet news day.</b> If a search stops returning
 anything, nothing announces it. That's why the source list isn't editable here.</p>
-<p><b>The clock is set in UTC.</b> The run happens at 8:30 Eastern now; after the clocks
-change in November it happens at 7:30 Eastern — earlier, never later, so it's always ready
+<p><b>The clock is set in UTC.</b> The run happens at 6:00 Eastern now; after the clocks
+change in November it happens at 5:00 Eastern — earlier, never later, so it's always ready
 before 9.</p>
 """
 
