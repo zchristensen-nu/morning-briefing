@@ -90,7 +90,9 @@ DOCS = """
 <h2>The morning</h2>
 <p>Three things happen each weekday, with nobody at a computer. At <b>8:10</b> a script
 collects the news. At <b>8:30</b> the AI agent reads what was collected and writes the
-briefing. By about <b>8:45</b> it's on this page, ready to send.</p>
+briefing. By about <b>8:45</b> it's on this page, ready to send. If that run fails, the
+agent tries again at <b>9:30</b> and <b>10:30</b>; once a day's briefing is published the
+later tries do nothing.</p>
 
 <h2>Sending it</h2>
 <p>Open the Briefing tab, press Copy briefing, paste into Outlook, set From to
