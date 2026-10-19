@@ -9,7 +9,8 @@
 set -u
 cd "$(dirname "$0")"
 DATE=${DIGEST_DATE:-$(TZ=America/New_York date +%F)}
-FILE="digests/$DATE.md"
+# DIGEST_NAME waits for a sweep digest instead, e.g. DIGEST_NAME=2026-10-09-sweep-11
+FILE="digests/${DIGEST_NAME:-$DATE}.md"
 i=0
 until git fetch -q origin main && git cat-file -e "origin/main:$FILE" 2>/dev/null; do
   i=$((i + 1))

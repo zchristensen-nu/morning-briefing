@@ -2,7 +2,8 @@
 #
 # Triggering on docs/index.html means this fires exactly when the site is
 # updated — not on digest commits, and not on a run that failed before
-# publishing.
+# publishing. It also requires the push to add a new briefings/<date>.md, so
+# merging a renderer/page change or a later sweep (which re-render index.html) stays silent.
 #
 # Needs a bot token rather than an incoming webhook: webhooks cannot reply in
 # a thread, because they do not return the parent message's timestamp.
@@ -22,9 +23,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Only for a new briefing
+        id: gate
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if git diff --diff-filter=A --name-only "$BEFORE" "$GITHUB_SHA" -- 'briefings/*.md' | grep -q .; then
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No new briefing in this push (page, renderer or sweep change) — not posting."
+            echo "new=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Read the briefing
         id: sum
+        if: steps.gate.outputs.new != 'false'
         run: |
           F=$(ls -1 briefings/*.md | tail -1)
           DATE=$(basename "$F" .md)
@@ -32,6 +49,7 @@ jobs:
           echo "near=near-misses/$DATE.md" >> "$GITHUB_OUTPUT"
 
       - name: Post to Slack
+        if: steps.gate.outputs.new != 'false'
         env:
           TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           CHANNEL: ${{ secrets.SLACK_CHANNEL }}

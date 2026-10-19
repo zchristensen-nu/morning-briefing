@@ -3,6 +3,15 @@ on:
   schedule:
     - cron: "45 9 * * 1-5"    # 09:45 UTC weekdays, 15 min before the first briefing routine fire
   workflow_dispatch:
+    inputs:
+      name:
+        description: "Sweep digest file name, e.g. 2026-10-09-sweep-11 (empty = the morning digest)"
+        required: false
+        default: ""
+      hours:
+        description: "Lookback hours for a sweep"
+        required: false
+        default: "4"
 
 permissions:
   contents: write
@@ -13,24 +22,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Fetch feeds into dated digest
+        env:
+          NAME: ${{ inputs.name }}
+          HOURS: ${{ inputs.hours }}
         run: |
           mkdir -p digests
           DATE=$(TZ=America/New_York date +%F)
-          python3 fetch_headlines.py > "digests/$DATE.md" 2> feed_errors.txt || true
+          # A later routine run asks for a short "since this morning" sweep under its own name.
+          case "$NAME" in
+            "") OUT="digests/$DATE.md"; ARGS="" ;;
+            "$DATE"-sweep-[0-9][0-9]) OUT="digests/$NAME.md"; ARGS="--hours ${HOURS:-4}" ;;
+            *) echo "Bad sweep name: $NAME"; exit 1 ;;
+          esac
+          python3 fetch_headlines.py $ARGS > "$OUT" 2> feed_errors.txt || true
           if [ -s feed_errors.txt ]; then
-            printf '\n## FEED ERRORS\n' >> "digests/$DATE.md"
-            cat feed_errors.txt >> "digests/$DATE.md"
+            printf '\n## FEED ERRORS\n' >> "$OUT"
+            cat feed_errors.txt >> "$OUT"
           fi
-          echo "Digest items: $(grep -c '^- ' "digests/$DATE.md" || true)"
+          echo "Digest items: $(grep -c '^- ' "$OUT" || true)"
+          echo "OUT=$OUT" >> "$GITHUB_ENV"
       - name: Commit digest
         run: |
-          DATE=$(TZ=America/New_York date +%F)
           git config user.name "digest-bot"
           git config user.email "actions@github.com"
-          git add "digests/$DATE.md"
-          git diff --cached --quiet || git commit -m "Digest $DATE"
+          git add "$OUT"
+          git diff --cached --quiet || git commit -m "Digest $(basename "$OUT" .md)"
+          git pull -q --rebase origin main
           git push
-      - name: Prune digests older than 15 runs
+      - name: Prune old digests
         run: |
-          ls -1 digests/*.md 2>/dev/null | head -n -15 | xargs -r git rm -q || true
+          # Keep the last 15 morning digests; sweep digests only matter on their own day.
+          DATE=$(TZ=America/New_York date +%F)
+          ls -1 digests/*.md 2>/dev/null | grep -v -- '-sweep-' | head -n -15 | xargs -r git rm -q || true
+          ls -1 digests/*-sweep-*.md 2>/dev/null | grep -v -- "^digests/$DATE-" | xargs -r git rm -q || true
           git diff --cached --quiet || { git commit -m "Prune old digests"; git push; }
