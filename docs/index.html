@@ -1751,6 +1751,13 @@ function toast(msg, action, onAction) {
 function clean(root) {
   const c = root.cloneNode(true);
   c.querySelectorAll(".ed").forEach(x => x.remove());
+  // An unwritten (or emptied) summary is never copied: drop it and the line break before it.
+  c.querySelectorAll("[data-entry] > span").forEach(x => {
+    if (x.dataset.todo === x.textContent || !x.textContent.trim()) {
+      if (x.previousSibling?.nodeName === "BR") x.previousSibling.remove();
+      x.remove();
+    }
+  });
   c.querySelectorAll("[data-todo]").forEach(x => x.removeAttribute("data-todo"));
   c.querySelectorAll("[data-entry]").forEach(x => {
     x.style.transform = x.style.transition = "";
@@ -2057,7 +2064,7 @@ function addLinks(text, at) {
   save();
   if (last) {
     const s = last.querySelector("span[data-todo]");
-    s.focus?.(); getSelection().selectAllChildren(s);
+    sheet.focus({preventScroll: true}); getSelection().selectAllChildren(s);
   }
 }
 
@@ -2099,8 +2106,14 @@ document.addEventListener("click", async ev => {
     const s = getSelection(); s.removeAllRanges(); s.addRange(r);
     document.execCommand("copy"); s.removeAllRanges(); el.remove();
   }
-  const left = btn.dataset.copy === "briefing" ? sheet.querySelectorAll("[data-todo]").length : 0;
-  toast(left ? `Copied. ${left} highlighted ${left === 1 ? "field still needs" : "fields still need"} a look.` : "Copied. Paste it into Outlook.");
+  if (btn.dataset.copy !== "briefing") return toast("Copied.");
+  const missing = [...sheet.querySelectorAll("[data-entry] > span")]
+    .filter(x => x.dataset.todo === x.textContent || !x.textContent.trim());
+  const left = sheet.querySelectorAll("[data-todo]").length - missing.filter(x => x.dataset.todo).length;
+  if (missing.length) {
+    toast(`Copied, but ${missing.length === 1 ? "1 story has" : missing.length + " stories have"} no summary yet. It was copied without one.`,
+          "Show", () => { missing[0].scrollIntoView({block: "center", behavior: "smooth"}); sheet.focus({preventScroll: true}); getSelection().selectAllChildren(missing[0]); });
+  } else toast(left ? `Copied. ${left} highlighted ${left === 1 ? "field still needs" : "fields still need"} a look.` : "Copied. Paste it into Outlook.");
 });
 </script>
 </body>
