@@ -3,10 +3,15 @@
 
 Usage: python3 render_page.py briefings/YYYY-MM-DD.md > docs/index.html
 
-Three tabs: the briefing itself (white sheet, copy button), the tracked
-stories from threads.tsv, and the source list from feeds.tsv. Tables are
+Styled like NGN Studio. The Briefing tab is an editor: the agent's draft is the starting
+sheet; stories can be edited in place, dragged to reorder, removed (×) or added from a link
+(headline from the digest when it's there, summary written by the editor). Edits persist per
+browser per day and Copy takes what's on screen. Production notes and close calls sit in a
+side panel. Other tabs: tracked stories (threads.tsv), sources (feeds.tsv), archive, docs. Tables are
 generated from those files so they can never drift from what actually runs.
 """
+import base64
+import json
 import re
 import subprocess
 import sys
@@ -21,14 +26,7 @@ body = subprocess.run(
     [sys.executable, str(HERE / "render_email.py"), md_path],
     capture_output=True, text=True, check=True,
 ).stdout
-LOGO = ('<svg viewBox="0 0 298 298" fill="none" xmlns="http://www.w3.org/2000/svg" '
-        'class="logo" aria-hidden="true">'
-        '<path d="M148.868 297.951C231.086 297.951 297.737 231.252 297.737 148.975C297.737 66.6986 231.086 0 148.868 0C66.6506 0 0 66.6986 0 148.975C0 231.252 66.6506 297.951 148.868 297.951Z" fill="white"/>'
-        '<path d="M66.4521 191.258C66.4521 169.292 83.0397 152.58 104.989 152.58C117.985 152.58 129.978 158.775 137.888 170.234L126.11 178.642C120.247 169.794 112.623 166.415 104.989 166.415C91.3283 166.415 81.7708 176.706 81.7708 191.258C81.7708 205.809 91.7274 216.101 105.378 216.101C117.872 216.101 124.892 208.738 126.611 200.771H103.884V187.878H141.705C141.93 189.814 141.981 192.026 141.981 193.91C141.981 213.223 128.382 229.925 105.378 229.925C82.3745 229.925 66.4521 213.213 66.4521 191.247V191.258Z" fill="black"/>'
-        '<path d="M156.194 228.829V155.191H169.466L210.163 205.727V155.191H224.796V228.829H211.309L170.838 178.836V228.829H156.205H156.194Z" fill="black"/>'
-        '<path d="M71.1904 144.255V70.6169H84.4625L125.159 121.153V70.6169H139.792V144.255H126.305L85.8337 94.2617V144.255H71.2007H71.1904Z" fill="black"/>'
-        '<path d="M151.201 70.6272V85.3425H199.327L156.42 128.27L166.817 138.674L210.081 95.3882V144.255H224.786V70.6272H151.201Z" fill="#C8102E"/>'
-        '</svg>')
+LOGO = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#000"/><path d="M0,73.07V1.06H12.99L52.81,50.48V1.06h14.32V73.07h-13.2L14.32,24.18v48.89H0Z" fill="#fff" transform="translate(15.3 15.18) scale(0.21955) translate(0 -1.06)"/><path d="M240.67 1.01L240.67 8.21L264.23 8.21L243.23 29.21L248.32 34.31L269.5 13.12L269.5 37.04L276.7 37.04L276.7 1.01Z" fill="#cf2b28" transform="translate(32.49 15.18) scale(0.43880) translate(-240.67 -1.01)"/><path d="M78.46,37.06C78.46,16.01,94.36,0,115.41,0c12.46,0,23.97,5.94,31.55,16.91l-11.29,8.06c-5.62-8.48-12.94-11.72-20.26-11.72-13.1,0-22.27,9.86-22.27,23.81s9.54,23.81,22.64,23.81c11.98,0,18.72-7.05,20.36-14.69h-21.79v-12.35h36.27c.21,1.86,.26,3.98,.26,5.78,0,18.51-13.04,34.52-35.1,34.52s-37.33-16.01-37.33-37.06Z" fill="#fff" transform="translate(14.3 32.78) scale(0.22393) translate(-78.46 0)"/><path d="M162.22,73.07V1.06h12.99l39.82,49.42V1.06h14.32V73.07h-13.2l-39.61-48.89v48.89h-14.32Z" fill="#fff" transform="translate(33.57 33.34) scale(0.21955) translate(-162.22 -1.06)"/></svg>'
 
 
 def browsable(rss_url):
@@ -90,14 +88,21 @@ DOCS = """
 <h2>The morning</h2>
 <p>Three things happen each weekday, with nobody at a computer. At <b>5:45</b> a script
 collects the news. At <b>6:00</b> the AI agent reads what was collected and writes the
-briefing. By about <b>6:20</b> it's on this page, ready to send. If that run fails, the
-agent tries again at <b>7:00</b>, <b>8:00</b> and <b>9:00</b>; once a day's briefing is
-published the later tries do nothing.</p>
+briefing. By about <b>6:20</b> it's on this page, ready to send. At <b>7:00</b>, <b>8:00</b>
+and <b>9:00</b> it sweeps again for anything that has broken since: a story that clears the
+same bar is added at the end of its section, and a note in the production notes says what
+was added. Most sweeps add nothing. A sweep never reorders or rewrites what's already there,
+and if you've started editing, new stories are merged into your copy and marked <b>New</b>.
+If the 6:00 run fails, the next one writes the briefing instead.</p>
 
 <h2>Sending it</h2>
-<p>Open the Briefing tab, press Copy briefing, paste into Outlook, set From to
-media@northeastern.edu, add the bcc lists, send. Ignore the production notes at the
-bottom of each briefing — those are notes to us, not part of the email.</p>
+<p>Edit the Briefing tab in place: click any text to change it, drag a story by its ⠿ handle
+to reorder it, and press × to drop it. To add a story the agent missed, hover between two
+stories and press +, or paste the link anywhere in the briefing. The outlet fills in, and the
+headline too when the story was in the morning's digest; anything highlighted is yours to
+fill in, including the one-line summary. Edits stay in your browser for the day. Then press
+Copy briefing, paste into Outlook, set From to media@northeastern.edu, add the bcc lists,
+send.</p>
 
 <h2>How the news is gathered</h2>
 <p>Most outlets that matter are paywalled, which is why this was assumed to be impossible.
@@ -154,10 +159,11 @@ unresolved. It stops when the story concludes or two weeks pass with nothing new
 Tracked stories tab shows what it's watching now and when each last produced news.</p>
 
 <h2>Production notes</h2>
-<p>Below the divider at the bottom of each briefing the agent records what happened during
-the run: what it cut and why, which links need a manual fix, which stories it started or
-stopped tracking, and anything that failed. If a briefing looks thin, the reason is usually
-there.</p>
+<p>The panel on the right of the Briefing tab shows what the agent recorded during the run:
+what it cut and why, which links need a manual fix, which stories it started or stopped
+tracking, and anything that failed. If a briefing looks thin, the reason is usually there.
+Above the notes, <b>Close calls</b> lists stories it nearly ran; press Add to put one back.
+Hide the panel with the Notes button.</p>
 
 <h2>What it never does</h2>
 <p>It never sends email, never adds recipients, never touches the distribution list. It
@@ -208,7 +214,7 @@ for i, p in enumerate(past):
     inner = subprocess.run([sys.executable, str(HERE / "render_email.py"), str(p)],
                            capture_output=True, text=True, check=True).stdout
     archive_html += (f'<details><summary>{escape(head)}</summary>'
-                     f'<div class="arch"><button class="copy sm" data-copy="a{i}">Copy</button>'
+                     f'<div class="arch"><button class="btn outline" data-copy="a{i}">Copy</button>'
                      f'<div class="sheet" id="a{i}">{inner}</div></div></details>\n')
 if not archive_html:
     archive_html = '<p class="meta">No earlier briefings yet.</p>' 
@@ -231,6 +237,666 @@ sources_html = "\n".join(
 
 rss_count = sum(1 for r in source_rows if r[2] == "Publisher RSS")
 
+# House outlet names by domain, learned from past briefings, so a pasted link gets the
+# same masthead the agent would use ("The Wall Street Journal", not "WSJ").
+outlets = {}
+for p in sorted((HERE / "briefings").glob("*.md")):
+    for name, url in re.findall(r"^\*\*([^*\n]+)\*\*[^\n]*\n\n\[[^\]]+\]\((https?://[^)\s]+)\)",
+                                p.read_text(), re.M):
+        host = urllib.parse.urlparse(url).hostname or ""
+        if "google" not in host:
+            outlets[host.removeprefix("www.")] = name
+
+# Headlines from the latest two morning digests (plus today's sweeps), so a pasted link
+# usually gets its real headline. The summary is always left for the editor to write.
+headlines, seen = [], set()
+digests = sorted((HERE / "digests").glob("*.md"))
+mornings = [d for d in digests if "-sweep-" not in d.name][-2:]
+sweeps = [d for d in digests if d.name.startswith(Path(md_path).stem + "-sweep-")]
+for p in sweeps[::-1] + mornings[::-1]:
+    outlet, cur = "", None
+    for line in p.read_text().splitlines():
+        if line.startswith("## "):
+            outlet, cur = re.sub(r"^## \[[^\]]*\]\s*", "", line).strip(), None
+            continue
+        m = re.match(r"- (.+) \(([^()]*)\)$", line)
+        if m:
+            src = re.search(r"source: (.+)$", m.group(2))
+            cur = None
+            if m.group(1) not in seen:
+                seen.add(m.group(1))
+                cur = {"t": m.group(1), "o": src.group(1) if src else outlet, "u": ""}
+                headlines.append(cur)
+        elif cur and line.startswith("  http"):
+            cur["u"] = line.strip()
+editor_data = json.dumps({"date": Path(md_path).stem, "outlets": outlets, "headlines": headlines},
+                         separators=(",", ":")).replace("</", "<\\/")
+
+STYLE = """
+  :root {
+    --chrome:#ffffff; --canvas:#f0f0f0; --dot:rgb(0 0 0 / .07); --line:#e6e6e6;
+    --field:#f5f5f5; --field-hover:#ececec; --raised:#ffffff;
+    --text:#1e1e1e; --text-2:#6b6b6b; --text-3:#737373;
+    --sel:#C8102E; --sel-soft:rgb(200 16 46 / .1); --sel-text:#A50D26; --on-sel:#ffffff;
+    --btn:#C8102E; --btn-hover:#A50D26; --warn:#f24822; --todo:#fff3bf;
+    --toast:#1e1e1e; --toast-text:#ffffff;
+    --shadow-art:0 1px 2px rgb(0 0 0 / .08), 0 8px 32px rgb(0 0 0 / .12);
+    --shadow-pop:0 1px 3px rgb(0 0 0 / .12), 0 6px 20px rgb(0 0 0 / .16);
+    --ui:"Inter", system-ui, -apple-system, sans-serif; --r:6px; --bar:48px;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --chrome:#2c2c2c; --canvas:#1e1e1e; --dot:rgb(255 255 255 / .06); --line:#3a3a3a;
+    --field:#383838; --field-hover:#424242; --raised:#4a4a4a;
+    --text:#f5f5f5; --text-2:#b3b3b3; --text-3:#a3a3a3;
+    --sel-soft:rgb(232 74 95 / .2); --sel-text:#FF8A99; --toast:#f5f5f5; --toast-text:#1e1e1e;
+    --shadow-art:0 1px 2px rgb(0 0 0 / .4), 0 12px 40px rgb(0 0 0 / .5); color-scheme:dark;
+  } }
+  :root[data-theme="dark"] {
+    --chrome:#2c2c2c; --canvas:#1e1e1e; --dot:rgb(255 255 255 / .06); --line:#3a3a3a;
+    --field:#383838; --field-hover:#424242; --raised:#4a4a4a;
+    --text:#f5f5f5; --text-2:#b3b3b3; --text-3:#a3a3a3;
+    --sel-soft:rgb(232 74 95 / .2); --sel-text:#FF8A99; --toast:#f5f5f5; --toast-text:#1e1e1e;
+    --shadow-art:0 1px 2px rgb(0 0 0 / .4), 0 12px 40px rgb(0 0 0 / .5); color-scheme:dark;
+  }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  html, body { height:100%; }
+  body { margin:0; background:var(--canvas); color:var(--text); font:400 12px/16px var(--ui);
+         -webkit-font-smoothing:antialiased; display:grid; grid-template-rows:var(--bar) minmax(0, 1fr); }
+  ::selection { background:var(--sel-soft); }
+  :focus-visible { outline:2px solid var(--sel); outline-offset:1px; }
+  svg.i { width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.5;
+          stroke-linecap:round; stroke-linejoin:round; }
+
+  .topbar { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px;
+            padding:0 12px 0 14px; background:var(--chrome); border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:13px;
+           letter-spacing:-0.01em; min-width:0; white-space:nowrap; }
+  .brand svg { width:24px; height:24px; flex:none; }
+  .tabs { display:flex; gap:2px; background:var(--field); border-radius:var(--r); padding:2px; }
+  .tabs button { padding:5px 12px; border:0; border-radius:4px; background:none; color:var(--text-2);
+                 font:500 12px var(--ui); cursor:pointer; white-space:nowrap; }
+  .tabs button:hover { color:var(--text); }
+  .tabs button[aria-selected="true"] { background:var(--raised); color:var(--text);
+                                       box-shadow:0 1px 2px rgb(0 0 0 / .12); }
+  .top-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; min-width:0; }
+  body:not([data-tab="b"]) .top-actions > * { display:none; }
+
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:28px;
+         padding:0 10px; font:500 12px var(--ui); color:var(--text); background:transparent;
+         border:1px solid transparent; border-radius:var(--r); cursor:pointer; white-space:nowrap;
+         transition:background .12s; }
+  .btn:hover { background:var(--field); }
+  .btn.outline { border-color:var(--line); }
+  .btn.primary { background:var(--btn); color:var(--on-sel); padding:0 12px; }
+  .btn.primary:hover { background:var(--btn-hover); }
+  .btn:disabled, .btn:disabled:hover { color:var(--text-3); background:var(--chrome); cursor:default; }
+  .btn.icon { width:28px; padding:0; color:var(--text-2); }
+  .btn.sm { height:24px; padding:0 8px; font-size:11px; gap:4px; }
+  .btn.sm svg { width:12px; height:12px; }
+
+  .pane { min-height:0; overflow:auto; background-color:var(--canvas);
+          background-image:radial-gradient(var(--dot) 1px, transparent 1px); background-size:16px 16px; }
+  .workspace { display:grid; grid-template-columns:minmax(0, 1fr) auto; min-height:0; }
+  .stage { padding:40px 40px 72px; }
+  .artboard { position:relative; display:grid; gap:8px; max-width:760px; margin:0 auto; }
+  .frame-label { display:flex; justify-content:space-between; gap:16px; color:var(--text-2); font-size:11px; }
+  .frame-label span:last-child { color:var(--text-3); font-variant-numeric:tabular-nums; }
+  .hint { margin:4px 0 0; text-align:center; color:var(--text-3); font-size:11px; }
+  .sheet { background:#fff; color:#000; padding:36px 48px; box-shadow:var(--shadow-art); }
+  .sheet a { color:#0563C1; }
+
+  /* Editor-only controls sit on the white sheet in both themes, so they use fixed light values. */
+  #briefing { outline:none; position:relative; }
+  #briefing [data-entry], #briefing [data-section] { position:relative; border-radius:2px; }
+  /* More air between stories while editing; the copied email keeps its own 10pt spacing. */
+  #briefing [data-entry] { margin-bottom:24px !important; }
+  #briefing [data-entry]:hover { box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel); }
+  #briefing [data-entry].lifted { z-index:3; background:#fff; cursor:grabbing;
+    box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel), 0 12px 32px 6px rgb(0 0 0 / .18); }
+  #briefing.sorting [data-entry]:not(.lifted) { pointer-events:none; }
+  #briefing.sorting { user-select:none; cursor:grabbing; }
+  #briefing [data-todo] { background:var(--todo); }
+  /* A story a later sweep added after you started editing. */
+  #briefing [data-entry].fresh::before { content:"New"; position:absolute; left:-36px; top:22px; width:24px;
+    font:600 9px/14px var(--ui); text-align:center; color:#fff; background:var(--sel); border-radius:3px; }
+  .ctl { position:absolute; top:-3px; width:24px; height:24px; padding:0; display:grid; place-items:center;
+         border:0; border-radius:6px; background:none; color:#737373; cursor:pointer; opacity:.35;
+         transition:opacity .12s, background .12s, color .12s; }
+  .ctl svg { display:block; width:14px; height:14px; }
+  .grip { left:-36px; cursor:grab; touch-action:none; }
+  .x { right:-36px; border-radius:50%; }
+  [data-entry]:hover .ctl, .lifted .ctl, .ctl:focus-visible { opacity:1; }
+  .grip:hover { background:#f0f0f0; color:#1e1e1e; }
+  .x:hover { background:#fde8e4; color:#c4320a; }
+  @media (hover: none) { .ctl { opacity:1; } }
+  /* The + between stories: one floating control, positioned over whichever gap the pointer is in. */
+  .adder { position:absolute; z-index:2; left:0; right:0; height:24px; margin-top:-12px; display:flex;
+           align-items:center; pointer-events:none; }
+  .adder::before { content:""; position:absolute; left:48px; right:48px; top:50%; height:1px; background:var(--sel);
+                   opacity:.5; }
+  .adder button { position:relative; pointer-events:auto; margin:0 auto; width:24px; height:24px; padding:0;
+                  display:grid; place-items:center; border:0; border-radius:50%; background:var(--sel);
+                  color:#fff; cursor:pointer; box-shadow:0 0 0 3px #fff; }
+  .adder button svg { width:14px; height:14px; }
+  .slot { display:flex; align-items:center; gap:8px; height:36px; margin:0 0 24px; padding:0 10px;
+          border:1px solid var(--sel); border-radius:6px; color:var(--sel-text); font:12px var(--ui);
+          box-shadow:0 0 0 3px var(--sel-soft); }
+  .slot input { flex:1; min-width:0; height:100%; border:0; outline:0; background:none; color:#1e1e1e; font:inherit; }
+  .slot input::placeholder { color:#737373; }
+
+  .notes { width:360px; min-height:0; overflow-y:auto; background:var(--chrome); border-left:1px solid var(--line);
+           padding:12px 20px 32px; font-size:12px; line-height:18px; }
+  body.notes-off .notes { display:none; }
+  .notes-head { display:flex; align-items:center; justify-content:space-between; min-height:28px; }
+  .notes h2 { margin:0; font-size:12px; font-weight:600; }
+  .notes h3 { margin:0 0 2px; font-size:11px; font-weight:600; }
+  .notes-sub { margin:2px 0 12px; color:var(--text-3); }
+  .notes-body p { margin:0 0 12px; color:var(--text-2); }
+  .notes code { font-size:11px; padding:1px 4px; border-radius:4px; background:var(--field); }
+  .notes a { color:var(--sel-text); }
+  .near { margin:4px 0 16px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+  .near ul { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+  .near li { display:flex; gap:8px; align-items:flex-start; }
+  .near li div { flex:1; min-width:0; }
+  .near li a, .near li > div { font-weight:500; color:var(--text); }
+  .near li span { display:block; font-weight:400; color:var(--text-3); }
+
+  .page { max-width:860px; margin:32px auto 72px; padding:24px 28px; background:var(--chrome);
+          border-radius:8px; box-shadow:0 0 0 1px var(--line); font-size:13px; line-height:18px; }
+  .page h1 { margin:0 0 4px; font-size:20px; line-height:26px; font-weight:600; letter-spacing:-0.01em; }
+  .meta { color:var(--text-2); margin:0 0 16px; }
+  .scroll { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; }
+  th { text-align:left; font-weight:600; color:var(--text-2); font-size:11px; padding:0 12px 8px 0;
+       border-bottom:1px solid var(--line); white-space:nowrap; }
+  td { padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  td.k { font-weight:500; }
+  td.n { font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--text-2); }
+  td.g, td.c { color:var(--text-2); }
+  td.g { white-space:nowrap; }
+  td a { color:var(--sel-text); font-weight:500; }
+  .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:500;
+         white-space:nowrap; background:var(--field); color:var(--text-2); }
+  .tag.rss { background:var(--sel-soft); color:var(--text); }
+  details { border-bottom:1px solid var(--line); }
+  summary { cursor:pointer; padding:11px 0; font-weight:500; }
+  .arch { padding:4px 0 20px; display:grid; gap:10px; justify-items:start; }
+  .arch .sheet { box-shadow:0 0 0 1px var(--line); width:100%; }
+  #p-h .page { font-size:14px; line-height:22px; }
+  #p-h h2 { font-size:13px; font-weight:600; margin:24px 0 6px; }
+  #p-h p { margin:0 0 12px; max-width:640px; }
+
+  .toasts { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); display:grid; gap:8px;
+            justify-items:center; width:max-content; max-width:calc(100% - 32px); pointer-events:none; }
+  .toast { pointer-events:auto; display:flex; align-items:center; gap:12px; padding:8px 8px 8px 14px;
+           background:var(--toast); color:var(--toast-text); border-radius:8px; box-shadow:var(--shadow-pop);
+           font-weight:500; animation:toast-in .24s cubic-bezier(.16, 1, .3, 1); }
+  .toast.plain { padding-right:14px; }
+  .toast button { font:600 12px var(--ui); color:var(--sel-text); background:none; border:0;
+                  padding:4px 6px; border-radius:4px; cursor:pointer; }
+  @keyframes toast-in { from { opacity:0; transform:translateY(6px); } }
+
+  @media (max-width: 960px) {
+    .topbar { grid-template-columns:auto 1fr; padding:0 8px; }
+    .brand span { display:none; }
+    .tabs { overflow-x:auto; justify-self:start; max-width:100%; }
+    .top-actions { position:fixed; z-index:2; right:16px; bottom:16px; }
+    .top-actions .btn { box-shadow:var(--shadow-pop); background:var(--chrome); }
+    .top-actions .btn.primary { background:var(--btn); }
+    .workspace { grid-template-columns:1fr; grid-auto-rows:max-content; overflow:auto; }
+    .workspace .pane { overflow:visible; }
+    .notes { width:auto; border-left:0; border-top:1px solid var(--line); overflow:visible; padding-bottom:88px; }
+    .stage { padding:16px 16px 24px; }
+    .sheet { padding:24px 36px; }
+    .grip { left:-32px; }
+    .x { right:-32px; }
+    #briefing [data-entry].fresh::before { left:-32px; }
+    .page { margin:16px; padding:18px 16px; }
+  }
+"""
+
+SCRIPT = r"""
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const KEY = "mb:" + DATA.date;
+const sheet = document.getElementById("briefing");
+const board = document.getElementById("artboard");
+const adder = document.getElementById("adder");
+const stage = document.getElementById("stage");
+const toasts = document.getElementById("toasts");
+const SVG = {
+  x: '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  grip: '<svg viewBox="0 0 14 14" aria-hidden="true" fill="currentColor"><circle cx="5" cy="3" r="1.2"/><circle cx="9" cy="3" r="1.2"/><circle cx="5" cy="7" r="1.2"/><circle cx="9" cy="7" r="1.2"/><circle cx="5" cy="11" r="1.2"/><circle cx="9" cy="11" r="1.2"/></svg>',
+  plus: '<svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M7 2.5v9M2.5 7h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+};
+
+// Tabs
+const tabs = [...document.querySelectorAll(".tabs button")];
+for (const t of tabs) t.addEventListener("click", () => {
+  for (const o of tabs) {
+    o.setAttribute("aria-selected", o === t ? "true" : "false");
+    document.getElementById(o.getAttribute("aria-controls")).hidden = o !== t;
+  }
+  document.body.dataset.tab = t.id.slice(2);
+});
+
+function toast(msg, action, onAction) {
+  const el = document.createElement("div");
+  el.className = "toast" + (action ? "" : " plain");
+  el.append(msg);
+  if (action) {
+    const b = document.createElement("button");
+    b.textContent = action;
+    b.onclick = () => { onAction(); el.remove(); };
+    el.append(b);
+  }
+  toasts.replaceChildren(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+// Editor: the agent's draft is the starting sheet; edits live in this browser per day.
+// Everything with class "ed" is an editor control and never leaves the page.
+function clean(root) {
+  const c = root.cloneNode(true);
+  c.querySelectorAll(".ed").forEach(x => x.remove());
+  c.querySelectorAll("[data-todo]").forEach(x => x.removeAttribute("data-todo"));
+  c.querySelectorAll("[data-entry]").forEach(x => {
+    x.style.transform = x.style.transition = "";
+    x.removeAttribute("class");
+  });
+  return c;
+}
+function control(cls, label, svg) {
+  const b = document.createElement("button");
+  b.className = "ed ctl " + cls; b.type = "button"; b.contentEditable = "false";
+  b.setAttribute("aria-label", label); b.title = label; b.innerHTML = svg;
+  return b;
+}
+const entries = () => [...sheet.querySelectorAll("[data-entry]")];
+const sections = () => [...sheet.querySelectorAll("[data-section]")];
+const href = e => e.querySelector("a")?.getAttribute("href") || "";
+function sectionEnd(key) {
+  // The last story of a section (or its header when empty).
+  let el = sheet.querySelector(`[data-section="${key}"]`);
+  while (el && el.nextElementSibling && el.nextElementSibling.matches("[data-entry]")) el = el.nextElementSibling;
+  return el;
+}
+// Layout position ignores transforms, so animations in flight don't make targets jitter.
+const top_ = el => sheet.getBoundingClientRect().top + el.offsetTop;
+const bottom_ = el => top_(el) + el.offsetHeight;
+
+function decorate() {
+  for (const e of entries()) {
+    if (e.querySelector(".ctl")) continue;
+    e.prepend(control("grip", "Drag to reorder, or use the arrow keys", SVG.grip));
+    e.append(control("x", "Remove story", SVG.x));
+  }
+  const n = entries().length;
+  document.getElementById("count").textContent = n + (n === 1 ? " story" : " stories");
+}
+function save() {
+  decorate();
+  try { localStorage.setItem(KEY, clean(sheet).innerHTML); } catch (e) {}
+  document.getElementById("state").textContent = "Edited in this browser";
+  document.getElementById("reset").disabled = false;
+}
+const original = sheet.innerHTML;
+try {
+  const saved = localStorage.getItem(KEY);
+  if (saved) { sheet.innerHTML = saved; document.getElementById("state").textContent = "Edited in this browser"; }
+  else document.getElementById("reset").disabled = true;
+} catch (e) {}
+
+// Stories you removed, so a later sweep's re-render never brings them back.
+const RKEY = KEY + ":removed";
+let removed = new Set();
+try { removed = new Set(JSON.parse(localStorage.getItem(RKEY) || "[]")); } catch (e) {}
+function remember() { try { localStorage.setItem(RKEY, JSON.stringify([...removed])); } catch (e) {} }
+
+// A sweep may have added stories since you started editing: merge them in, marked "New".
+{
+  const draft = document.createElement("div");
+  draft.innerHTML = original;
+  const have = new Set(entries().map(href));
+  let added = 0;
+  for (const d of draft.querySelectorAll("[data-entry]")) {
+    const h = href(d);
+    if (!h || have.has(h) || removed.has(h)) continue;
+    let s = d.previousElementSibling;
+    while (s && !s.matches("[data-section]")) s = s.previousElementSibling;
+    const end = s && sectionEnd(s.dataset.section);
+    if (!end) continue;
+    d.classList.add("fresh");
+    end.after(d); added++;
+  }
+  if (added) setTimeout(() => {
+    save();
+    toast(added === 1 ? "1 new story arrived since your edits. It's marked New."
+                      : added + " new stories arrived since your edits. They're marked New.");
+  });
+}
+decorate();
+sheet.contentEditable = "true";
+sheet.addEventListener("input", ev => {
+  if (ev.target.closest(".ed")) return;  // typing in an add-story box isn't an edit
+  for (const t of sheet.querySelectorAll("[data-todo]"))
+    if (t.textContent !== t.dataset.todo) t.removeAttribute("data-todo");
+  save();
+});
+sheet.addEventListener("click", ev => {
+  const t = ev.target.closest("[data-todo]");
+  if (t) return getSelection().selectAllChildren(t);  // typing replaces the placeholder
+  const x = ev.target.closest(".x");
+  if (!x) return;
+  const entry = x.parentElement, parent = entry.parentNode, next = entry.nextSibling;
+  const head = entry.querySelector("a")?.textContent || "story";
+  flip(() => entry.remove()); removed.add(href(entry)); remember(); save();
+  toast("Removed “" + (head.length > 48 ? head.slice(0, 47) + "…" : head) + "”", "Undo",
+        () => { flip(() => parent.insertBefore(entry, next)); removed.delete(href(entry)); remember(); save(); });
+});
+
+// FLIP: run a DOM change, then slide every story from where it was to where it now is.
+function flip(change, skip) {
+  const before = new Map(entries().map(e => [e, e.getBoundingClientRect().top]));
+  change();
+  for (const e of entries()) {
+    if (e === skip || !before.has(e)) continue;
+    const d = before.get(e) - e.getBoundingClientRect().top;
+    if (!d) continue;
+    e.style.transition = "none"; e.style.transform = `translateY(${d}px)`;
+    e.offsetHeight;  // commit the start position
+    e.style.transition = "transform .18s cubic-bezier(.2, 0, 0, 1)"; e.style.transform = "";
+  }
+}
+
+// Reordering: press the grip and drag (mouse, pen or touch); the story follows the pointer
+// and the others slide aside. Or focus the grip and use the arrow keys.
+let drag = null;
+sheet.addEventListener("pointerdown", ev => {
+  const g = ev.target.closest(".grip");
+  if (!g || ev.button > 0) return;
+  ev.preventDefault();
+  const el = g.parentElement;
+  drag = {el, g, grab: ev.clientY - top_(el), y: ev.clientY};
+  el.classList.add("lifted"); sheet.classList.add("sorting"); adder.hidden = true;
+  el.style.transition = "none";
+});
+function placeDragged() {
+  const {el, y} = drag;
+  // Where should it sit? Before the first other item whose middle is below the pointer.
+  const others = [...sheet.querySelectorAll("[data-entry], [data-section]")].filter(o => o !== el);
+  const first = sections()[0];
+  let target = others.find(o => (top_(o) + bottom_(o)) / 2 > y);
+  let move = null;
+  if (!target) { const last = others[others.length - 1]; if (last !== el.previousElementSibling) move = () => last.after(el); }
+  else if (target === first) { if (first.nextElementSibling !== el) move = () => first.after(el); }
+  else if (target.previousElementSibling !== el) move = () => target.before(el);
+  if (move) flip(move, el);
+  el.style.transform = `translateY(${y - drag.grab - top_(el)}px)`;
+}
+// Window-level: moving the story in the DOM drops pointer capture, so the sheet can miss events.
+window.addEventListener("pointermove", ev => {
+  if (!drag) return;
+  drag.y = ev.clientY;
+  placeDragged();
+  // Nudge the page when dragging near the top or bottom edge.
+  const r = stage.getBoundingClientRect();
+  if (ev.clientY < r.top + 48) stage.scrollTop -= 12;
+  else if (ev.clientY > r.bottom - 48) stage.scrollTop += 12;
+});
+function endDrag() {
+  if (!drag) return;
+  const {el} = drag;
+  drag = null;
+  el.style.transition = "transform .18s cubic-bezier(.2, 0, 0, 1)"; el.style.transform = "";
+  sheet.classList.remove("sorting");
+  setTimeout(() => { el.classList.remove("lifted"); el.style.transition = ""; save(); }, 180);
+}
+window.addEventListener("pointerup", endDrag);
+window.addEventListener("pointercancel", endDrag);
+sheet.addEventListener("keydown", ev => {
+  const g = ev.target.closest(".grip");
+  if (!g || (ev.key !== "ArrowUp" && ev.key !== "ArrowDown")) return;
+  ev.preventDefault();
+  const e = g.parentElement, up = ev.key === "ArrowUp";
+  const n = up ? e.previousElementSibling : e.nextElementSibling;
+  if (!n) return;
+  if (n.matches("[data-entry]")) flip(() => up ? n.before(e) : n.after(e));
+  else if (n.matches("[data-section]") && (!up || n !== sections()[0])) flip(() => up ? n.before(e) : n.after(e));
+  else return;  // title or footer: already at the edge
+  save(); g.focus();
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  if (!confirm("Discard your edits and go back to this morning's draft?")) return;
+  sheet.innerHTML = original;
+  try { localStorage.removeItem(KEY); localStorage.removeItem(RKEY); } catch (e) {}
+  removed = new Set();
+  decorate();
+  document.getElementById("state").textContent = "This morning's draft";
+  document.getElementById("reset").disabled = true;
+});
+
+// The + between stories. Gaps sit after each section header and after each story.
+let gapAfter = null, slot = null;
+function gaps() {
+  const out = [];
+  for (const h of sections()) {
+    let el = h;
+    while (el) {
+      const next = el.nextElementSibling;
+      const isEntry = next && next.matches("[data-entry]");
+      out.push({after: el, y: isEntry ? (bottom_(el) + top_(next)) / 2 : bottom_(el) + 12});
+      if (!isEntry) break;
+      el = next;
+    }
+  }
+  return out;
+}
+board.addEventListener("pointermove", ev => {
+  if (drag || slot || ev.pointerType === "touch") return;
+  const g = gaps().find(g => Math.abs(g.y - ev.clientY) < 14);
+  if (!g || ev.target.closest(".ctl")) { adder.hidden = true; gapAfter = null; return; }
+  gapAfter = g.after;
+  adder.style.top = (g.y - board.getBoundingClientRect().top) + "px";
+  adder.hidden = false;
+});
+board.addEventListener("pointerleave", () => { adder.hidden = true; });
+adder.querySelector("button").addEventListener("click", () => { if (gapAfter) openSlot(gapAfter); });
+
+function openSlot(after) {
+  adder.hidden = true;
+  slot = document.createElement("div");
+  slot.className = "ed slot"; slot.contentEditable = "false";
+  slot.innerHTML = SVG.plus;
+  const i = document.createElement("input");
+  i.type = "url"; i.placeholder = "Paste a link and press Enter · Esc to cancel";
+  i.setAttribute("aria-label", "Link to the story to add");
+  slot.append(i);
+  after.after(slot);
+  i.focus();
+  const close = () => { if (slot) { slot.remove(); slot = null; } };
+  const go = () => { const v = i.value; close(); addLinks(v, after); };
+  i.addEventListener("paste", () => setTimeout(go));
+  i.addEventListener("keydown", ev => {
+    if (ev.key === "Enter") { ev.preventDefault(); go(); }
+    if (ev.key === "Escape") close();
+  });
+  i.addEventListener("blur", () => setTimeout(() => { if (slot && !i.value) close(); }, 150));
+}
+
+// Pasting a link anywhere in the sheet adds it as a story right after the one you're in.
+sheet.addEventListener("paste", ev => {
+  if (ev.target.closest(".ed")) return;
+  const text = ev.clipboardData.getData("text/plain").trim();
+  if (!/^(https?:\/\/\S+\s*)+$/.test(text)) return;  // ordinary text pastes as usual
+  ev.preventDefault();
+  const node = getSelection().anchorNode;
+  const here = node && (node.nodeType === 1 ? node : node.parentElement);
+  let at = here && here.closest("[data-entry], [data-section]");
+  // Above the first section, or in the footer: fall back to the end of the nearest section.
+  if (!at) {
+    const before = here && sections().filter(s => s.compareDocumentPosition(here) & Node.DOCUMENT_POSITION_FOLLOWING).pop();
+    at = sectionEnd((before || sections()[0]).dataset.section);
+  }
+  addLinks(text, at);
+});
+
+function outletFor(url) {
+  const host = url.hostname.replace(/^www\./, "");
+  return DATA.outlets[host] || host;
+}
+function headlineFromSlug(url) {
+  const seg = url.pathname.split("/").filter(Boolean)
+    .sort((a, b) => b.split("-").length - a.split("-").length)[0] || url.hostname;
+  return seg.replace(/\.[a-z]+$/, "").replace(/[-_]+[0-9a-f]{6,}$/i, "").replace(/[-_]+/g, " ")
+            .replace(/\b\w/g, c => c.toUpperCase());
+}
+// Match a pasted link to a digest headline: the same address, or a headline sharing most of
+// the words in the address (search results carry no address, only the headline).
+const words = t => t.toLowerCase().replace(/[’'`]/g, "").split(/[^a-z0-9$]+/).filter(w => w.length > 2 && !/^[0-9a-f]{6,}$/.test(w));
+const bare = u => u.replace(/^https?:\/\/(www\.)?/, "").split(/[?#]/)[0].replace(/\/$/, "");
+const norm = o => (o || "").toLowerCase().replace(/^the\s+/, "").replace(/\.(com|org|net|co\.uk)$/, "");
+function digestHeadline(url) {
+  const hit = DATA.headlines.find(h => h.u && bare(h.u) === bare(url.href));
+  if (hit) return hit.t;
+  const slug = words(url.pathname.split("/").filter(Boolean)
+    .sort((a, b) => b.split("-").length - a.split("-").length)[0] || "");
+  if (slug.length < 3) return "";
+  const outlet = norm(DATA.outlets[url.hostname.replace(/^www\./, "")]);
+  let best = null, bestScore = 0;
+  for (const h of DATA.headlines) {
+    if (outlet && norm(h.o) && norm(h.o) !== outlet) continue;
+    const tw = new Set(words(h.t));
+    const score = slug.filter(w => tw.has(w)).length / slug.length;
+    if (score > bestScore) { best = h; bestScore = score; }
+  }
+  return bestScore >= (outlet ? 0.7 : 0.85) ? best.t : "";
+}
+function todo(el, text) { el.textContent = text; el.dataset.todo = text; }
+
+// A pasted link becomes a story: outlet from house names, headline from the digest when it's
+// there (otherwise guessed from the address and highlighted), summary always for the editor.
+function addLinks(text, at) {
+  const found = (text || "").match(/https?:\/\/[^\s<>"']+/g) || [];
+  if (!found.length) { if ((text || "").trim()) toast("That isn't a link. Paste a full address starting with https://"); return; }
+  if (!at) return;
+  let last = null;
+  for (const raw of found) {
+    let url;
+    try { url = new URL(raw); } catch (e) { continue; }
+    const tpl = sheet.querySelector("[data-entry]");
+    const p = document.createElement("p");
+    p.dataset.entry = "";
+    p.setAttribute("style", tpl ? tpl.getAttribute("style") : "font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 10pt");
+    const outlet = document.createElement("b"), a = document.createElement("a"), head = document.createElement("b");
+    const summary = document.createElement("span");
+    a.href = url.href; a.append(head);
+    outlet.textContent = outletFor(url);
+    const known = digestHeadline(url);
+    if (known) head.textContent = known;
+    else todo(head, headlineFromSlug(url));
+    todo(summary, "Add a one-line summary.");
+    p.append(outlet, document.createElement("br"), a, document.createElement("br"), summary);
+    const after = at;
+    flip(() => after.after(p));
+    at = last = p;
+  }
+  save();
+  if (last) {
+    const s = last.querySelector("span[data-todo]");
+    s.focus?.(); getSelection().selectAllChildren(s);
+  }
+}
+
+// Production notes panel: open by default, remembered per browser.
+function setNotes(on) {
+  document.body.classList.toggle("notes-off", !on);
+  document.getElementById("notesToggle").setAttribute("aria-pressed", on);
+  try { localStorage.setItem("mb:notes", on ? "on" : "off"); } catch (e) {}
+}
+try { if (localStorage.getItem("mb:notes") === "off") setNotes(false); } catch (e) {}
+document.getElementById("notesToggle").addEventListener("click",
+  () => setNotes(document.body.classList.contains("notes-off")));
+document.getElementById("notesClose").addEventListener("click", () => setNotes(false));
+
+// Close calls: pull one back into the briefing.
+for (const b of document.querySelectorAll("[data-add]")) {
+  if (entries().some(e => href(e) === b.dataset.add)) { b.disabled = true; b.lastChild.textContent = "Added"; }
+  b.addEventListener("click", () => {
+    b.disabled = true; b.lastChild.textContent = "Added";
+    removed.delete(b.dataset.add); remember();
+    addLinks(b.dataset.add, sectionEnd("higher"));
+    toast("Added to the end of Higher Ed News. Add a summary.");
+  });
+}
+
+// Copy: the edited sheet minus editor controls, as rich text for Outlook.
+document.addEventListener("click", async ev => {
+  const btn = ev.target.closest("button[data-copy]");
+  if (!btn) return;
+  const el = clean(document.getElementById(btn.dataset.copy));
+  try {
+    await navigator.clipboard.write([new ClipboardItem({
+      "text/html": new Blob([el.innerHTML], {type: "text/html"}),
+      "text/plain": new Blob([el.innerText || el.textContent], {type: "text/plain"}),
+    })]);
+  } catch (e) {
+    document.body.append(el);
+    const r = document.createRange(); r.selectNodeContents(el);
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    document.execCommand("copy"); s.removeAllRanges(); el.remove();
+  }
+  const left = btn.dataset.copy === "briefing" ? sheet.querySelectorAll("[data-todo]").length : 0;
+  toast(left ? `Copied. ${left} highlighted ${left === 1 ? "field still needs" : "fields still need"} a look.` : "Copied. Paste it into Outlook.");
+});
+"""
+
+ICON = {
+    "copy": '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+    "reset": '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>',
+    "plus": '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    "notes": '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>',
+    "close": '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+}
+FAVICON = ("data:image/svg+xml;base64," + base64.b64encode(
+    b'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    b'<path d="M0 0V4.796H15.6936L1.70524 18.7843L5.09576 22.1815L19.204 8.06661V24H24V0H0Z" fill="#CF2B28"/>'
+    b'</svg>').decode())
+
+
+# Production notes (below the --- in the briefing) and the near-misses, for the side panel.
+def inline(text):
+    t = escape(text)
+    t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
+    return re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", r'<a href="\2">\1</a>', t)
+
+
+md_parts = Path(md_path).read_text().split("\n---\n", 1)
+notes_paras = [b.strip().strip("*").strip() for b in (md_parts[1] if len(md_parts) > 1 else "").split("\n\n")]
+notes_paras = [re.sub(r"^Production notes \(not for email\):\s*", "", n) for n in notes_paras if n]
+# Notes are markdown-ish: drop the italics markers and turn "- item" lines into bullets.
+notes_html = "\n".join("<p>" + inline(n.replace("*", "")).replace("\n- ", "<br>• ").replace("\n", " ") + "</p>"
+                       for n in notes_paras) or '<p class="notes-sub">No production notes today.</p>'
+
+near_html = ""
+near_path = HERE / "near-misses" / Path(md_path).name
+for line in (near_path.read_text().splitlines() if near_path.exists() else []):
+    m = re.match(r"\s*•\s*(?:<(https?://[^|>]+)\|([^>]+)>|([^—]+?))\s*—\s*(.+)", line)
+    if not m:
+        continue
+    url, head, plain, rest = m.groups()
+    title_html = f'<a href="{escape(url)}">{escape(head)}</a>' if url else escape(plain.strip())
+    add = (f'<button type="button" class="btn outline sm" data-add="{escape(url)}">{ICON["plus"]}Add</button>'
+           if url else "")
+    near_html += f'<li><div>{title_html}<span>{escape(rest)}</span></div>{add}</li>\n'
+near_section = (f'<section class="near"><h3>Close calls</h3><p class="notes-sub">Considered and left out. '
+                f'Add one to put it back at the end of Higher Ed News.</p><ul>{near_html}</ul></section>'
+                if near_html else "")
+
+title = re.sub(r"\*", "", Path(md_path).read_text().splitlines()[0]).strip()
+day = title.split("|")[-1].strip()
+
 print(f"""<!doctype html>
 <html lang="en">
 <head>
@@ -238,83 +904,50 @@ print(f"""<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>The Morning Briefing</title>
-<style>
-  :root {{
-    --ground:#FAFAF8; --ink:#1A1A1A; --muted:#6B6B6B; --border:#E4E2DD;
-    --accent:#C00000; --btn-ink:#FFFFFF; --panel:#FFFFFF; --rss:#E8F0E6; --rss-ink:#2C4A28;
-    --srch:#E6EEF7; --srch-ink:#1B3F63;
-  }}
-  @media (prefers-color-scheme: dark) {{
-    :root:not([data-theme="light"]) {{ --ground:#1C1B1A; --ink:#EDEBE8; --muted:#9C9994;
-      --border:#3A3835; --panel:#232221; --rss:#22301F; --rss-ink:#BFD8B8;
-      --srch:#1D2B3A; --srch-ink:#B6CFE8; }}
-  }}
-  :root[data-theme="dark"] {{ --ground:#1C1B1A; --ink:#EDEBE8; --muted:#9C9994;
-    --border:#3A3835; --panel:#232221; --rss:#22301F; --rss-ink:#BFD8B8;
-    --srch:#1D2B3A; --srch-ink:#B6CFE8; }}
-  body {{ background:var(--ground); color:var(--ink); margin:0;
-         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }}
-  .wrap {{ max-width:860px; margin:0 auto; padding:26px 20px 60px; }}
-  .bar {{ display:flex; align-items:center; gap:11px; flex-wrap:wrap; margin-bottom:18px; }}
-  .bar h1 {{ font-size:17px; font-weight:600; margin:0; letter-spacing:.01em; margin-right:auto; }}
-  .logo {{ width:34px; height:34px; flex:none; display:block; }}
-  button.copy {{ background:var(--accent); color:var(--btn-ink); border:0; border-radius:4px;
-            font:600 13px/1 inherit; padding:9px 16px; cursor:pointer; }}
-  nav {{ display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:20px; }}
-  nav button {{ background:none; border:0; border-bottom:2px solid transparent; color:var(--muted);
-            font:500 14px/1 inherit; padding:10px 14px; cursor:pointer; }}
-  nav button[aria-selected="true"] {{ color:var(--ink); border-bottom-color:var(--accent); }}
-  nav button:focus-visible, button.copy:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; }}
-  [hidden] {{ display:none; }}
-  .sheet {{ background:#FFFFFF; color:#000; padding:36px 40px; border:1px solid var(--border);
-            border-radius:2px; }}
-  .sheet a {{ color:#0563C1; }}
-  .meta {{ color:var(--muted); font-size:13px; margin:0 0 14px; }}
-  .scroll {{ overflow-x:auto; }}
-  table {{ border-collapse:collapse; width:100%; font-size:13.5px; }}
-  th {{ text-align:left; font-weight:600; color:var(--muted); font-size:12px;
-        letter-spacing:.04em; text-transform:uppercase; padding:0 12px 8px 0;
-        border-bottom:1px solid var(--border); white-space:nowrap; }}
-  td {{ padding:9px 12px 9px 0; border-bottom:1px solid var(--border); vertical-align:top; }}
-  td.k {{ font-weight:500; }}
-  td.n {{ font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--muted); }}
-  td.g {{ color:var(--muted); white-space:nowrap; }}
-  td.c {{ color:var(--muted); }}
-  td a {{ color:var(--accent); }}
-  .tag {{ display:inline-block; padding:2px 8px; border-radius:10px; font-size:11.5px;
-          font-weight:500; white-space:nowrap; }}
-  .tag.rss {{ background:var(--rss); color:var(--rss-ink); }}
-  .tag.srch {{ background:var(--srch); color:var(--srch-ink); }}
-  details {{ border-bottom:1px solid var(--border); }}
-  summary {{ cursor:pointer; padding:11px 0; font-weight:500; font-size:14px; }}
-  summary:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; }}
-  .arch {{ padding:4px 0 20px; }}
-  button.copy.sm {{ font-size:12px; padding:6px 12px; margin-bottom:10px; }}
-  #p-h {{ max-width:660px; }}
-  #p-h h2 {{ font-size:15px; font-weight:600; margin:26px 0 8px; }}
-  #p-h p {{ font-size:14.5px; line-height:1.65; margin:0 0 12px; color:var(--ink); }}
-</style>
+<link rel="icon" type="image/svg+xml" href="{FAVICON}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>{STYLE}</style>
 </head>
-<body>
-<div class="wrap">
-<div class="bar">
-  {LOGO}
-  <h1>The Morning Briefing</h1>
-  <button class="copy" data-copy="briefing">Copy briefing</button>
-</div>
-<nav role="tablist">
-  <button role="tab" id="t-b" aria-controls="p-b" aria-selected="true">Briefing</button>
-  <button role="tab" id="t-t" aria-controls="p-t" aria-selected="false">Tracked stories</button>
-  <button role="tab" id="t-s" aria-controls="p-s" aria-selected="false">Sources</button>
-  <button role="tab" id="t-a" aria-controls="p-a" aria-selected="false">Archive</button>
-  <button role="tab" id="t-h" aria-controls="p-h" aria-selected="false">How it works</button>
-</nav>
+<body data-tab="b">
+<header class="topbar">
+  <div class="brand">{LOGO}<span>The Morning Briefing</span></div>
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" id="t-b" aria-controls="p-b" aria-selected="true">Briefing</button>
+    <button role="tab" id="t-t" aria-controls="p-t" aria-selected="false">Tracked stories</button>
+    <button role="tab" id="t-s" aria-controls="p-s" aria-selected="false">Sources</button>
+    <button role="tab" id="t-a" aria-controls="p-a" aria-selected="false">Archive</button>
+    <button role="tab" id="t-h" aria-controls="p-h" aria-selected="false">How it works</button>
+  </nav>
+  <div class="top-actions">
+    <button type="button" class="btn outline" id="notesToggle" aria-pressed="true" aria-controls="notes">{ICON["notes"]}Notes</button>
+    <button type="button" class="btn outline" id="reset">{ICON["reset"]}Reset</button>
+    <button type="button" class="btn primary" data-copy="briefing">{ICON["copy"]}Copy briefing</button>
+  </div>
+</header>
 
-<section id="p-b" role="tabpanel" aria-labelledby="t-b">
-  <div class="sheet" id="briefing">{body}</div>
-</section>
+<main class="workspace" id="p-b" role="tabpanel" aria-labelledby="t-b">
+  <div class="pane stage" id="stage">
+    <div class="artboard" id="artboard">
+      <div class="adder" id="adder" hidden><button type="button" aria-label="Add a story here" title="Add a story here"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2.5v9M2.5 7h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+      <div class="frame-label"><span>{escape(day)} · <span id="state">This morning's draft</span></span><span id="count"></span></div>
+      <div class="sheet" id="briefing" spellcheck="true">{body}</div>
+      <p class="hint">Click text to edit · drag ⠿ to reorder · × removes · hover between stories and
+      press + to add one from its link, or paste a link anywhere. Edits stay in this browser until Reset.</p>
+    </div>
+  </div>
+  <aside class="notes" id="notes" aria-label="Production notes">
+    <div class="notes-head"><h2>Production notes</h2>
+      <button type="button" class="btn icon" id="notesClose" aria-label="Hide notes" title="Hide notes">{ICON["close"]}</button></div>
+    <p class="notes-sub">What the agent did this morning: what it cut, links it couldn't verify, threads opened or closed. Not part of the email.</p>
+    {near_section}
+    <section class="notes-body">{notes_html}</section>
+  </aside>
+</main>
 
-<section id="p-t" role="tabpanel" aria-labelledby="t-t" hidden>
+<section class="pane" id="p-t" role="tabpanel" aria-labelledby="t-t" hidden><div class="page">
+  <h1>Tracked stories</h1>
   <p class="meta">{len(trend_rows)} running stories the agent follows up on every morning. It opens
   one when a story keeps developing and is unresolved, and retires it once the story concludes or
   goes quiet for two weeks. Newest activity first.</p>
@@ -323,9 +956,10 @@ print(f"""<!doctype html>
   <tbody>
 {trends_html}
   </tbody></table></div>
-</section>
+</div></section>
 
-<section id="p-s" role="tabpanel" aria-labelledby="t-s" hidden>
+<section class="pane" id="p-s" role="tabpanel" aria-labelledby="t-s" hidden><div class="page">
+  <h1>Sources</h1>
   <p class="meta">{len(source_rows)} sources checked every morning — {rss_count} through the
   publisher's own feed, {len(source_rows) - rss_count} through a news search, which is how
   paywalled outlets are covered. Running-story searches are listed under Tracked stories.</p>
@@ -334,46 +968,21 @@ print(f"""<!doctype html>
   <tbody>
 {sources_html}
   </tbody></table></div>
-</section>
+</div></section>
 
-<section id="p-a" role="tabpanel" aria-labelledby="t-a" hidden>
+<section class="pane" id="p-a" role="tabpanel" aria-labelledby="t-a" hidden><div class="page">
+  <h1>Archive</h1>
   <p class="meta">Every briefing published so far, newest first. Click one to open it.</p>
 {archive_html}
-</section>
+</div></section>
 
-<section id="p-h" role="tabpanel" aria-labelledby="t-h" hidden>
+<section class="pane" id="p-h" role="tabpanel" aria-labelledby="t-h" hidden><div class="page">
+  <h1>How it works</h1>
 {DOCS}
-</section>
-</div>
-<script>
-  const tabs = [["t-b","p-b"],["t-t","p-t"],["t-s","p-s"],["t-a","p-a"],["t-h","p-h"]];
-  for (const [tid, pid] of tabs) {{
-    document.getElementById(tid).addEventListener("click", () => {{
-      for (const [t, p] of tabs) {{
-        const on = t === tid;
-        document.getElementById(t).setAttribute("aria-selected", on ? "true" : "false");
-        document.getElementById(p).hidden = !on;
-      }}
-    }});
-  }}
-  document.addEventListener("click", async (ev) => {{
-    const btn = ev.target.closest("button[data-copy]");
-    if (!btn) return;
-    const el = document.getElementById(btn.dataset.copy);
-    try {{
-      await navigator.clipboard.write([new ClipboardItem({{
-        "text/html": new Blob([el.innerHTML], {{type: "text/html"}}),
-        "text/plain": new Blob([el.innerText], {{type: "text/plain"}}),
-      }})]);
-    }} catch (e) {{
-      const r = document.createRange(); r.selectNodeContents(el);
-      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-      document.execCommand("copy"); s.removeAllRanges();
-    }}
-    const was = btn.textContent;
-    btn.textContent = "Copied";
-    setTimeout(() => btn.textContent = was, 2500);
-  }});
-</script>
+</div></section>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script type="application/json" id="data">{editor_data}</script>
+<script>{SCRIPT}</script>
 </body>
 </html>""")
