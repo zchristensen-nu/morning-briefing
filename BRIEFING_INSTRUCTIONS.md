@@ -9,11 +9,13 @@ Today's date = the current date in America/New_York.
 
 Before anything else:
 `git fetch -q origin main && git cat-file -e origin/main:briefings/$(TZ=America/New_York date +%F).md`
-If that succeeds, today's briefing is already published. Stop, change nothing, and end
-with the single line "Already published today". The cloud routine fires hourly at 10:00, 11:00, 12:00
-and 13:00 UTC (6:00-9:00 Eastern) on purpose: the later fires are retries for a morning
-where an earlier run died, and this check is what makes them harmless. Whichever fire
-succeeds first sets the day's content; the later ones do not refresh it.
+If that fails, nobody has published today: do the full run (sections 1-7). The cloud
+routine fires hourly at 10:00, 11:00, 12:00 and 13:00 UTC (6:00-9:00 Eastern), so a later
+fire is also the retry for a morning where an earlier run died.
+
+If it succeeds, today's briefing is already out: skip sections 1-7 and do **8. Sweep**
+instead — add anything worth running that has broken since. The cloud routine is the only
+runner that sweeps; the local scheduled task stops here with "Already published today".
 
 ## 1. Fetch
 
@@ -230,7 +232,9 @@ Write the briefing to `briefings/YYYY-MM-DD.md` (today's date). Format exactly:
   `**Outlet Name**`, then `[Headline](URL)` optionally followed by a label like
   `(Op-ed)` / `(Editorial)` / `(Podcast)`, then a one-sentence summary (omit only if
   the headline is fully self-explanatory).
-- Then `**Global Campus/Regional News**`, same entry format.
+- Then `**Global Campus/Regional News**`, same entry format. Never open a summary with a
+  city or region label (`Boston:`, `ArlingtonVA:`, `Toronto:`); the digest's group names are
+  for finding stories, not for the email.
 - Footer (italic): `*Please visit NGN's "[In The Press](https://news.northeastern.edu/in-the-media/)" section to view Northeastern's most recent press mentions, updated weekly.*`
   and `*To get in touch with the media relations team, please contact us at [media@northeastern.edu](mailto:media@northeastern.edu).*`
 - Then a `---` line and `*Production notes (not for email): ...*` listing threads
@@ -276,6 +280,34 @@ Do not commit digests or /tmp files.
 Same as 7, plus: run `sh draft_email.sh briefings/YYYY-MM-DD.md` to place a
 recipient-less draft in Outlook, and send the briefing file to the user with a proactive
 notification.
+
+## 8. Sweep (later fires on a day that is already published)
+
+The team may already be editing the morning's draft, so a sweep only ever ADDS stories.
+Never reorder, rewrite or remove an existing entry, and never touch the title, tagline,
+section headers or footer.
+
+a. Fetch what's new. The cloud sandbox can't reach news sites, so ask the Action:
+   NAME = `<today>-sweep-<UTC hour, two digits>` (e.g. `2026-10-09-sweep-12`). Dispatch
+   `fetch-digest.yml` with inputs `name=<NAME>` and `hours=4` (`gh workflow run
+   fetch-digest.yml -f name=<NAME> -f hours=4`, or the GitHub MCP `run_workflow` with those
+   inputs), then run `DIGEST_NAME=<NAME> sh wait_for_digest.sh` in the foreground — same
+   loop and same never-wait-any-other-way rules as section 1, at most three rounds.
+   If it never lands, stop: note nothing, commit nothing.
+b. Read `digests/<NAME>.md` and apply the same bar as sections 2-4: relevance, approved
+   outlets, link hygiene, and de-duplication against today's briefing as it stands plus the
+   recent briefings. A sweep has no ten-story floor — most sweeps should add nothing, and
+   that is the right result on a quiet morning. Only add a story a senior leader would
+   want before their first meeting that is genuinely new since the morning run.
+c. Add each one at the END of its section, in the normal entry format. Update threads.tsv
+   (last_hit) for any tracked story it advances.
+d. Append one italic paragraph to the production notes:
+   `*Sweep <H:MM> ET: added <Outlet — Headline>; <…>.*` and nothing else.
+e. If nothing was added, stop: change nothing, commit nothing. Otherwise re-render
+   (`python3 render_page.py briefings/<today>.md > docs/index.html`) and commit and push:
+   `git add briefings/ threads.tsv docs/ && git commit -m "Morning Briefing sweep <today> <H:MM>" && git push`.
+   Do not write near-misses and do not commit digests. A sweep never posts to Slack — the
+   notify workflow only fires when a new briefing file appears.
 
 ## Hard rules
 
