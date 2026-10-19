@@ -711,25 +711,29 @@ board.addEventListener("pointermove", ev => {
 board.addEventListener("pointerleave", () => { adder.hidden = true; });
 adder.querySelector("button").addEventListener("click", () => { if (gapAfter) openSlot(gapAfter); });
 
-function openSlot(after) {
+function openSlot(after, headline, onAdd) {
   adder.hidden = true;
-  slot = document.createElement("div");
-  slot.className = "ed slot"; slot.contentEditable = "false";
-  slot.innerHTML = SVG.plus;
+  const mine = slot = document.createElement("div");
+  mine.className = "ed slot"; mine.contentEditable = "false";
+  mine.innerHTML = SVG.plus;
   const i = document.createElement("input");
-  i.type = "url"; i.placeholder = "Paste a link and press Enter · Esc to cancel";
+  i.type = "url";
+  i.placeholder = headline ? `Paste the link for “${headline}” and press Enter · Esc to cancel`
+                           : "Paste a link and press Enter · Esc to cancel";
   i.setAttribute("aria-label", "Link to the story to add");
-  slot.append(i);
-  after.after(slot);
-  i.focus();
-  const close = () => { if (slot) { slot.remove(); slot = null; } };
-  const go = () => { const v = i.value; close(); addLinks(v, after); };
+  mine.append(i);
+  after.after(mine);
+  mine.scrollIntoView({block: "center", behavior: "smooth"});
+  i.focus({preventScroll: true});
+  // Close only this box: a cancelled box's late blur must not close the next one.
+  const close = () => { mine.remove(); if (slot === mine) slot = null; };
+  const go = () => { const v = i.value; close(); if (addLinks(v, after, headline)) onAdd?.(); };
   i.addEventListener("paste", () => setTimeout(go));
   i.addEventListener("keydown", ev => {
     if (ev.key === "Enter") { ev.preventDefault(); go(); }
     if (ev.key === "Escape") close();
   });
-  i.addEventListener("blur", () => setTimeout(() => { if (slot && !i.value) close(); }, 150));
+  i.addEventListener("blur", () => setTimeout(() => { if (!i.value) close(); }, 150));
 }
 
 // Pasting a link anywhere in the sheet adds it as a story right after the one you're in.
@@ -784,10 +788,10 @@ function todo(el, text) { el.textContent = text; el.dataset.todo = text; }
 
 // A pasted link becomes a story: outlet from house names, headline from the digest when it's
 // there (otherwise guessed from the address and highlighted), summary always for the editor.
-function addLinks(text, at) {
+function addLinks(text, at, headline) {
   const found = (text || "").match(/https?:\/\/[^\s<>"']+/g) || [];
-  if (!found.length) { if ((text || "").trim()) toast("That isn't a link. Paste a full address starting with https://"); return; }
-  if (!at) return;
+  if (!found.length) { if ((text || "").trim()) toast("That isn't a link. Paste a full address starting with https://"); return false; }
+  if (!at) return false;
   let last = null;
   for (const raw of found) {
     let url;
@@ -800,7 +804,7 @@ function addLinks(text, at) {
     const summary = document.createElement("span");
     a.href = url.href; a.append(head);
     outlet.textContent = outletFor(url);
-    const known = digestHeadline(url);
+    const known = headline || digestHeadline(url);
     if (known) head.textContent = known;
     else todo(head, headlineFromSlug(url));
     todo(summary, "Add a one-line summary.");
@@ -814,6 +818,7 @@ function addLinks(text, at) {
     const s = last.querySelector("span[data-todo]");
     sheet.focus({preventScroll: true}); getSelection().selectAllChildren(s);
   }
+  return !!last;
 }
 
 // Production notes panel: open by default, remembered per browser.
@@ -827,14 +832,15 @@ document.getElementById("notesToggle").addEventListener("click",
   () => setNotes(document.body.classList.contains("notes-off")));
 document.getElementById("notesClose").addEventListener("click", () => setNotes(false));
 
-// Close calls: pull one back into the briefing.
+// Close calls: pull one back into the briefing, at the end of Higher Ed News.
 for (const b of document.querySelectorAll("[data-add]")) {
-  if (entries().some(e => href(e) === b.dataset.add)) { b.disabled = true; b.lastChild.textContent = "Added"; }
+  const done = () => { b.disabled = true; b.lastChild.textContent = "Added"; };
+  const url = b.dataset.add, headline = b.dataset.head;
+  if (url && entries().some(e => href(e) === url)) done();
   b.addEventListener("click", () => {
-    b.disabled = true; b.lastChild.textContent = "Added";
-    removed.delete(b.dataset.add); remember();
-    addLinks(b.dataset.add, sectionEnd("higher"));
-    toast("Added to the end of Higher Ed News. Add a summary.");
+    if (!url) return openSlot(sectionEnd("higher"), headline, () => { done(); toast("Added. Write its summary."); });
+    removed.delete(url); remember();
+    if (addLinks(url, sectionEnd("higher"), headline)) { done(); toast("Added to the end of Higher Ed News. Write its summary."); }
   });
 }
 
@@ -900,11 +906,12 @@ for line in (near_path.read_text().splitlines() if near_path.exists() else []):
         continue
     url, head, plain, rest = m.groups()
     title_html = f'<a href="{escape(url)}">{escape(head)}</a>' if url else escape(plain.strip())
-    add = (f'<button type="button" class="btn outline sm" data-add="{escape(url)}">{ICON["plus"]}Add</button>'
-           if url else "")
+    # A close call without a link (often why it was cut) asks for one when you add it.
+    add = (f'<button type="button" class="btn outline sm" data-add="{escape(url or "")}" '
+           f'data-head="{escape(head or plain.strip())}">{ICON["plus"]}Add</button>')
     near_html += f'<li><div>{title_html}<span>{escape(rest)}</span></div>{add}</li>\n'
 near_section = (f'<section class="near"><h3>Close calls</h3><p class="notes-sub">Considered and left out. '
-                f'Add one to put it back at the end of Higher Ed News.</p><ul>{near_html}</ul></section>'
+                f'Add one to put it back at the end of Higher Ed News; if it has no link yet, you’ll be asked for one.</p><ul>{near_html}</ul></section>'
                 if near_html else "")
 
 title = re.sub(r"\*", "", Path(md_path).read_text().splitlines()[0]).strip()
