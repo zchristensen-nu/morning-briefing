@@ -1,0 +1,30 @@
+# Posts the self-heal routine's report to Slack (see SELF_HEAL.md §5).
+# The routine has no Slack token, so it dispatches this with the message text.
+# Same secrets as notify-slack.yml; missing secrets = the job no-ops.
+name: Self-heal notify
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: "Slack mrkdwn message"
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Slack
+        env:
+          TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          TEXT: ${{ inputs.text }}
+        run: |
+          if [ -z "$TOKEN" ] || [ -z "$CHANNEL" ]; then
+            echo "SLACK_BOT_TOKEN or SLACK_CHANNEL not set — nothing posted."
+            exit 0
+          fi
+          jq -n --arg c "$CHANNEL" --arg t "$TEXT" '{channel: $c, text: $t, unfurl_links: false}' \
+            | curl -sS -X POST https://slack.com/api/chat.postMessage \
+                -H "Authorization: Bearer $TOKEN" \
+                -H 'Content-type: application/json; charset=utf-8' --data @- \
+            | jq -e 'if .ok then "posted ts=\(.ts)" else error("SLACK ERROR: \(.error)") end'
