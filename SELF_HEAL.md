@@ -12,6 +12,10 @@ throughout. Never wait in the background or end your turn to wait; poll in a for
 
 ## 1. Which run
 
+The trigger may not filter events. If the event that fired you is not a `workflow_run`
+with `action` `completed`, `conclusion` `failure` and `head_branch` `main`, or the run
+is "Self-heal notify", stop at once: change nothing, notify nothing.
+
 The webhook event that fired you should name the run (`workflow_run.id`, `.name`,
 `.html_url`). If it is missing, take the newest failed run on main:
 `gh api 'repos/zchristensen-nu/morning-briefing/actions/runs?branch=main&status=failure&per_page=1'`.
