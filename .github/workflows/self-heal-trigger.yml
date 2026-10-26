@@ -1,0 +1,33 @@
+# Fires the morning-briefing-self-heal routine (see SELF_HEAL.md) when a
+# pipeline run on main fails. Routine GitHub triggers can't listen to
+# workflow_run, so this calls the routine's API trigger instead.
+# Secret: SELF_HEAL_ROUTINE_TOKEN (the routine's API token, from its Edit
+# dialog at claude.ai/code/routines). Missing secret = the job no-ops.
+name: Self-heal trigger
+on:
+  workflow_run:
+    workflows: ["Fetch morning digest", "Notify Slack"]
+    types: [completed]
+
+jobs:
+  fire:
+    if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fire the self-heal routine
+        env:
+          TOKEN: ${{ secrets.SELF_HEAL_ROUTINE_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "SELF_HEAL_ROUTINE_TOKEN not set — not firing."
+            exit 0
+          fi
+          jq -n --arg t "run_id=$RUN_ID" '{text: $t}' \
+            | curl -sS --fail-with-body -X POST \
+                https://api.anthropic.com/v1/claude_code/routines/trig_01TPNG9eKFgk6u3A4jjWxDtM/fire \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
+                -H "anthropic-version: 2023-06-01" \
+                -H "Content-Type: application/json" --data @- \
+            | jq -r '.claude_code_session_url'

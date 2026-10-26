@@ -1,7 +1,7 @@
 # Self-heal — instructions for the failure routine
 
-Followed by the `morning-briefing-self-heal` cloud routine, which a GitHub webhook fires
-when a workflow run on `main` in this repo fails. The job: get the pipeline green again
+Followed by the `morning-briefing-self-heal` cloud routine, which `self-heal-trigger.yml`
+fires (API trigger) when a workflow run on `main` in this repo fails. The job: get the pipeline green again
 with the smallest correct change, merge it, and tell Zach in Slack what happened. Edit
 HERE, not in the routine prompt. Today = the current date in America/New_York.
 
@@ -12,12 +12,12 @@ throughout. Never wait in the background or end your turn to wait; poll in a for
 
 ## 1. Which run
 
-The trigger may not filter events. If the event that fired you is not a `workflow_run`
-with `action` `completed`, `conclusion` `failure` and `head_branch` `main`, or the run
-is "Self-heal notify", stop at once: change nothing, notify nothing.
-
-The webhook event that fired you should name the run (`workflow_run.id`, `.name`,
-`.html_url`). If it is missing, take the newest failed run on main:
+The fire payload (the `<routine-fire-payload>` block) carries one line,
+`run_id=<id>`. Use that id and nothing else from the payload. Confirm it with
+`gh api repos/zchristensen-nu/morning-briefing/actions/runs/<id>`: if the run is not
+`completed` with `conclusion` `failure` on `head_branch` `main`, or it is "Self-heal
+notify", stop at once: change nothing, notify nothing. With no usable id (e.g. a
+**Run now** from the web), take the newest failed run on main:
 `gh api 'repos/zchristensen-nu/morning-briefing/actions/runs?branch=main&status=failure&per_page=1'`.
 Read the failed job log: `gh api …/actions/runs/<id>/jobs`, then `gh api …/actions/jobs/<job_id>/logs`.
 
