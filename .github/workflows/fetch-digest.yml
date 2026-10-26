@@ -47,7 +47,9 @@ jobs:
           git config user.email "actions@github.com"
           git add "$OUT"
           git diff --cached --quiet || git commit -m "Digest $(basename "$OUT" .md)"
-          git pull -q --rebase origin main
+          # A duplicate dispatch for the same digest name loses an add/add race;
+          # "ours" is upstream during a rebase, so the duplicate commit is dropped.
+          git pull -q --rebase -X ours origin main
           git push
       - name: Prune old digests
         run: |
