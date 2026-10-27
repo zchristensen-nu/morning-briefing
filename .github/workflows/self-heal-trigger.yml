@@ -2,11 +2,12 @@
 # pipeline run on main fails. Routine GitHub triggers can't listen to
 # workflow_run, so this calls the routine's API trigger instead.
 # Secret: SELF_HEAL_ROUTINE_TOKEN (the routine's API token, from its Edit
-# dialog at claude.ai/code/routines). Missing secret = the job no-ops.
+# dialog at claude.ai/code/routines). If the token is missing or the fire call
+# fails, posts straight to Slack instead, so a broken self-heal never goes quiet.
 name: Self-heal trigger
 on:
   workflow_run:
-    workflows: ["Fetch morning digest", "Notify Slack"]
+    workflows: ["Fetch morning digest", "Notify Slack", "Briefing deadline"]
     types: [completed]
 
 jobs:
@@ -18,16 +19,28 @@ jobs:
         env:
           TOKEN: ${{ secrets.SELF_HEAL_ROUTINE_TOKEN }}
           RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_NAME: ${{ github.event.workflow_run.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          SLACK_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
         run: |
-          if [ -z "$TOKEN" ]; then
-            echo "SELF_HEAL_ROUTINE_TOKEN not set — not firing."
+          if [ -n "$TOKEN" ] && RESP=$(jq -n --arg t "run_id=$RUN_ID" '{text: $t}' \
+              | curl -sS --fail-with-body -X POST \
+                  https://api.anthropic.com/v1/claude_code/routines/trig_01TPNG9eKFgk6u3A4jjWxDtM/fire \
+                  -H "Authorization: Bearer $TOKEN" \
+                  -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
+                  -H "anthropic-version: 2023-06-01" \
+                  -H "Content-Type: application/json" --data @- 2>&1); then
+            echo "$RESP" | jq -r '.claude_code_session_url'
             exit 0
           fi
-          jq -n --arg t "run_id=$RUN_ID" '{text: $t}' \
-            | curl -sS --fail-with-body -X POST \
-                https://api.anthropic.com/v1/claude_code/routines/trig_01TPNG9eKFgk6u3A4jjWxDtM/fire \
-                -H "Authorization: Bearer $TOKEN" \
-                -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
-                -H "anthropic-version: 2023-06-01" \
-                -H "Content-Type: application/json" --data @- \
-            | jq -r '.claude_code_session_url'
+
+          echo "Fire failed: ${RESP:-SELF_HEAL_ROUTINE_TOKEN not set}"
+          TEXT=$(printf '*Self-heal couldn'"'"'t start*\n<%s|%s> failed and nothing is fixing it.\nFire call: %s' \
+            "$RUN_URL" "$RUN_NAME" "$(echo "${RESP:-token secret missing}" | head -c 300)")
+          jq -n --arg c "$SLACK_CHANNEL" --arg t "$TEXT" '{channel: $c, text: $t, unfurl_links: false}' \
+            | curl -sS -X POST https://slack.com/api/chat.postMessage \
+                -H "Authorization: Bearer $SLACK_TOKEN" \
+                -H 'Content-type: application/json; charset=utf-8' --data @- \
+            | jq -r 'if .ok then "fallback posted to Slack" else "SLACK ERROR: \(.error)" end'
+          exit 1

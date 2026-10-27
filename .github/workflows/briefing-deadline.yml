@@ -1,0 +1,19 @@
+# Fails when today's briefing isn't on main by mid-morning, so the self-heal
+# routine (via self-heal-trigger.yml) hears about a briefing run that "succeeded"
+# without publishing, or a routine GitHub connection that quietly expired.
+# Nothing else turns red in those cases.
+name: Briefing deadline
+on:
+  schedule:
+    - cron: "20 14 * * 1-5"   # 14:20 UTC weekdays, after the last briefing fire (13:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Today's briefing is on main
+        run: |
+          F="briefings/$(TZ=America/New_York date +%F).md"
+          if [ -s "$F" ]; then echo "$F published."; else echo "::error::$F is not on main."; exit 1; fi
