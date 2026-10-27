@@ -17,3 +17,8 @@ jobs:
         run: |
           F="briefings/$(TZ=America/New_York date +%F).md"
           if [ -s "$F" ]; then echo "$F published."; else echo "::error::$F is not on main."; exit 1; fi
+      - name: The page shows its stories
+        run: |
+          # The briefing file can exist while the page renders no stories (2026-10-22, 10-26, 10-27).
+          N=$(sed -n '/id="briefing"/,/class="hint"/p' docs/index.html | grep -o '<p data-entry ' | wc -l)  # today's sheet only, not the Archive tab
+          if [ "$N" -gt 0 ]; then echo "docs/index.html shows $N stories."; else echo "::error::docs/index.html renders no stories."; exit 1; fi
