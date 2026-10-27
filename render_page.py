@@ -96,9 +96,13 @@ and if you've started editing, new stories are merged into your copy and marked 
 If the 6:00 run fails, the next one writes the briefing instead.</p>
 
 <h2>Sending it</h2>
-<p>Edit the Briefing tab in place: click any text to change it, drag a story by its ⠿ handle
-to reorder it, and press × to drop it. To add a story the agent missed, hover between two
-stories and press +, or paste the link anywhere in the briefing. The outlet fills in, and the
+<p>Edit the Briefing tab in place. Each story is three lines, outlet, headline and summary,
+and you edit one line at a time: click any text to change it, and Enter moves you to the next
+line, so a story can't come apart. Formatting is set by house style, so pasted text arrives
+plain. To point a headline at a different article, paste the new link on the headline. Drag a
+story by its ⠿ handle to reorder it, and press × to drop it. To add a story the agent missed,
+press Enter at the end of a summary, or hover between two stories and press +, or paste the
+link anywhere in the briefing. The outlet fills in, and the
 headline too when the story was in the morning's digest; anything highlighted is yours to
 fill in, including the one-line summary. Edits stay in your browser for the day. Then press
 Copy briefing, paste into Outlook, set From to media@northeastern.edu, add the bcc lists,
@@ -346,44 +350,68 @@ STYLE = """
   .sheet { background:#fff; color:#000; padding:36px 48px; box-shadow:var(--shadow-art); }
   .sheet a { color:#0563C1; }
 
-  /* Editor-only controls sit on the white sheet in both themes, so they use fixed light values. */
+  /* Editor-only styling sits on the white sheet in both themes, so it uses fixed light values.
+     The sheet previews the email: Calibri (Carlito where it isn't installed; same metrics) at
+     the email's 11pt, with room to breathe. Inline email styles are only overridden here, on
+     the page; Copy briefing sends the email's own markup. Rhythm: 2px between a story's lines,
+     22px between stories, 28/12 around section headers. */
   #briefing { outline:none; position:relative; }
-  #briefing [data-entry], #briefing [data-section] { position:relative; border-radius:2px; }
-  /* More air between stories while editing; the copied email keeps its own 10pt spacing. */
-  #briefing [data-entry] { margin-bottom:24px !important; }
-  #briefing [data-entry]:hover { box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel); }
-  #briefing [data-entry].lifted { z-index:3; background:#fff; cursor:grabbing;
-    box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel), 0 12px 32px 6px rgb(0 0 0 / .18); }
+  .sheet p, .sheet p * { font-family:Calibri, Carlito, Arial, sans-serif !important; }  /* here and in the Archive */
+  .sheet p { line-height:1.38; }
+  #briefing > div > p:first-child { margin:0 0 2px !important; }
+  #briefing > div > p:nth-child(2) { margin:0 !important; }
+  #briefing [data-section] { position:relative; margin:28px 0 12px !important; }
+  #briefing [data-entry] { position:relative; z-index:0; margin:0 0 22px !important; }
+  /* The story you're over or in sits on a soft card; dragging lifts it. */
+  #briefing [data-entry]::after { content:""; position:absolute; inset:-9px -14px; z-index:-1; border-radius:12px;
+    background:#f5f5f7; opacity:0; transition:opacity .15s, background .15s, box-shadow .2s; }
+  #briefing [data-entry]:hover::after { opacity:1; }
+  #briefing [data-entry]:focus-within::after { opacity:1; background:#f2f2f6; }
+  #briefing [data-entry].lifted { z-index:3; cursor:grabbing; }
+  #briefing [data-entry].lifted::after { opacity:1; background:#fff;
+    box-shadow:0 12px 32px rgb(0 0 0 / .16), 0 0 0 1px rgb(0 0 0 / .05); }
   #briefing.sorting [data-entry]:not(.lifted) { pointer-events:none; }
   #briefing.sorting { user-select:none; cursor:grabbing; }
-  #briefing [data-todo] { background:var(--todo); }
-  /* A story a later sweep added after you started editing. */
-  #briefing [data-entry].fresh::before { content:"New"; position:absolute; left:-36px; top:22px; width:24px;
-    font:600 9px/14px var(--ui); text-align:center; color:#fff; background:var(--sel); border-radius:3px; }
-  .ctl { position:absolute; top:-3px; width:24px; height:24px; padding:0; display:grid; place-items:center;
-         border:0; border-radius:6px; background:none; color:#737373; cursor:pointer; opacity:.35;
-         transition:opacity .12s, background .12s, color .12s; }
+  /* Fields: one per line of a story. inline-block keeps an emptied field clickable and lets
+     the lines take their 2px; a link's underline doesn't reach into one, so the headline sets its own. */
+  #briefing [data-f] { outline:none; cursor:text; }
+  #briefing [data-f="outlet"], #briefing [data-f="head"], #briefing [data-f="sum"] { display:inline-block; min-width:8em; }
+  #briefing [data-f="outlet"], #briefing [data-f="head"] { margin-bottom:2px; }
+  #briefing [data-f="head"] { text-decoration:underline; text-underline-offset:2px; }
+  #briefing [data-f]:empty::before { content:attr(data-ph); color:#a1a1a6; font-weight:400; }
+  #briefing a { cursor:text; }
+  #briefing [data-todo] { background:#fff3c4; border-radius:3px; box-shadow:0 0 0 2px #fff3c4; }
+  /* A story a later sweep added after you started editing: an unread dot, as in Mail. */
+  #briefing [data-entry].fresh::before { content:""; position:absolute; left:-33px; top:6px; width:8px; height:8px;
+    border-radius:50%; background:#0a7aff; transition:opacity .15s; }
+  #briefing [data-entry].fresh:hover::before, #briefing [data-entry].fresh:focus-within::before { opacity:0; }
+  /* Grip and ×: out of the way until you're on a story, level with its outlet. */
+  .ctl { position:absolute; top:-2px; width:24px; height:24px; padding:0; display:grid; place-items:center;
+         border:0; border-radius:6px; background:none; color:#a1a1a6; cursor:pointer; opacity:0;
+         transition:opacity .15s, background .15s, color .15s; }
   .ctl svg { display:block; width:14px; height:14px; }
-  .grip { left:-36px; cursor:grab; touch-action:none; }
-  .x { right:-36px; border-radius:50%; }
-  [data-entry]:hover .ctl, .lifted .ctl, .ctl:focus-visible { opacity:1; }
-  .grip:hover { background:#f0f0f0; color:#1e1e1e; }
-  .x:hover { background:#fde8e4; color:#c4320a; }
+  .grip { left:-42px; cursor:grab; touch-action:none; }
+  .x { right:-42px; }
+  [data-entry]:hover .ctl, [data-entry]:focus-within .ctl, .lifted .ctl, .ctl:focus-visible { opacity:1; }
+  .grip:hover, .x:hover { background:#ececf0; color:#1d1d1f; }
   @media (hover: none) { .ctl { opacity:1; } }
   /* The + between stories: one floating control, positioned over whichever gap the pointer is in. */
   .adder { position:absolute; z-index:2; left:0; right:0; height:24px; margin-top:-12px; display:flex;
            align-items:center; pointer-events:none; }
-  .adder::before { content:""; position:absolute; left:48px; right:48px; top:50%; height:1px; background:var(--sel);
-                   opacity:.5; }
-  .adder button { position:relative; pointer-events:auto; margin:0 auto; width:24px; height:24px; padding:0;
-                  display:grid; place-items:center; border:0; border-radius:50%; background:var(--sel);
-                  color:#fff; cursor:pointer; box-shadow:0 0 0 3px #fff; }
+  .adder::before { content:""; position:absolute; left:34px; right:34px; top:50%; height:1px; background:#d2d2d7; }
+  .adder button { position:relative; pointer-events:auto; margin:0 auto; width:22px; height:22px; padding:0;
+                  display:grid; place-items:center; border:0; border-radius:50%; background:#fff; color:#6e6e73;
+                  cursor:pointer; box-shadow:0 0 0 1px #d2d2d7, 0 1px 2px rgb(0 0 0 / .08);
+                  transition:background .15s, color .15s, box-shadow .15s; }
+  .adder button:hover { background:var(--sel); color:#fff; box-shadow:none; }
   .adder button svg { width:14px; height:14px; }
-  .slot { display:flex; align-items:center; gap:8px; height:36px; margin:0 0 24px; padding:0 10px;
-          border:1px solid var(--sel); border-radius:6px; color:var(--sel-text); font:12px var(--ui);
-          box-shadow:0 0 0 3px var(--sel-soft); }
-  .slot input { flex:1; min-width:0; height:100%; border:0; outline:0; background:none; color:#1e1e1e; font:inherit; }
-  .slot input::placeholder { color:#737373; }
+  /* "Add a story" sits where the story will, the width of a story's card. */
+  .slot { display:flex; align-items:center; gap:10px; height:40px; margin:-6px -14px 22px; padding:0 14px;
+          background:#f5f5f7; border:1px solid transparent; border-radius:12px; color:#a1a1a6; font:13px var(--ui);
+          transition:background .15s, border-color .15s, box-shadow .15s; }
+  .slot:focus-within { background:#fff; border-color:rgb(200 16 46 / .45); box-shadow:0 0 0 3px rgb(200 16 46 / .1); }
+  .slot input { flex:1; min-width:0; height:100%; border:0; outline:0; background:none; color:#1d1d1f; font:inherit; }
+  .slot input::placeholder { color:#a1a1a6; }
 
   .notes { width:360px; min-height:0; overflow-y:auto; background:var(--chrome); border-left:1px solid var(--line);
            padding:12px 20px 32px; font-size:12px; line-height:18px; }
@@ -449,9 +477,9 @@ STYLE = """
     .notes { width:auto; border-left:0; border-top:1px solid var(--line); overflow:visible; padding-bottom:88px; }
     .stage { padding:16px 16px 24px; }
     .sheet { padding:24px 36px; }
-    .grip { left:-32px; }
-    .x { right:-32px; }
-    #briefing [data-entry].fresh::before { left:-32px; }
+    .grip { left:-34px; }
+    .x { right:-34px; }
+    #briefing [data-entry].fresh::before { left:-26px; }
     .page { margin:16px; padding:18px 16px; }
   }
 """
@@ -507,6 +535,11 @@ function clean(root) {
     }
   });
   c.querySelectorAll("[data-todo]").forEach(x => x.removeAttribute("data-todo"));
+  // Field wiring is page-only: the email gets the same markup render_email.py writes.
+  c.querySelectorAll("[data-entry] > span").forEach(x => x.replaceWith(...x.childNodes));
+  c.querySelectorAll("[data-f], a[tabindex]").forEach(x => {
+    for (const a of ["data-f", "data-ph", "contenteditable", "spellcheck", "tabindex"]) x.removeAttribute(a);
+  });
   c.querySelectorAll("[data-entry]").forEach(x => {
     x.style.transform = x.style.transition = "";
     x.removeAttribute("class");
@@ -532,12 +565,43 @@ function sectionEnd(key) {
 const top_ = el => sheet.getBoundingClientRect().top + el.offsetTop;
 const bottom_ = el => top_(el) + el.offsetHeight;
 
+// Each story is three fields edited one at a time: outlet, headline, summary. The sheet itself
+// isn't editable, so Enter can never split a story or leave stray line breaks behind.
+const FIELD = "[data-f]";
+function field(el, kind, ph) {
+  if (el.dataset.f) return;
+  el.dataset.f = kind; el.dataset.ph = ph; el.contentEditable = "true"; el.spellcheck = true;
+}
+function shape(e) {
+  const kids = [...e.childNodes].filter(n => !n.classList?.contains("ed"));
+  const brs = kids.filter(n => n.nodeName === "BR");
+  const outlet = kids.find(n => n.nodeName === "B"), a = e.querySelector("a");
+  if (!outlet || !a || !brs.length) return field(e, "line", "");  // not story-shaped: edit as one block
+  field(outlet, "outlet", "Outlet");
+  if (!a.querySelector("b")) a.replaceChildren(Object.assign(document.createElement("b"), {textContent: a.textContent}));
+  field(a.querySelector("b"), "head", "Headline");
+  a.tabIndex = -1;  // the headline text is the stop, not the link around it
+  let span = kids.find(n => n.nodeName === "SPAN");
+  if (!span) {
+    if (brs.length < 2) a.after(document.createElement("br"));
+    const br2 = [...e.childNodes].filter(n => n.nodeName === "BR")[1];
+    span = document.createElement("span");
+    while (br2.nextSibling && !br2.nextSibling.classList?.contains("ed")) span.append(br2.nextSibling);
+    br2.after(span);
+  }
+  field(span, "sum", "Add a one-line summary.");
+}
+
 function decorate() {
   for (const e of entries()) {
+    shape(e);
     if (e.querySelector(".ctl")) continue;
     e.prepend(control("grip", "Drag to reorder, or use the arrow keys", SVG.grip));
     e.append(control("x", "Remove story", SVG.x));
   }
+  const title = sheet.querySelector("div > p:first-child u"), tag = sheet.querySelector("div > p:nth-child(2) i");
+  if (title) field(title, "line", "Title");
+  if (tag) field(tag, "line", "Tagline");
   const n = entries().length;
   document.getElementById("count").textContent = n + (n === 1 ? " story" : " stories");
 }
@@ -583,14 +647,81 @@ function remember() { try { localStorage.setItem(RKEY, JSON.stringify([...remove
   });
 }
 decorate();
-sheet.contentEditable = "true";
 sheet.addEventListener("input", ev => {
   if (ev.target.closest(".ed")) return;  // typing in an add-story box isn't an edit
+  const f = ev.target.closest(FIELD);
+  if (f && !f.textContent) f.replaceChildren();  // drop the stray <br> browsers leave, so the placeholder shows
+  ev.target.closest("[data-entry]")?.classList.remove("fresh");
   for (const t of sheet.querySelectorAll("[data-todo]"))
     if (t.textContent !== t.dataset.todo) t.removeAttribute("data-todo");
   save();
 });
+
+// Moving between fields, Notion-style. Enter goes to the next field; from a summary it opens
+// "add a story" below. Arrows cross into the neighbouring field at its edge.
+const fieldList = () => [...sheet.querySelectorAll(FIELD)];
+function goTo(f, atStart) {
+  if (!f) return;
+  f.focus({preventScroll: true});
+  f.scrollIntoView({block: "nearest"});
+  const r = document.createRange(); r.selectNodeContents(f); r.collapse(!!atStart);
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+function step(f, by) { const all = fieldList(); return all[all.indexOf(f) + by]; }
+function atEdge(f, end) {
+  const s = getSelection();
+  if (!s.rangeCount || !s.isCollapsed) return false;
+  const r = document.createRange(); r.selectNodeContents(f);
+  if (end) r.setStart(s.anchorNode, s.anchorOffset); else r.setEnd(s.anchorNode, s.anchorOffset);
+  return r.toString() === "";
+}
+function onEdgeLine(f, down) {
+  const s = getSelection();
+  if (!s.rangeCount || !s.isCollapsed) return false;
+  const c = s.getRangeAt(0).getClientRects()[0];
+  if (!c) return true;  // empty field
+  const box = f.getBoundingClientRect(), lh = c.height || 16;
+  return down ? c.bottom > box.bottom - lh / 2 : c.top < box.top + lh / 2;
+}
+function enter(f) {
+  if (f.dataset.f === "sum") openSlot(f.closest("[data-entry]"));
+  else goTo(step(f, 1));
+}
+sheet.addEventListener("keydown", ev => {
+  const f = ev.target.closest?.(FIELD);
+  if (!f || ev.isComposing || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+  const k = ev.key;
+  if (k === "Enter") { ev.preventDefault(); if (!ev.shiftKey) enter(f); return; }
+  if (k === "Escape") { f.blur(); return; }
+  if (ev.shiftKey) return;  // shift+arrows extend the selection as usual
+  let to = null, start = false;
+  if (k === "ArrowRight" && atEdge(f, true)) { to = step(f, 1); start = true; }
+  else if (k === "ArrowLeft" && atEdge(f, false)) to = step(f, -1);
+  else if (k === "ArrowDown" && onEdgeLine(f, true)) { to = step(f, 1); start = true; }
+  else if (k === "ArrowUp" && onEdgeLine(f, false)) to = step(f, -1);
+  else if (k === "Backspace" && atEdge(f, false)) { ev.preventDefault(); return; }  // never merges fields
+  else if (k === "Delete" && atEdge(f, true)) { ev.preventDefault(); return; }
+  if (to) { ev.preventDefault(); goTo(to, start); }
+});
+// The house format is fixed: no bold/italic shortcuts, no line breaks, no dropped-in markup.
+// (Mobile keyboards send Enter only as beforeinput, so it's handled here too.)
+sheet.addEventListener("beforeinput", ev => {
+  const f = ev.target.closest?.(FIELD);
+  if (!f) return;
+  const t = ev.inputType;
+  if (t === "insertParagraph" || t === "insertLineBreak") { ev.preventDefault(); enter(f); }
+  else if (t.startsWith("format") || t === "insertFromDrop") ev.preventDefault();
+});
+sheet.addEventListener("dragover", ev => { if (ev.target.closest?.(FIELD)) ev.preventDefault(); });
+sheet.addEventListener("drop", ev => { if (ev.target.closest?.(FIELD)) ev.preventDefault(); });
+
 sheet.addEventListener("click", ev => {
+  // Headlines are links: a click edits the text; Cmd/Ctrl-click opens the story.
+  const link = ev.target.closest("a");
+  if (link && !ev.target.closest(".ed")) {
+    ev.preventDefault();
+    if (ev.metaKey || ev.ctrlKey) return window.open(link.href, "_blank", "noopener");
+  }
   const t = ev.target.closest("[data-todo]");
   if (t) return getSelection().selectAllChildren(t);  // typing replaces the placeholder
   const x = ev.target.closest(".x");
@@ -727,17 +858,30 @@ function openSlot(after) {
   i.addEventListener("paste", () => setTimeout(go));
   i.addEventListener("keydown", ev => {
     if (ev.key === "Enter") { ev.preventDefault(); go(); }
-    if (ev.key === "Escape") close();
+    if (ev.key === "Escape") { close(); goTo(after.querySelector?.('[data-f="sum"]')); }
   });
   i.addEventListener("blur", () => setTimeout(() => { if (slot && !i.value) close(); }, 150));
 }
 
 // Pasting a link anywhere in the sheet adds it as a story right after the one you're in.
+// Pasting a link into a headline points that headline at it instead. Text always pastes plain.
 sheet.addEventListener("paste", ev => {
   if (ev.target.closest(".ed")) return;
+  ev.preventDefault();  // never paste markup into the sheet
   const text = ev.clipboardData.getData("text/plain").trim();
-  if (!/^(https?:\/\/\S+\s*)+$/.test(text)) return;  // ordinary text pastes as usual
-  ev.preventDefault();
+  const f = ev.target.closest?.(FIELD);
+  if (!/^(https?:\/\/\S+\s*)+$/.test(text)) {
+    if (f) document.execCommand("insertText", false, text.replace(/\s+/g, " "));  // keeps Cmd+Z working
+    return;
+  }
+  if (f?.dataset.f === "head" && !/\s/.test(text)) {
+    const a = f.closest("a"), was = a.getAttribute("href");
+    try { a.href = new URL(text).href; } catch (e) { return; }
+    removed.add(was); remember();  // so the draft's old link isn't merged back in as "New"
+    f.closest("[data-entry]").classList.remove("fresh");
+    save();
+    return toast("Link updated for this headline.");
+  }
   const node = getSelection().anchorNode;
   const here = node && (node.nodeType === 1 ? node : node.parentElement);
   let at = here && here.closest("[data-entry], [data-section]");
@@ -812,7 +956,7 @@ function addLinks(text, at) {
   save();
   if (last) {
     const s = last.querySelector("span[data-todo]");
-    sheet.focus({preventScroll: true}); getSelection().selectAllChildren(s);
+    s.focus({preventScroll: true}); getSelection().selectAllChildren(s);
   }
 }
 
@@ -860,7 +1004,7 @@ document.addEventListener("click", async ev => {
   const left = sheet.querySelectorAll("[data-todo]").length - missing.filter(x => x.dataset.todo).length;
   if (missing.length) {
     toast(`Copied, but ${missing.length === 1 ? "1 story has" : missing.length + " stories have"} no summary yet. It was copied without one.`,
-          "Show", () => { missing[0].scrollIntoView({block: "center", behavior: "smooth"}); sheet.focus({preventScroll: true}); getSelection().selectAllChildren(missing[0]); });
+          "Show", () => { missing[0].scrollIntoView({block: "center", behavior: "smooth"}); missing[0].focus({preventScroll: true}); getSelection().selectAllChildren(missing[0]); });
   } else toast(left ? `Copied. ${left} highlighted ${left === 1 ? "field still needs" : "fields still need"} a look.` : "Copied. Paste it into Outlook.");
 });
 """
@@ -920,7 +1064,7 @@ print(f"""<!doctype html>
 <link rel="icon" type="image/svg+xml" href="{FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600&display=swap">
 <style>{STYLE}</style>
 </head>
 <body data-tab="b">
@@ -946,8 +1090,9 @@ print(f"""<!doctype html>
       <div class="adder" id="adder" hidden><button type="button" aria-label="Add a story here" title="Add a story here"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2.5v9M2.5 7h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
       <div class="frame-label"><span>{escape(day)} · <span id="state">This morning's draft</span></span><span id="count"></span></div>
       <div class="sheet" id="briefing" spellcheck="true">{body}</div>
-      <p class="hint">Click text to edit · drag ⠿ to reorder · × removes · hover between stories and
-      press + to add one from its link, or paste a link anywhere. Edits stay in this browser until Reset.</p>
+      <p class="hint">Click text to edit · Enter moves to the next line, and after a summary adds a story ·
+      paste a link on a headline to change it, anywhere else to add a story · ⌘-click opens a link ·
+      drag ⠿ to reorder · × removes. Edits stay in this browser until Reset.</p>
     </div>
   </div>
   <aside class="notes" id="notes" aria-label="Production notes">
