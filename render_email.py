@@ -11,6 +11,9 @@ import re
 import sys
 
 md = open(sys.argv[1]).read().split("\n---\n")[0]  # drop production notes
+# Entries sometimes come with outlet, headline and summary on consecutive lines instead of
+# blank-line separated (2026-10-22, 10-26, 10-27 rendered no stories). Split them apart.
+md = re.sub(r"^(\*\*[^*\n]+\*\*[^\n]*|\[[^\n]+\]\(https?://[^\n]+\)[^\n]*)\n(?=\S)", r"\1\n\n", md, flags=re.M)
 
 F = "font-family:Calibri,Arial,sans-serif;font-size:11pt;"
 out = [f'<div style="{F}color:#000">']

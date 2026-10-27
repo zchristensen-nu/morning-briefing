@@ -36,7 +36,9 @@ with the run link, and stop.
   out. Rerun: `gh api -X POST …/actions/runs/<id>/rerun-failed-jobs`, then wait (up to
   ten minutes) for that run's conclusion. Passed → notify "Rerun passed", stop. Failed the
   same way → treat it as a bug.
-- **Missed briefing.** "Briefing deadline" failed: today's briefing never reached main.
+- **Missed briefing.** "Briefing deadline" failed: today's briefing never reached main, or
+  the page renders none of its stories (a renderer bug is yours to fix, then re-render with
+  `python3 render_page.py briefings/<today>.md > docs/index.html` in the same PR).
   Never write or publish the briefing yourself. Find out why (did today's digest land? did a
   fetch fail? was there a briefing commit that didn't push?), fix only a repo bug that
   caused it, and otherwise notify "Needs you" with what you found.
