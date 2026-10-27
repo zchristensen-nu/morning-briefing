@@ -30,9 +30,11 @@ hours late most weeks), fetch it yourself with this exact loop — no improvisin
 1. Dispatch the workflow: `gh workflow run fetch-digest.yml`, or the GitHub MCP tool
    (`actions_run_trigger`, method `run_workflow`, workflow `fetch-digest.yml`, ref `main`).
 2. Run `sh wait_for_digest.sh` as a plain FOREGROUND Bash call. It polls origin/main for
-   `digests/<today>.md`, pulls it and exits 0, or exits 1 after ~100 seconds if the file
-   never appeared.
-3. On exit 1, go back to step 1. Up to six rounds (about ten minutes).
+   `digests/<today>.md`, pulls it and exits 0, or after ~100 seconds exits 2 if a fetch is
+   still queued or running, or 1 if none is.
+3. On exit 2, re-run step 2 without dispatching (runners can take several minutes to pick
+   up a run, and a second dispatch only races it). On exit 1, go back to step 1. Up to six
+   dispatches, and stop waiting after about fifteen minutes in all.
 
 Never wait any other way. Do not put the wait in a background Bash call, a Monitor or a
 ScheduleWakeup, and never end your turn to "wait for a notification": this is a headless
@@ -292,7 +294,8 @@ a. Fetch what's new. The cloud sandbox can't reach news sites, so ask the Action
    `fetch-digest.yml` with inputs `name=<NAME>` and `hours=4` (`gh workflow run
    fetch-digest.yml -f name=<NAME> -f hours=4`, or the GitHub MCP `run_workflow` with those
    inputs), then run `DIGEST_NAME=<NAME> sh wait_for_digest.sh` in the foreground — same
-   loop and same never-wait-any-other-way rules as section 1, at most three rounds.
+   loop, same exit-2 rule and same never-wait-any-other-way rules as section 1, at most
+   three dispatches and about ten minutes of waiting.
    If it never lands, stop: note nothing, commit nothing.
 b. Read `digests/<NAME>.md` and apply the same bar as sections 2-4: relevance, approved
    outlets, link hygiene, and de-duplication against today's briefing as it stands plus the
