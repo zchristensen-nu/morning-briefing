@@ -96,9 +96,13 @@ and if you've started editing, new stories are merged into your copy and marked 
 If the 6:00 run fails, the next one writes the briefing instead.</p>
 
 <h2>Sending it</h2>
-<p>Edit the Briefing tab in place: click any text to change it, drag a story by its ⠿ handle
-to reorder it, and press × to drop it. To add a story the agent missed, hover between two
-stories and press +, or paste the link anywhere in the briefing. The outlet fills in, and the
+<p>Edit the Briefing tab in place. Each story is three lines, outlet, headline and summary,
+and you edit one line at a time: click any text to change it, and Enter moves you to the next
+line, so a story can't come apart. Formatting is set by house style, so pasted text arrives
+plain. To point a headline at a different article, paste the new link on the headline. Drag a
+story by its ⠿ handle to reorder it, and press × to drop it. To add a story the agent missed,
+press Enter at the end of a summary, or hover between two stories and press +, or paste the
+link anywhere in the briefing. The outlet fills in, and the
 headline too when the story was in the morning's digest; anything highlighted is yours to
 fill in, including the one-line summary. Edits stay in your browser for the day. Then press
 Copy briefing, paste into Outlook, set From to media@northeastern.edu, add the bcc lists,
@@ -356,6 +360,14 @@ STYLE = """
     box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel), 0 12px 32px 6px rgb(0 0 0 / .18); }
   #briefing.sorting [data-entry]:not(.lifted) { pointer-events:none; }
   #briefing.sorting { user-select:none; cursor:grabbing; }
+  #briefing [data-entry]:focus-within { box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel); }
+  /* Fields: one per line of a story. inline-block keeps an emptied field clickable. */
+  #briefing [data-f] { outline:none; border-radius:2px; cursor:text; }
+  #briefing [data-f="outlet"], #briefing [data-f="head"], #briefing [data-f="sum"] { display:inline-block; min-width:8em; }
+  #briefing [data-f="head"] { text-decoration:underline; }  /* the link's underline doesn't reach an inline-block */
+  #briefing [data-f]:focus { background:#f2f5fa; }
+  #briefing [data-f]:empty::before { content:attr(data-ph); color:#8c8c8c; font-weight:400; }
+  #briefing a { cursor:text; }
   #briefing [data-todo] { background:var(--todo); }
   /* A story a later sweep added after you started editing. */
   #briefing [data-entry].fresh::before { content:"New"; position:absolute; left:-36px; top:22px; width:24px;
@@ -507,6 +519,11 @@ function clean(root) {
     }
   });
   c.querySelectorAll("[data-todo]").forEach(x => x.removeAttribute("data-todo"));
+  // Field wiring is page-only: the email gets the same markup render_email.py writes.
+  c.querySelectorAll("[data-entry] > span").forEach(x => x.replaceWith(...x.childNodes));
+  c.querySelectorAll("[data-f], a[tabindex]").forEach(x => {
+    for (const a of ["data-f", "data-ph", "contenteditable", "spellcheck", "tabindex"]) x.removeAttribute(a);
+  });
   c.querySelectorAll("[data-entry]").forEach(x => {
     x.style.transform = x.style.transition = "";
     x.removeAttribute("class");
@@ -532,12 +549,43 @@ function sectionEnd(key) {
 const top_ = el => sheet.getBoundingClientRect().top + el.offsetTop;
 const bottom_ = el => top_(el) + el.offsetHeight;
 
+// Each story is three fields edited one at a time: outlet, headline, summary. The sheet itself
+// isn't editable, so Enter can never split a story or leave stray line breaks behind.
+const FIELD = "[data-f]";
+function field(el, kind, ph) {
+  if (el.dataset.f) return;
+  el.dataset.f = kind; el.dataset.ph = ph; el.contentEditable = "true"; el.spellcheck = true;
+}
+function shape(e) {
+  const kids = [...e.childNodes].filter(n => !n.classList?.contains("ed"));
+  const brs = kids.filter(n => n.nodeName === "BR");
+  const outlet = kids.find(n => n.nodeName === "B"), a = e.querySelector("a");
+  if (!outlet || !a || !brs.length) return field(e, "line", "");  // not story-shaped: edit as one block
+  field(outlet, "outlet", "Outlet");
+  if (!a.querySelector("b")) a.replaceChildren(Object.assign(document.createElement("b"), {textContent: a.textContent}));
+  field(a.querySelector("b"), "head", "Headline");
+  a.tabIndex = -1;  // the headline text is the stop, not the link around it
+  let span = kids.find(n => n.nodeName === "SPAN");
+  if (!span) {
+    if (brs.length < 2) a.after(document.createElement("br"));
+    const br2 = [...e.childNodes].filter(n => n.nodeName === "BR")[1];
+    span = document.createElement("span");
+    while (br2.nextSibling && !br2.nextSibling.classList?.contains("ed")) span.append(br2.nextSibling);
+    br2.after(span);
+  }
+  field(span, "sum", "Add a one-line summary.");
+}
+
 function decorate() {
   for (const e of entries()) {
+    shape(e);
     if (e.querySelector(".ctl")) continue;
     e.prepend(control("grip", "Drag to reorder, or use the arrow keys", SVG.grip));
     e.append(control("x", "Remove story", SVG.x));
   }
+  const title = sheet.querySelector("div > p:first-child u"), tag = sheet.querySelector("div > p:nth-child(2) i");
+  if (title) field(title, "line", "Title");
+  if (tag) field(tag, "line", "Tagline");
   const n = entries().length;
   document.getElementById("count").textContent = n + (n === 1 ? " story" : " stories");
 }
@@ -583,14 +631,81 @@ function remember() { try { localStorage.setItem(RKEY, JSON.stringify([...remove
   });
 }
 decorate();
-sheet.contentEditable = "true";
 sheet.addEventListener("input", ev => {
   if (ev.target.closest(".ed")) return;  // typing in an add-story box isn't an edit
+  const f = ev.target.closest(FIELD);
+  if (f && !f.textContent) f.replaceChildren();  // drop the stray <br> browsers leave, so the placeholder shows
+  ev.target.closest("[data-entry]")?.classList.remove("fresh");
   for (const t of sheet.querySelectorAll("[data-todo]"))
     if (t.textContent !== t.dataset.todo) t.removeAttribute("data-todo");
   save();
 });
+
+// Moving between fields, Notion-style. Enter goes to the next field; from a summary it opens
+// "add a story" below. Arrows cross into the neighbouring field at its edge.
+const fieldList = () => [...sheet.querySelectorAll(FIELD)];
+function goTo(f, atStart) {
+  if (!f) return;
+  f.focus({preventScroll: true});
+  f.scrollIntoView({block: "nearest"});
+  const r = document.createRange(); r.selectNodeContents(f); r.collapse(!!atStart);
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+function step(f, by) { const all = fieldList(); return all[all.indexOf(f) + by]; }
+function atEdge(f, end) {
+  const s = getSelection();
+  if (!s.rangeCount || !s.isCollapsed) return false;
+  const r = document.createRange(); r.selectNodeContents(f);
+  if (end) r.setStart(s.anchorNode, s.anchorOffset); else r.setEnd(s.anchorNode, s.anchorOffset);
+  return r.toString() === "";
+}
+function onEdgeLine(f, down) {
+  const s = getSelection();
+  if (!s.rangeCount || !s.isCollapsed) return false;
+  const c = s.getRangeAt(0).getClientRects()[0];
+  if (!c) return true;  // empty field
+  const box = f.getBoundingClientRect(), lh = c.height || 16;
+  return down ? c.bottom > box.bottom - lh / 2 : c.top < box.top + lh / 2;
+}
+function enter(f) {
+  if (f.dataset.f === "sum") openSlot(f.closest("[data-entry]"));
+  else goTo(step(f, 1));
+}
+sheet.addEventListener("keydown", ev => {
+  const f = ev.target.closest?.(FIELD);
+  if (!f || ev.isComposing || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+  const k = ev.key;
+  if (k === "Enter") { ev.preventDefault(); if (!ev.shiftKey) enter(f); return; }
+  if (k === "Escape") { f.blur(); return; }
+  if (ev.shiftKey) return;  // shift+arrows extend the selection as usual
+  let to = null, start = false;
+  if (k === "ArrowRight" && atEdge(f, true)) { to = step(f, 1); start = true; }
+  else if (k === "ArrowLeft" && atEdge(f, false)) to = step(f, -1);
+  else if (k === "ArrowDown" && onEdgeLine(f, true)) { to = step(f, 1); start = true; }
+  else if (k === "ArrowUp" && onEdgeLine(f, false)) to = step(f, -1);
+  else if (k === "Backspace" && atEdge(f, false)) { ev.preventDefault(); return; }  // never merges fields
+  else if (k === "Delete" && atEdge(f, true)) { ev.preventDefault(); return; }
+  if (to) { ev.preventDefault(); goTo(to, start); }
+});
+// The house format is fixed: no bold/italic shortcuts, no line breaks, no dropped-in markup.
+// (Mobile keyboards send Enter only as beforeinput, so it's handled here too.)
+sheet.addEventListener("beforeinput", ev => {
+  const f = ev.target.closest?.(FIELD);
+  if (!f) return;
+  const t = ev.inputType;
+  if (t === "insertParagraph" || t === "insertLineBreak") { ev.preventDefault(); enter(f); }
+  else if (t.startsWith("format") || t === "insertFromDrop") ev.preventDefault();
+});
+sheet.addEventListener("dragover", ev => { if (ev.target.closest?.(FIELD)) ev.preventDefault(); });
+sheet.addEventListener("drop", ev => { if (ev.target.closest?.(FIELD)) ev.preventDefault(); });
+
 sheet.addEventListener("click", ev => {
+  // Headlines are links: a click edits the text; Cmd/Ctrl-click opens the story.
+  const link = ev.target.closest("a");
+  if (link && !ev.target.closest(".ed")) {
+    ev.preventDefault();
+    if (ev.metaKey || ev.ctrlKey) return window.open(link.href, "_blank", "noopener");
+  }
   const t = ev.target.closest("[data-todo]");
   if (t) return getSelection().selectAllChildren(t);  // typing replaces the placeholder
   const x = ev.target.closest(".x");
@@ -727,17 +842,30 @@ function openSlot(after) {
   i.addEventListener("paste", () => setTimeout(go));
   i.addEventListener("keydown", ev => {
     if (ev.key === "Enter") { ev.preventDefault(); go(); }
-    if (ev.key === "Escape") close();
+    if (ev.key === "Escape") { close(); goTo(after.querySelector?.('[data-f="sum"]')); }
   });
   i.addEventListener("blur", () => setTimeout(() => { if (slot && !i.value) close(); }, 150));
 }
 
 // Pasting a link anywhere in the sheet adds it as a story right after the one you're in.
+// Pasting a link into a headline points that headline at it instead. Text always pastes plain.
 sheet.addEventListener("paste", ev => {
   if (ev.target.closest(".ed")) return;
+  ev.preventDefault();  // never paste markup into the sheet
   const text = ev.clipboardData.getData("text/plain").trim();
-  if (!/^(https?:\/\/\S+\s*)+$/.test(text)) return;  // ordinary text pastes as usual
-  ev.preventDefault();
+  const f = ev.target.closest?.(FIELD);
+  if (!/^(https?:\/\/\S+\s*)+$/.test(text)) {
+    if (f) document.execCommand("insertText", false, text.replace(/\s+/g, " "));  // keeps Cmd+Z working
+    return;
+  }
+  if (f?.dataset.f === "head" && !/\s/.test(text)) {
+    const a = f.closest("a"), was = a.getAttribute("href");
+    try { a.href = new URL(text).href; } catch (e) { return; }
+    removed.add(was); remember();  // so the draft's old link isn't merged back in as "New"
+    f.closest("[data-entry]").classList.remove("fresh");
+    save();
+    return toast("Link updated for this headline.");
+  }
   const node = getSelection().anchorNode;
   const here = node && (node.nodeType === 1 ? node : node.parentElement);
   let at = here && here.closest("[data-entry], [data-section]");
@@ -812,7 +940,7 @@ function addLinks(text, at) {
   save();
   if (last) {
     const s = last.querySelector("span[data-todo]");
-    sheet.focus({preventScroll: true}); getSelection().selectAllChildren(s);
+    s.focus({preventScroll: true}); getSelection().selectAllChildren(s);
   }
 }
 
@@ -860,7 +988,7 @@ document.addEventListener("click", async ev => {
   const left = sheet.querySelectorAll("[data-todo]").length - missing.filter(x => x.dataset.todo).length;
   if (missing.length) {
     toast(`Copied, but ${missing.length === 1 ? "1 story has" : missing.length + " stories have"} no summary yet. It was copied without one.`,
-          "Show", () => { missing[0].scrollIntoView({block: "center", behavior: "smooth"}); sheet.focus({preventScroll: true}); getSelection().selectAllChildren(missing[0]); });
+          "Show", () => { missing[0].scrollIntoView({block: "center", behavior: "smooth"}); missing[0].focus({preventScroll: true}); getSelection().selectAllChildren(missing[0]); });
   } else toast(left ? `Copied. ${left} highlighted ${left === 1 ? "field still needs" : "fields still need"} a look.` : "Copied. Paste it into Outlook.");
 });
 """
@@ -946,8 +1074,9 @@ print(f"""<!doctype html>
       <div class="adder" id="adder" hidden><button type="button" aria-label="Add a story here" title="Add a story here"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2.5v9M2.5 7h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
       <div class="frame-label"><span>{escape(day)} · <span id="state">This morning's draft</span></span><span id="count"></span></div>
       <div class="sheet" id="briefing" spellcheck="true">{body}</div>
-      <p class="hint">Click text to edit · drag ⠿ to reorder · × removes · hover between stories and
-      press + to add one from its link, or paste a link anywhere. Edits stay in this browser until Reset.</p>
+      <p class="hint">Click text to edit · Enter moves to the next line, and after a summary adds a story ·
+      paste a link on a headline to change it, anywhere else to add a story · ⌘-click opens a link ·
+      drag ⠿ to reorder · × removes. Edits stay in this browser until Reset.</p>
     </div>
   </div>
   <aside class="notes" id="notes" aria-label="Production notes">
