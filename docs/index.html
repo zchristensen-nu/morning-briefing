@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwVjQuNzk2SDE1LjY5MzZMMS43MDUyNCAxOC43ODQzTDUuMDk1NzYgMjIuMTgxNUwxOS4yMDQgOC4wNjY2MVYyNEgyNFYwSDBaIiBmaWxsPSIjQ0YyQjI4Ii8+PC9zdmc+">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600&display=swap">
 <style>
   :root {
     --chrome:#ffffff; --canvas:#f0f0f0; --dot:rgb(0 0 0 / .07); --line:#e6e6e6;
@@ -83,52 +83,68 @@
   .sheet { background:#fff; color:#000; padding:36px 48px; box-shadow:var(--shadow-art); }
   .sheet a { color:#0563C1; }
 
-  /* Editor-only controls sit on the white sheet in both themes, so they use fixed light values. */
+  /* Editor-only styling sits on the white sheet in both themes, so it uses fixed light values.
+     The sheet previews the email: Calibri (Carlito where it isn't installed; same metrics) at
+     the email's 11pt, with room to breathe. Inline email styles are only overridden here, on
+     the page; Copy briefing sends the email's own markup. Rhythm: 2px between a story's lines,
+     22px between stories, 28/12 around section headers. */
   #briefing { outline:none; position:relative; }
-  #briefing [data-entry], #briefing [data-section] { position:relative; border-radius:2px; }
-  /* More air between stories while editing; the copied email keeps its own 10pt spacing. */
-  #briefing [data-entry] { margin-bottom:24px !important; }
-  #briefing [data-entry]:hover { box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel); }
-  #briefing [data-entry].lifted { z-index:3; background:#fff; cursor:grabbing;
-    box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel), 0 12px 32px 6px rgb(0 0 0 / .18); }
+  .sheet p, .sheet p * { font-family:Calibri, Carlito, Arial, sans-serif !important; }  /* here and in the Archive */
+  .sheet p { line-height:1.38; }
+  #briefing > div > p:first-child { margin:0 0 2px !important; }
+  #briefing > div > p:nth-child(2) { margin:0 !important; }
+  #briefing [data-section] { position:relative; margin:28px 0 12px !important; }
+  #briefing [data-entry] { position:relative; z-index:0; margin:0 0 22px !important; }
+  /* The story you're over or in sits on a soft card; dragging lifts it. */
+  #briefing [data-entry]::after { content:""; position:absolute; inset:-9px -14px; z-index:-1; border-radius:12px;
+    background:#f5f5f7; opacity:0; transition:opacity .15s, background .15s, box-shadow .2s; }
+  #briefing [data-entry]:hover::after { opacity:1; }
+  #briefing [data-entry]:focus-within::after { opacity:1; background:#f2f2f6; }
+  #briefing [data-entry].lifted { z-index:3; cursor:grabbing; }
+  #briefing [data-entry].lifted::after { opacity:1; background:#fff;
+    box-shadow:0 12px 32px rgb(0 0 0 / .16), 0 0 0 1px rgb(0 0 0 / .05); }
   #briefing.sorting [data-entry]:not(.lifted) { pointer-events:none; }
   #briefing.sorting { user-select:none; cursor:grabbing; }
-  #briefing [data-entry]:focus-within { box-shadow:0 0 0 6px #fff, 0 0 0 7px var(--sel); }
-  /* Fields: one per line of a story. inline-block keeps an emptied field clickable. */
-  #briefing [data-f] { outline:none; border-radius:2px; cursor:text; }
+  /* Fields: one per line of a story. inline-block keeps an emptied field clickable and lets
+     the lines take their 2px; a link's underline doesn't reach into one, so the headline sets its own. */
+  #briefing [data-f] { outline:none; cursor:text; }
   #briefing [data-f="outlet"], #briefing [data-f="head"], #briefing [data-f="sum"] { display:inline-block; min-width:8em; }
-  #briefing [data-f="head"] { text-decoration:underline; }  /* the link's underline doesn't reach an inline-block */
-  #briefing [data-f]:focus { background:#f2f5fa; }
-  #briefing [data-f]:empty::before { content:attr(data-ph); color:#8c8c8c; font-weight:400; }
+  #briefing [data-f="outlet"], #briefing [data-f="head"] { margin-bottom:2px; }
+  #briefing [data-f="head"] { text-decoration:underline; text-underline-offset:2px; }
+  #briefing [data-f]:empty::before { content:attr(data-ph); color:#a1a1a6; font-weight:400; }
   #briefing a { cursor:text; }
-  #briefing [data-todo] { background:var(--todo); }
-  /* A story a later sweep added after you started editing. */
-  #briefing [data-entry].fresh::before { content:"New"; position:absolute; left:-36px; top:22px; width:24px;
-    font:600 9px/14px var(--ui); text-align:center; color:#fff; background:var(--sel); border-radius:3px; }
-  .ctl { position:absolute; top:-3px; width:24px; height:24px; padding:0; display:grid; place-items:center;
-         border:0; border-radius:6px; background:none; color:#737373; cursor:pointer; opacity:.35;
-         transition:opacity .12s, background .12s, color .12s; }
+  #briefing [data-todo] { background:#fff3c4; border-radius:3px; box-shadow:0 0 0 2px #fff3c4; }
+  /* A story a later sweep added after you started editing: an unread dot, as in Mail. */
+  #briefing [data-entry].fresh::before { content:""; position:absolute; left:-33px; top:6px; width:8px; height:8px;
+    border-radius:50%; background:#0a7aff; transition:opacity .15s; }
+  #briefing [data-entry].fresh:hover::before, #briefing [data-entry].fresh:focus-within::before { opacity:0; }
+  /* Grip and ×: out of the way until you're on a story, level with its outlet. */
+  .ctl { position:absolute; top:-2px; width:24px; height:24px; padding:0; display:grid; place-items:center;
+         border:0; border-radius:6px; background:none; color:#a1a1a6; cursor:pointer; opacity:0;
+         transition:opacity .15s, background .15s, color .15s; }
   .ctl svg { display:block; width:14px; height:14px; }
-  .grip { left:-36px; cursor:grab; touch-action:none; }
-  .x { right:-36px; border-radius:50%; }
-  [data-entry]:hover .ctl, .lifted .ctl, .ctl:focus-visible { opacity:1; }
-  .grip:hover { background:#f0f0f0; color:#1e1e1e; }
-  .x:hover { background:#fde8e4; color:#c4320a; }
+  .grip { left:-42px; cursor:grab; touch-action:none; }
+  .x { right:-42px; }
+  [data-entry]:hover .ctl, [data-entry]:focus-within .ctl, .lifted .ctl, .ctl:focus-visible { opacity:1; }
+  .grip:hover, .x:hover { background:#ececf0; color:#1d1d1f; }
   @media (hover: none) { .ctl { opacity:1; } }
   /* The + between stories: one floating control, positioned over whichever gap the pointer is in. */
   .adder { position:absolute; z-index:2; left:0; right:0; height:24px; margin-top:-12px; display:flex;
            align-items:center; pointer-events:none; }
-  .adder::before { content:""; position:absolute; left:48px; right:48px; top:50%; height:1px; background:var(--sel);
-                   opacity:.5; }
-  .adder button { position:relative; pointer-events:auto; margin:0 auto; width:24px; height:24px; padding:0;
-                  display:grid; place-items:center; border:0; border-radius:50%; background:var(--sel);
-                  color:#fff; cursor:pointer; box-shadow:0 0 0 3px #fff; }
+  .adder::before { content:""; position:absolute; left:34px; right:34px; top:50%; height:1px; background:#d2d2d7; }
+  .adder button { position:relative; pointer-events:auto; margin:0 auto; width:22px; height:22px; padding:0;
+                  display:grid; place-items:center; border:0; border-radius:50%; background:#fff; color:#6e6e73;
+                  cursor:pointer; box-shadow:0 0 0 1px #d2d2d7, 0 1px 2px rgb(0 0 0 / .08);
+                  transition:background .15s, color .15s, box-shadow .15s; }
+  .adder button:hover { background:var(--sel); color:#fff; box-shadow:none; }
   .adder button svg { width:14px; height:14px; }
-  .slot { display:flex; align-items:center; gap:8px; height:36px; margin:0 0 24px; padding:0 10px;
-          border:1px solid var(--sel); border-radius:6px; color:var(--sel-text); font:12px var(--ui);
-          box-shadow:0 0 0 3px var(--sel-soft); }
-  .slot input { flex:1; min-width:0; height:100%; border:0; outline:0; background:none; color:#1e1e1e; font:inherit; }
-  .slot input::placeholder { color:#737373; }
+  /* "Add a story" sits where the story will, the width of a story's card. */
+  .slot { display:flex; align-items:center; gap:10px; height:40px; margin:-6px -14px 22px; padding:0 14px;
+          background:#f5f5f7; border:1px solid transparent; border-radius:12px; color:#a1a1a6; font:13px var(--ui);
+          transition:background .15s, border-color .15s, box-shadow .15s; }
+  .slot:focus-within { background:#fff; border-color:rgb(200 16 46 / .45); box-shadow:0 0 0 3px rgb(200 16 46 / .1); }
+  .slot input { flex:1; min-width:0; height:100%; border:0; outline:0; background:none; color:#1d1d1f; font:inherit; }
+  .slot input::placeholder { color:#a1a1a6; }
 
   .notes { width:360px; min-height:0; overflow-y:auto; background:var(--chrome); border-left:1px solid var(--line);
            padding:12px 20px 32px; font-size:12px; line-height:18px; }
@@ -194,9 +210,9 @@
     .notes { width:auto; border-left:0; border-top:1px solid var(--line); overflow:visible; padding-bottom:88px; }
     .stage { padding:16px 16px 24px; }
     .sheet { padding:24px 36px; }
-    .grip { left:-32px; }
-    .x { right:-32px; }
-    #briefing [data-entry].fresh::before { left:-32px; }
+    .grip { left:-34px; }
+    .x { right:-34px; }
+    #briefing [data-entry].fresh::before { left:-26px; }
     .page { margin:16px; padding:18px 16px; }
   }
 </style>
