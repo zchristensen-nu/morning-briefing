@@ -54,15 +54,16 @@ relevance order. Note any FEED ERROR lines for production notes.
 
 **Publisher feeds now carry the Tier 1 stories.** WSJ (US news + opinion), NYT (education,
 opinion, US, business), the Economist, AP, CSM, NPR, the Guardian and Inside Higher Ed all
-publish working RSS, and those entries arrive with a real, canonical article URL that needs
-no verification. This is the primary source of Tier 1 coverage — read those sections first
-and hardest. The Google News `site:` queries are a supplement, not the backbone: they
-return an outlet's general firehose and their links are dead redirects.
+publish working RSS. This is the primary source of Tier 1 coverage — read those sections
+first and hardest. The Google News `site:` queries are a supplement, not the backbone: they
+return an outlet's general firehose.
 
-**Reading the digest.** It runs 1,200-1,500 lines. Read it in chunks with offset/limit —
-about 250 lines at a time is safe. Entries that came from a publisher feed carry a usable
-URL; entries from a news search carry none, because Google's redirect links are dead ends
-and the canonical URL has to be found by headline search regardless (step 3).
+**Reading the digest.** It runs 1,800-2,200 lines. Read it in chunks with offset/limit —
+about 250 lines at a time is safe. The line under a headline is the article's own URL and
+is usable as-is: publisher feeds supply it directly, and the fetcher trades each Google
+News redirect for the publisher's URL while it still has open network access. The digest's
+third header line reports how many were resolved. A headline marked (DUPLICATE) carries its
+URL under its first appearance. Only an item with no URL needs a headline search (step 3).
 
 **Never end a run with work outstanding.** This is a scheduled, headless session: nothing
 resumes it, so anything left pending is simply lost. If you delegate reading or extraction
@@ -168,11 +169,16 @@ releases, PR wires, aggregator or syndication mirrors (find the original outlet)
 
 ## 3. Link hygiene
 
-Google News items carry news.google.com redirect URLs. For every included story, find the
-canonical article URL by web-searching the exact headline plus outlet domain, and verify
-the publication date is inside the window. Direct-feed items (NYT Education, NPR,
-Guardian, Inside Higher Ed) already have real URLs. Never include a news.google.com link;
-never fabricate a URL. **If a canonical URL cannot be found for an otherwise important
+**Every entry carries a working link.** Use the URL printed under the story's headline in
+the digest, exactly as given, and verify the publication date is inside the window. The
+cloud sandbox cannot open news sites and its web search rarely finds same-day articles, so
+the digest is the source of links, not search: from 2026-11-06 to 2026-11-12 runs that
+relied on search published 5 to 17 entries a day with no link at all. Only when the digest
+has no URL for a story (the header line shows some went unresolved, or the story came from
+the ACE backstop) web-search the exact headline plus outlet domain. If the header shows
+most links unresolved, dispatch the fetch once more under a sweep name before curating and
+take URLs from whichever digest has them. Never include a news.google.com link; never
+fabricate a URL. **If a canonical URL cannot be found for an otherwise important
 story from a major outlet, KEEP the story** — include it with the best available
 attribution and flag it prominently in production notes for a manual link fix. Dropping
 significant stories over link resolution is worse than a link the team fixes in 10 seconds.

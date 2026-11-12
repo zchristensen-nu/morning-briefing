@@ -143,11 +143,12 @@ padding.</p>
 
 <h2>How the links are checked</h2>
 <p>Stories found through search arrive with Google redirect links rather than real
-addresses. For each story it keeps, the agent searches the exact headline to find the
-article on the publisher's own site, then confirms the date falls inside the window — most
-publishers put the date in the address, which makes that checkable. If it can't verify a
-link for an important story it keeps the story and flags the link in the production notes.
-It never invents a link.</p>
+addresses. The fetch step trades each one for the article's address on the publisher's own
+site before the agent ever sees it, so every story in the digest comes with a working link.
+The agent confirms the date falls inside the window — most publishers put the date in the
+address, which makes that checkable. Only when the fetch step could not resolve a link does
+the agent search the exact headline instead; if that fails for an important story it keeps
+the story and flags the link in the production notes. It never invents a link.</p>
 
 <h2>How repeats are avoided</h2>
 <p>Every past briefing is kept (see the Archive tab) and the agent reads the most recent one
