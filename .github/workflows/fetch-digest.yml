@@ -49,7 +49,7 @@ jobs:
           git diff --cached --quiet || git commit -m "Digest $(basename "$OUT" .md)"
           # A duplicate dispatch for the same digest name loses an add/add race;
           # "ours" is upstream during a rebase, so the duplicate commit is dropped.
-          git pull -q --rebase -X ours origin main
+          git pull -q --rebase -X ours origin "$GITHUB_REF_NAME"
           git push
       - name: Prune old digests
         run: |
