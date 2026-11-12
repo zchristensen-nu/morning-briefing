@@ -41,11 +41,19 @@ for block in md.strip().split("\n\n"):
         out.append(f'<p style="{F}margin:{gap} 0 0"><i>{text}</i></p>')
     elif block.startswith("**"):  # outlet name opens a new entry
         entries.append({"outlet": block.replace("**", ""), "headline": "", "summary": ""})
-    elif entries and block.startswith("["):
-        h = re.sub(r"\[([^\]]+)\]\(([^)]+)\)",
-                   lambda m: f'<a href="{m.group(2)}"><b>{m.group(1)}</b></a>', " ".join(block.split("\n")))
-        # bold any format label after the link, e.g. (Op-ed)
-        entries[-1]["headline"] = re.sub(r"</a>\s*(\([^)]+\))$", r"</a> <b>\1</b>", h)
+    elif entries and not entries[-1]["headline"]:
+        text = " ".join(block.split("\n"))
+        if text.startswith("["):
+            h = re.sub(r"\[([^\]]+)\]\(([^)]+)\)",
+                       lambda m: f'<a href="{m.group(2)}"><b>{m.group(1)}</b></a>', text)
+            # bold any format label after the link, e.g. (Op-ed)
+            h = re.sub(r"</a>\s*(\([^)]+\))$", r"</a> <b>\1</b>", h)
+        else:
+            # no resolvable link (flagged in production notes) — plain bold headline, no anchor
+            h = re.sub(r"^(.*?)\s*(\([^)]+\))$", r"<b>\1</b> <b>\2</b>", text)
+            if h == text:
+                h = f"<b>{text}</b>"
+        entries[-1]["headline"] = h
         out.append(entries[-1])  # placeholder position
     elif entries and entries[-1]["headline"] and not entries[-1]["summary"]:
         summary = " ".join(block.split("\n"))
